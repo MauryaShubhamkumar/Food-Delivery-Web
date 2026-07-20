@@ -1,0 +1,109 @@
+.explore-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  margin-top: 40px;
+}
+
+.explore-menu-header h2 {
+  color: var(--text-dark);
+  font-size: max(2.2vw, 26px);
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+.explore-menu-text {
+  max-width: 60%;
+  color: var(--text-muted);
+  font-size: 15px;
+  line-height: 1.6;
+  margin-top: 8px;
+}
+
+.explore-menu-list {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  text-align: center;
+  margin: 16px 0 10px;
+  overflow-x: auto;
+  padding: 12px 6px;
+  scroll-behavior: smooth;
+}
+
+.explore-menu-list::-webkit-scrollbar {
+  display: none;
+}
+
+.explore-menu-list-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: var(--transition-normal);
+}
+
+.explore-menu-img-wrapper {
+  position: relative;
+  padding: 4px;
+  border-radius: 50%;
+  transition: var(--transition-normal);
+  background: transparent;
+}
+
+.explore-menu-list-item:hover .explore-menu-img-wrapper {
+  transform: translateY(-6px);
+}
+
+.explore-menu-list-item img {
+  width: 7.5vw;
+  min-width: 80px;
+  max-width: 110px;
+  height: 7.5vw;
+  min-height: 80px;
+  max-height: 110px;
+  object-fit: cover;
+  cursor: pointer;
+  border-radius: 50%;
+  transition: var(--transition-normal);
+  box-shadow: var(--shadow-sm);
+}
+
+.explore-menu-list-item .active {
+  border: 4px solid var(--primary-color);
+  padding: 2px;
+  box-shadow: var(--shadow-glow);
+}
+
+.explore-menu-list-item.active-item .explore-menu-img-wrapper {
+  background: var(--primary-gradient);
+  box-shadow: var(--shadow-glow);
+}
+
+.explore-menu-list-item p {
+  margin-top: 12px;
+  color: var(--text-body);
+  font-size: max(1.1vw, 15px);
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.explore-menu-list-item:hover p, .explore-menu-list-item.active-item p {
+  color: var(--primary-color);
+  font-weight: 600;
+}
+
+.explore-menu hr {
+  margin: 20px 0;
+  height: 1px;
+  background: rgba(226, 232, 240, 0.8);
+  border: none;
+}
+
+@media (max-width: 1050px) {
+  .explore-menu-text {
+    max-width: 100%;
+    font-size: 14px;
+  }
+}

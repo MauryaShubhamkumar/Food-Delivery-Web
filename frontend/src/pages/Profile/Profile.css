@@ -1,0 +1,271 @@
+.user-profile-page {
+  margin: 40px 0 80px 0;
+  display: flex;
+  justify-content: center;
+  animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.profile-card {
+  width: 100%;
+  max-width: 850px;
+  background: var(--card-bg);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+}
+
+.profile-banner {
+  height: 120px;
+  background: var(--primary-gradient);
+  position: relative;
+}
+
+.avatar-wrapper {
+  position: absolute;
+  bottom: -36px;
+  left: 40px;
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  background: var(--card-bg);
+  border: 4px solid var(--card-bg);
+  box-shadow: var(--shadow-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.avatar-img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+}
+
+.profile-body {
+  padding: 50px 40px 40px 40px;
+}
+
+.profile-header-info h2 {
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--text-dark);
+  letter-spacing: -0.5px;
+  margin-bottom: 4px;
+}
+
+.profile-email {
+  font-size: 15px;
+  color: var(--text-muted);
+  margin-bottom: 16px;
+}
+
+.profile-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+.diet-badge, .profession-badge, .member-badge {
+  padding: 5px 14px;
+  border-radius: var(--radius-pill);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.diet-badge {
+  background: rgba(16, 185, 129, 0.15);
+  color: #10b981;
+}
+
+.diet-badge.non-veg {
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+}
+
+.diet-badge.eggetarian {
+  background: rgba(245, 158, 11, 0.15);
+  color: #f59e0b;
+}
+
+.diet-badge.vegan {
+  background: rgba(16, 185, 129, 0.2);
+  color: #059669;
+}
+
+.profession-badge {
+  background: rgba(99, 102, 241, 0.15);
+  color: #6366f1;
+}
+
+.member-badge {
+  background: var(--input-bg);
+  border: 1px solid var(--border-color);
+  color: var(--text-muted);
+}
+
+.profile-divider {
+  border: none;
+  border-top: 1px solid var(--border-color);
+  margin: 28px 0;
+}
+
+.details-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.details-header h3 {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-dark);
+}
+
+.edit-profile-btn, .cancel-edit-btn {
+  border: none;
+  padding: 8px 18px;
+  border-radius: var(--radius-pill);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.edit-profile-btn {
+  background: rgba(255, 94, 58, 0.12);
+  color: var(--primary-color);
+}
+
+.edit-profile-btn:hover {
+  background: var(--primary-color);
+  color: white;
+}
+
+.cancel-edit-btn {
+  background: var(--input-bg);
+  border: 1px solid var(--border-color);
+  color: var(--text-muted);
+}
+
+.cancel-edit-btn:hover {
+  color: var(--text-dark);
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px 30px;
+}
+
+.info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.info-item.full-width {
+  grid-column: span 2;
+}
+
+.info-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.info-value {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--text-dark);
+  line-height: 1.5;
+}
+
+/* EDIT FORM STYLES */
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-group.full-width {
+  grid-column: span 2;
+}
+
+.form-group label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-dark);
+}
+
+.form-group input, .form-group select, .form-group textarea {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  outline: none;
+  font-size: 15px;
+  color: var(--text-dark);
+  background: var(--input-bg);
+  transition: var(--transition-fast);
+}
+
+.form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(255, 94, 58, 0.2);
+}
+
+.form-actions {
+  margin-top: 28px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.save-profile-btn {
+  border: none;
+  padding: 12px 32px;
+  border-radius: var(--radius-pill);
+  background: var(--primary-gradient);
+  color: white;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: var(--shadow-glow);
+  transition: var(--transition-normal);
+}
+
+.save-profile-btn:hover {
+  transform: translateY(-2px);
+  background: var(--primary-gradient-hover);
+}
+
+.profile-empty, .profile-loading {
+  text-align: center;
+  padding: 60px 20px;
+  background: var(--card-bg);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+  margin-top: 40px;
+}
+
+@media (max-width: 768px) {
+  .info-grid, .form-grid {
+    grid-template-columns: 1fr;
+  }
+  .info-item.full-width, .form-group.full-width {
+    grid-column: span 1;
+  }
+  .profile-body {
+    padding: 50px 20px 30px 20px;
+  }
+}

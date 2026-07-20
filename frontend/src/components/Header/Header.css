@@ -1,0 +1,126 @@
+.header {
+  height: 38vw;
+  min-height: 420px;
+  margin: 20px auto 40px;
+  background: linear-gradient(180deg, rgba(15, 23, 42, 0.2) 0%, rgba(15, 23, 42, 0.75) 100%), url('/header_img.png') no-repeat center/cover;
+  border-radius: var(--radius-lg);
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--shadow-lg);
+}
+
+.header-content {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1.2rem;
+  max-width: 55%;
+  bottom: 12%;
+  left: 5vw;
+  animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 2;
+}
+
+.header-badges {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.header-badge {
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: #ffffff;
+  padding: 6px 14px;
+  border-radius: var(--radius-pill);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+
+.header-badge.star {
+  background: rgba(255, 183, 3, 0.25);
+  border-color: rgba(255, 183, 3, 0.4);
+  color: #fff;
+}
+
+.header-content h2 {
+  font-weight: 700;
+  color: #ffffff;
+  font-size: max(3.5vw, 28px);
+  line-height: 1.15;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.header-content p {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: max(1.05vw, 14px);
+  line-height: 1.6;
+  font-weight: 400;
+  max-width: 90%;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+}
+
+.header-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: #ffffff;
+  color: var(--text-dark);
+  font-weight: 600;
+  padding: 14px 32px;
+  font-size: 15px;
+  border-radius: var(--radius-pill);
+  transition: var(--transition-normal);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  margin-top: 6px;
+}
+
+.header-btn:hover {
+  background: var(--primary-gradient);
+  color: #ffffff;
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-glow);
+}
+
+.header-btn svg {
+  transition: transform 0.3s ease;
+}
+
+.header-btn:hover svg {
+  transform: translateX(4px);
+}
+
+@media (max-width: 1050px) {
+  .header {
+    height: 42vw;
+    min-height: 360px;
+  }
+  .header-content {
+    max-width: 70%;
+    left: 4vw;
+  }
+}
+
+@media (max-width: 750px) {
+  .header {
+    height: 52vw;
+    min-height: 320px;
+    margin: 15px auto 30px;
+  }
+  .header-content {
+    max-width: 85%;
+    bottom: 10%;
+  }
+  .header-content p {
+    display: none;
+  }
+  .header-btn {
+    padding: 10px 22px;
+    font-size: 14px;
+  }
+}
