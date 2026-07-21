@@ -1,10 +1,14 @@
 # Tomato — Full-Stack Food Delivery Application
 
+[![Live Demo](https://img.shields.io/badge/Live_Demo-Vercel-000000?style=for-the-badge&logo=vercel)](https://food-delivery-web-iota-blond.vercel.app/)
+
 [![React](https://img.shields.io/badge/Frontend-React_18-61DAFB?logo=react)](https://reactjs.org/)
 [![Vite](https://img.shields.io/badge/Bundler-Vite_5-646CFF?logo=vite)](https://vitejs.dev/)
 [![Node.js](https://img.shields.io/badge/Backend-Node.js_Express-339933?logo=node.js)](https://nodejs.org/)
 [![MySQL](https://img.shields.io/badge/Database-MySQL_8_SSL-4479A1?logo=mysql)](https://www.mysql.com/)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+
+**Live Web Application**: [https://food-delivery-web-iota-blond.vercel.app/](https://food-delivery-web-iota-blond.vercel.app/)
 
 Tomato is a full-stack food ordering and delivery web application built with a React frontend and a Node.js/Express REST backend connected to a MySQL database. It features responsive design, live food search, real-time cart persistence, dark mode support, order history tracking, and user profile management.
 
