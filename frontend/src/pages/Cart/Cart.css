@@ -101,7 +101,9 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: rgba(241, 245, 249, 0.8);
+  background: var(--input-bg);
+  border: 1px solid var(--border-color);
+  color: var(--text-dark);
   width: 32px;
   height: 32px;
   border-radius: 50%;
@@ -128,7 +130,7 @@
 
 .cart hr {
   height: 1px;
-  background-color: rgba(226, 232, 240, 0.8);
+  background-color: var(--border-color);
   border: none;
 }
 
@@ -236,7 +238,7 @@
 
 .cart-promocode-input button {
   padding: 10px 24px;
-  background: var(--text-dark);
+  background: var(--primary-gradient);
   border: none;
   color: white;
   border-radius: var(--radius-pill);
@@ -247,7 +249,8 @@
 }
 
 .cart-promocode-input button:hover {
-  background: var(--primary-color);
+  background: var(--primary-gradient-hover);
+  box-shadow: var(--shadow-glow);
 }
 
 @media (max-width: 750px) {

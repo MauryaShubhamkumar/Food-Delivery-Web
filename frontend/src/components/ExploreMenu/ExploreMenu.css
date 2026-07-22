@@ -97,7 +97,7 @@
 .explore-menu hr {
   margin: 20px 0;
   height: 1px;
-  background: rgba(226, 232, 240, 0.8);
+  background: var(--border-color);
   border: none;
 }
 

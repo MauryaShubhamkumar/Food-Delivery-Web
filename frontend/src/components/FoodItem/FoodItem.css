@@ -7,7 +7,7 @@
   transition: var(--transition-normal);
   animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
   overflow: hidden;
-  border: 1px solid rgba(226, 232, 240, 0.8);
+  border: 1px solid var(--border-color);
   display: flex;
   flex-direction: column;
 }
@@ -15,13 +15,13 @@
 .food-item:hover {
   transform: translateY(-8px);
   box-shadow: var(--shadow-lg);
-  border-color: rgba(255, 94, 58, 0.2);
+  border-color: rgba(255, 94, 58, 0.3);
 }
 
 .food-item-img-container {
   position: relative;
   overflow: hidden;
-  background: #f8fafc;
+  background: var(--input-bg);
 }
 
 .food-item-image {
@@ -44,9 +44,11 @@
   right: 14px;
   cursor: pointer;
   border-radius: 50%;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+  box-shadow: var(--shadow-md);
   transition: var(--transition-normal);
   z-index: 2;
+  border: 1px solid var(--border-color);
+  background: var(--card-bg);
 }
 
 .food-item-img-container .add:hover {
@@ -62,9 +64,10 @@
   gap: 10px;
   padding: 6px 12px;
   border-radius: var(--radius-pill);
-  background: rgba(255, 255, 255, 0.95);
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
   backdrop-filter: blur(8px);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  box-shadow: var(--shadow-md);
   z-index: 2;
 }
 

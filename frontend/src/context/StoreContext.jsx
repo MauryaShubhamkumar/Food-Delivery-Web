@@ -6,7 +6,7 @@ export const StoreContext = createContext(null);
 const StoreContextProvider = (props) => {
   const [cartItems, setcartItems] = useState({});
   const [foodList, setFoodList] = useState(defaultFoodList);
-  const [token, setToken] = useState("");
+  const [token, setToken] = useState(() => localStorage.getItem("token") || "");
   const [searchQuery, setSearchQuery] = useState("");
   const url = import.meta.env.VITE_BACKEND_URL || "http://localhost:4000";
 
@@ -108,12 +108,12 @@ const StoreContextProvider = (props) => {
 
   useEffect(() => {
     async function loadData() {
-      await fetchFoodList();
       const savedToken = localStorage.getItem("token");
       if (savedToken) {
         setToken(savedToken);
         await loadCartData(savedToken);
       }
+      await fetchFoodList();
     }
     loadData();
   }, []);
