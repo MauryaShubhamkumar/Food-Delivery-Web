@@ -7,7 +7,7 @@ import Logo from "../Logo/Logo";
 
 const Navbar = ({ setShowLogin }) => {
   const [menu, setMenu] = useState("home");
-  const { getTotalCartAmount, token, setToken, searchQuery, setSearchQuery } = useContext(StoreContext);
+  const { getTotalCartAmount, token, setToken, user, searchQuery, setSearchQuery, theme, toggleTheme } = useContext(StoreContext);
   const [showSearchInput, setShowSearchInput] = useState(false);
   const navigate = useNavigate();
 
@@ -25,19 +25,6 @@ const Navbar = ({ setShowLogin }) => {
 
   const clearSearch = () => {
     setSearchQuery("");
-  };
-
-  const [theme, setTheme] = useState(() => {
-    return localStorage.getItem("theme") || "light";
-  });
-
-  useEffect(() => {
-    document.documentElement.setAttribute("data-theme", theme);
-    localStorage.setItem("theme", theme);
-  }, [theme]);
-
-  const toggleTheme = () => {
-    setTheme(prev => (prev === "light" ? "dark" : "light"));
   };
 
   const logout = () => {
@@ -100,10 +87,19 @@ const Navbar = ({ setShowLogin }) => {
           <button onClick={() => setShowLogin(true)} className="navbar-button">Sign In</button>
         ) : (
           <div className="navbar-profile">
-            <img src={assets.profile_icon} alt="Profile" className="nav-profile-img" />
+            <img src={user?.avatar_url || assets.profile_icon} alt="Profile" className="nav-profile-img" />
             <ul className="nav-profile-dropdown">
+              {user?.role === 'admin' && (
+                <>
+                  <li onClick={() => navigate('/admin')}>
+                    <span style={{ fontSize: '18px', width: '20px', textAlign: 'center' }}>⚙️</span>
+                    <p>Admin Dashboard</p>
+                  </li>
+                  <hr />
+                </>
+              )}
               <li onClick={() => navigate('/profile')}>
-                <img src={assets.profile_icon} alt="Profile" />
+                <img src={user?.avatar_url || assets.profile_icon} alt="Profile" />
                 <p>My Profile</p>
               </li>
               <hr />

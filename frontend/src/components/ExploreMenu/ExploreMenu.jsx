@@ -1,7 +1,16 @@
-import React from "react";
+import React, { useContext } from "react";
 import "./ExploreMenu.css";
 import { menu_list } from "../../assets/assets";
+import { StoreContext } from "../../context/StoreContext";
+
 const ExploreMenu = ({ category, setCategory }) => {
+  const { categories: backendCategories } = useContext(StoreContext);
+
+  // Only display categories that are active in backend
+  const displayMenu = backendCategories && backendCategories.length > 0
+    ? menu_list.filter(m => backendCategories.some(bc => bc.name === m.menu_name))
+    : menu_list;
+
   return (
     <div className="explore-menu" id="explore-menu">
       <div className="explore-menu-header">
@@ -12,7 +21,7 @@ const ExploreMenu = ({ category, setCategory }) => {
         </p>
       </div>
       <div className="explore-menu-list">
-        {menu_list.map((item, index) => {
+        {displayMenu.map((item, index) => {
           const isActive = category === item.menu_name;
           return (
             <div

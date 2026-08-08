@@ -107,6 +107,38 @@
   text-transform: uppercase;
 }
 
+.customer-pay-status-box {
+  margin-top: 6px;
+}
+
+.cust-pay-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.cust-pay-confirmed {
+  background: rgba(16, 185, 129, 0.15);
+  color: #059669;
+}
+
+.cust-pay-pending {
+  background: rgba(245, 158, 11, 0.18);
+  color: #b45309;
+}
+
+.cust-pay-rejected {
+  background: rgba(239, 68, 68, 0.15);
+  color: #dc2626;
+}
+
+.cust-pay-cod {
+  background: rgba(100, 116, 139, 0.12);
+  color: #475569;
+}
+
 .order-summary-info {
   display: flex;
   flex-direction: column;
@@ -239,4 +271,119 @@
   .order-status-wrapper {
     align-items: flex-start;
   }
+}
+
+/* Order Progress Tracker Styles */
+.my-orders-order-card {
+  background: var(--card-bg);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-sm);
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  transition: var(--transition-normal);
+}
+
+.my-orders-order-card:hover {
+  box-shadow: var(--shadow-md);
+}
+
+.order-main-row {
+  display: grid;
+  grid-template-columns: 0.5fr 2.5fr 1fr 1.2fr;
+  align-items: center;
+  gap: 24px;
+}
+
+@media (max-width: 900px) {
+  .order-main-row {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+}
+
+.order-progress-tracker {
+  border-top: 1px dashed var(--border-color);
+  padding-top: 16px;
+}
+
+.tracker-steps-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+  max-width: 650px;
+  margin: 0 auto;
+}
+
+.tracker-steps-container::before {
+  content: '';
+  position: absolute;
+  top: 14px;
+  left: 20px;
+  right: 20px;
+  height: 3px;
+  background: var(--border-color);
+  z-index: 1;
+}
+
+.tracker-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  z-index: 2;
+  position: relative;
+}
+
+.step-dot {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--card-bg);
+  border: 2px solid var(--border-color);
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.tracker-step.completed .step-dot {
+  background: #10b981;
+  border-color: #10b981;
+  color: white;
+}
+
+.tracker-step.active .step-dot {
+  background: #ff4c24;
+  border-color: #ff4c24;
+  color: white;
+  box-shadow: 0 0 0 4px rgba(255, 76, 36, 0.2);
+}
+
+.step-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.tracker-step.completed .step-label,
+.tracker-step.active .step-label {
+  color: var(--text-dark);
+}
+
+.order-cancelled-notice {
+  font-size: 13px;
+  font-weight: 600;
+  color: #dc2626;
+  background: #fee2e2;
+  padding: 8px 14px;
+  border-radius: 8px;
+  display: inline-block;
 }

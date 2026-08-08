@@ -1,0 +1,264 @@
+.order-modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(15, 23, 42, 0.7);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  padding: 16px;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.order-modal-container {
+  background: var(--card-bg, #ffffff);
+  border-radius: 16px;
+  width: 100%;
+  max-width: 680px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: var(--shadow-lg, 0 20px 25px -5px rgba(0, 0, 0, 0.2));
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  border: 1px solid var(--border-color, #e2e8f0);
+  color: var(--text-body);
+}
+
+.order-modal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border-color, #e2e8f0);
+  padding-bottom: 16px;
+}
+
+.modal-title-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.modal-title-row h3 {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text-dark, #0f172a);
+}
+
+.order-modal-date {
+  margin: 4px 0 0 0;
+  font-size: 13px;
+  color: var(--text-muted, #64748b);
+}
+
+/* Status Badges */
+.order-status-badge {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.status-pending { background-color: rgba(245, 158, 11, 0.15); color: #f59e0b; }
+.status-confirmed { background-color: rgba(2, 132, 199, 0.15); color: #0284c7; }
+.status-preparing { background-color: rgba(147, 51, 234, 0.15); color: #a855f7; }
+.status-delivery { background-color: rgba(234, 88, 12, 0.15); color: #ea580c; }
+.status-delivered { background-color: rgba(22, 163, 74, 0.15); color: #16a34a; }
+.status-cancelled { background-color: rgba(220, 38, 38, 0.15); color: #ef4444; }
+
+.order-error-alert {
+  background-color: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #ef4444;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.order-modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Customer & Delivery Section */
+.order-info-section {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+}
+
+.info-card {
+  background-color: var(--input-bg, #f8fafc);
+  border: 1px solid var(--border-color, #e2e8f0);
+  border-radius: 10px;
+  padding: 16px;
+}
+
+.info-card h4 {
+  margin: 0 0 10px 0;
+  font-size: 14px;
+  color: var(--text-dark, #334155);
+}
+
+.info-card p {
+  margin: 4px 0;
+  font-size: 13px;
+  color: var(--text-body, #475569);
+}
+
+/* Items Table */
+.order-items-section h4 {
+  margin: 0 0 10px 0;
+  font-size: 14px;
+  color: var(--text-dark, #334155);
+}
+
+.order-items-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.order-items-table th {
+  background-color: var(--input-bg, #f1f5f9);
+  color: var(--text-muted, #475569);
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  padding: 10px 12px;
+  text-align: left;
+}
+
+.order-items-table td {
+  padding: 12px;
+  border-bottom: 1px solid var(--border-color, #e2e8f0);
+  color: var(--text-dark, #1e293b);
+}
+
+.item-name-cell {
+  font-weight: 600;
+}
+
+.item-total-cell {
+  font-weight: 700;
+}
+
+/* Total Summary */
+.order-total-summary {
+  background-color: var(--input-bg, #f8fafc);
+  border: 1px solid var(--border-color, #e2e8f0);
+  border-radius: 10px;
+  padding: 14px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  color: var(--text-muted, #64748b);
+}
+
+.summary-row.total-row {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-dark, #0f172a);
+  border-top: 1px solid var(--border-color, #e2e8f0);
+  padding-top: 8px;
+}
+
+.total-amount {
+  color: #ff4c24;
+}
+
+/* Status Update Section */
+.order-status-update-section {
+  background-color: rgba(255, 76, 36, 0.1);
+  border: 1px solid rgba(255, 76, 36, 0.2);
+  border-radius: 12px;
+  padding: 18px;
+}
+
+.order-status-update-section h4 {
+  margin: 0 0 12px 0;
+  font-size: 14px;
+  color: #ff4c24;
+}
+
+.terminal-status-notice {
+  font-size: 13px;
+  color: var(--text-muted, #64748b);
+}
+
+.status-buttons-group {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.status-action-btn {
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s ease;
+}
+
+.btn-advance-status {
+  background-color: #ff4c24;
+  color: white;
+}
+
+.btn-advance-status:hover:not(:disabled) {
+  background-color: #d93812;
+}
+
+.btn-cancel-order {
+  background-color: var(--card-bg, #ffffff);
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  color: #ef4444;
+}
+
+.btn-cancel-order:hover:not(:disabled) {
+  background-color: rgba(239, 68, 68, 0.15);
+}
+
+.status-action-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.order-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  border-top: 1px solid var(--border-color, #e2e8f0);
+  padding-top: 14px;
+}
+
+.btn-close-modal {
+  padding: 8px 18px;
+  background-color: var(--input-bg, #f1f5f9);
+  border: 1px solid var(--border-color, #cbd5e1);
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--text-body, #475569);
+  cursor: pointer;
+}
+
+.btn-close-modal:hover {
+  background-color: var(--border-color, #e2e8f0);
+}

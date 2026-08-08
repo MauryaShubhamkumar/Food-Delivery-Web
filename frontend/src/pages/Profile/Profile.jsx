@@ -5,12 +5,14 @@ import { assets } from '../../assets/assets';
 import { useNavigate } from 'react-router-dom';
 
 const Profile = () => {
-  const { url, token } = useContext(StoreContext);
+  const { url, token, loadUserProfile, setUser: setGlobalUser } = useContext(StoreContext);
   const navigate = useNavigate();
 
   const [loading, setLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
+  const [removingAvatar, setRemovingAvatar] = useState(false);
 
   const [user, setUser] = useState({
     name: '',
@@ -20,6 +22,7 @@ const Profile = () => {
     profession: '',
     dietary_preference: 'Veg',
     bio: '',
+    avatar_url: null,
     created_at: ''
   });
 
@@ -71,6 +74,63 @@ const Profile = () => {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
+  const handleAvatarFileChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const postData = new FormData();
+    postData.append('avatar', file);
+
+    try {
+      setUploadingAvatar(true);
+      const response = await fetch(`${url}/api/user/avatar`, {
+        method: 'POST',
+        headers: { token: token },
+        body: postData
+      });
+
+      const resData = await response.json();
+      if (response.ok && resData.success && resData.user) {
+        setUser(resData.user);
+        if (setGlobalUser) setGlobalUser(resData.user);
+        await loadUserProfile(token);
+        alert('📸 Profile photo updated successfully!');
+      } else {
+        alert(resData.message || 'Failed to upload profile photo');
+      }
+    } catch (err) {
+      alert('Error uploading profile photo to server');
+    } finally {
+      setUploadingAvatar(false);
+    }
+  };
+
+  const handleRemoveAvatar = async () => {
+    if (!window.confirm('Are you sure you want to remove your profile photo?')) return;
+
+    try {
+      setRemovingAvatar(true);
+      const response = await fetch(`${url}/api/user/avatar`, {
+        method: 'DELETE',
+        headers: { token: token }
+      });
+
+      const resData = await response.json();
+      if (response.ok && resData.success && resData.user) {
+        setUser(resData.user);
+        if (setGlobalUser) setGlobalUser(resData.user);
+        await loadUserProfile(token);
+        alert('🗑️ Profile photo removed');
+      } else {
+        alert(resData.message || 'Failed to remove profile photo');
+      }
+    } catch (err) {
+      alert('Error removing profile photo');
+    } finally {
+      setRemovingAvatar(false);
+    }
+  };
+
   const handleSave = async (e) => {
     e.preventDefault();
     setSaving(true);
@@ -87,6 +147,7 @@ const Profile = () => {
       const resData = await response.json();
       if (resData.success && resData.user) {
         setUser(resData.user);
+        if (setGlobalUser) setGlobalUser(resData.user);
         setIsEditing(false);
         alert('🎉 Profile updated successfully!');
       } else {
@@ -119,13 +180,27 @@ const Profile = () => {
     );
   }
 
+  const userAvatarSrc = user.avatar_url || assets.profile_icon;
+
   return (
     <div className="user-profile-page">
       <div className="profile-card">
         {/* Banner / Header */}
         <div className="profile-banner">
           <div className="avatar-wrapper">
-            <img src={assets.profile_icon} alt="Profile Avatar" className="avatar-img" />
+            <img src={userAvatarSrc} alt={user.name || 'User'} className={`avatar-img ${!user.avatar_url ? 'default-icon' : ''}`} />
+            
+            {/* Interactive Upload Overlay */}
+            <label className="avatar-upload-overlay" title="Upload new profile photo">
+              <span>📷</span>
+              <input
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                onChange={handleAvatarFileChange}
+                disabled={uploadingAvatar}
+                className="file-hidden"
+              />
+            </label>
           </div>
         </div>
 
@@ -133,6 +208,32 @@ const Profile = () => {
           <div className="profile-header-info">
             <h2>{user.name || 'Food Lover'}</h2>
             <p className="profile-email">{user.email}</p>
+
+            {/* Avatar Action Controls */}
+            <div className="avatar-actions-bar">
+              <label className="avatar-action-btn upload-btn">
+                📷 {uploadingAvatar ? 'Uploading...' : 'Change Photo'}
+                <input
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp"
+                  onChange={handleAvatarFileChange}
+                  disabled={uploadingAvatar}
+                  className="file-hidden"
+                />
+              </label>
+
+              {user.avatar_url ? (
+                <button
+                  type="button"
+                  onClick={handleRemoveAvatar}
+                  disabled={removingAvatar}
+                  className="avatar-action-btn remove-btn"
+                >
+                  🗑️ {removingAvatar ? 'Removing...' : 'Remove Photo'}
+                </button>
+              ) : null}
+            </div>
+
             <div className="profile-badges">
               <span className={`diet-badge ${user.dietary_preference ? user.dietary_preference.toLowerCase() : 'veg'}`}>
                 {user.dietary_preference === 'Veg' ? '🌱 Pure Veg' : user.dietary_preference === 'Non-Veg' ? '🍖 Non-Veg' : user.dietary_preference === 'Vegan' ? '🥗 Vegan' : '🥚 Eggetarian'}

@@ -1,17 +1,23 @@
-import React from "react";
+import React, { useContext } from "react";
 import "./Footer.css";
 import { assets } from "../../assets/assets";
 import Logo from "../Logo/Logo";
+import { StoreContext } from "../../context/StoreContext";
 
 const Footer = () => {
+  const { settings } = useContext(StoreContext);
+  const name = settings?.restaurantName || 'FastBite';
+  const desc = settings?.description || 'Delivering your favourite meals hot & fresh right to your doorstep. Experience premium dining at home with fast delivery and unmatched convenience.';
+  const phone = settings?.phone || '+91-6387252549';
+  const email = settings?.email || 'shubhamkumarmaurya155@gmail.com';
+  const address = settings?.address || 'Varanasi, Uttar Pradesh, India';
+
   return (
     <div className="footer" id="footer">
       <div className="footer-content">
         <div className="footer-content-left">
           <Logo />
-          <p>
-            Delivering your favourite meals hot & fresh right to your doorstep. Experience premium dining at home with fast delivery, top culinary partners, and unmatched convenience.
-          </p>
+          <p>{desc}</p>
           <div className="footer-social-icons">
             <div className="social-icon-wrapper"><img src={assets.facebook_icon} alt="Facebook" /></div>
             <div className="social-icon-wrapper"><img src={assets.twitter_icon} alt="Twitter" /></div>
@@ -30,17 +36,17 @@ const Footer = () => {
         <div className="footer-content-right">
           <h2>GET IN TOUCH</h2>
           <ul>
-            <li>📞 +91-6387252549</li>
-            <li>✉️ shubhamkumarmaurya155@gmail.com</li>
+            <li>📞 {phone}</li>
+            <li>✉️ {email}</li>
+            {address ? <li>📍 {address}</li> : null}
           </ul>
         </div>
       </div>
       <hr />
       <p className="footer-copyright">
-        © 2024 FoodDel. All rights reserved. Crafted with care for food lovers everywhere.
+        © {new Date().getFullYear()} {name}. All rights reserved. Crafted with care for food lovers everywhere.
       </p>
     </div>
-    
   );
 };
 

@@ -54,3 +54,11 @@
   color: var(--primary-color);
   margin-top: 2px;
 }
+
+.custom-brand-logo-img {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  object-fit: cover;
+  box-shadow: 0 4px 12px rgba(255, 94, 58, 0.2);
+}

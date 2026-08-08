@@ -7,10 +7,45 @@ const StoreContextProvider = (props) => {
   const [cartItems, setcartItems] = useState({});
   const [foodList, setFoodList] = useState(defaultFoodList);
   const [token, setToken] = useState(() => localStorage.getItem("token") || "");
+  const [user, setUser] = useState(null);
+  const [userLoading, setUserLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const url = import.meta.env.VITE_BACKEND_URL || "http://localhost:4000";
 
+  const loadUserProfile = async (authToken) => {
+    if (!authToken) {
+      setUser(null);
+      setUserLoading(false);
+      return;
+    }
+    setUserLoading(true);
+    try {
+      const response = await fetch(`${url}/api/user/me`, {
+        method: "GET",
+        headers: { token: authToken }
+      });
+      const data = await response.json();
+      if (data.success && data.user) {
+        setUser(data.user);
+      } else {
+        setUser(null);
+      }
+    } catch (err) {
+      console.error("Failed to load user profile:", err);
+      setUser(null);
+    } finally {
+      setUserLoading(false);
+    }
+  };
+
   const addToCart = async (itemId) => {
+    // Check if food item is available before adding to cart
+    const itemInfo = foodList.find((product) => String(product._id || product.id) === String(itemId));
+    if (itemInfo && itemInfo.available === false) {
+      alert(`"${itemInfo.name}" is currently out of stock and unavailable.`);
+      return;
+    }
+
     if (!cartItems[itemId]) {
       setcartItems((prev) => ({ ...prev, [itemId]: 1 }));
     } else {
@@ -81,7 +116,8 @@ const StoreContextProvider = (props) => {
           return {
             ...item,
             _id: String(item.id),
-            image: imageSrc
+            image: imageSrc,
+            available: item.available === undefined ? true : Boolean(item.available)
           };
         });
         setFoodList(mappedData);
@@ -106,17 +142,137 @@ const StoreContextProvider = (props) => {
     }
   };
 
+  const [categories, setCategories] = useState([]);
+  const [appliedCoupon, setAppliedCoupon] = useState(null);
+  const [settings, setSettings] = useState({
+    restaurantName: 'FastBite',
+    logoUrl: null,
+    description: 'Delivering your favourite meals hot & fresh right to your doorstep.',
+    phone: '+91-6387252549',
+    email: 'shubhamkumarmaurya155@gmail.com',
+    address: 'Varanasi, Uttar Pradesh, India',
+    openingTime: '10:00',
+    closingTime: '22:00',
+    isOpen: true,
+    deliveryFee: 40.0,
+    minimumOrderAmount: 199.0,
+    currency: 'INR',
+    isActive: true
+  });
+
+  const loadCategories = async () => {
+    try {
+      const response = await fetch(`${url}/api/categories`);
+      const data = await response.json();
+      if (data.success && data.data) {
+        setCategories(data.data);
+      }
+    } catch (err) {
+      console.log("Failed to load active categories");
+    }
+  };
+
+  const loadPublicSettings = async () => {
+    try {
+      const response = await fetch(`${url}/api/settings`);
+      const data = await response.json();
+      if (data.success && data.data) {
+        setSettings(data.data);
+      }
+    } catch (err) {
+      console.log("Failed to load public restaurant settings");
+    }
+  };
+
+  const getCurrencySymbol = (currCode) => {
+    const c = (currCode || settings?.currency || 'INR').toUpperCase();
+    if (c === 'USD') return '$';
+    if (c === 'EUR') return '€';
+    if (c === 'GBP') return '£';
+    return '₹';
+  };
+
+  const formatCurrency = (val) => {
+    const sym = getCurrencySymbol(settings?.currency);
+    const amount = Number(val || 0).toFixed(2);
+    return `${sym}${amount}`;
+  };
+
+  const applyCouponCode = async (code) => {
+    const subtotal = getTotalCartAmount();
+    if (subtotal <= 0) {
+      throw new Error("Add items to your cart before applying a coupon.");
+    }
+    const response = await fetch(`${url}/api/coupon/validate`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ code, subtotal })
+    });
+    const data = await response.json();
+    if (!response.ok || !data.success) {
+      setAppliedCoupon(null);
+      throw new Error(data.message || "Invalid coupon code");
+    }
+    setAppliedCoupon(data.coupon);
+    return data;
+  };
+
+  const removeCoupon = () => {
+    setAppliedCoupon(null);
+  };
+
+  const getDiscountAmount = () => {
+    if (!appliedCoupon) return 0;
+    return Number(appliedCoupon.discountAmount || 0);
+  };
+
+  const getFinalCartTotal = () => {
+    const subtotal = getTotalCartAmount();
+    if (subtotal === 0) return 0;
+    const discount = getDiscountAmount();
+    const fee = settings?.deliveryFee !== undefined ? Number(settings.deliveryFee) : 40.0;
+    return Math.max(0, subtotal - discount) + fee;
+  };
+
   useEffect(() => {
     async function loadData() {
       const savedToken = localStorage.getItem("token");
       if (savedToken) {
         setToken(savedToken);
         await loadCartData(savedToken);
+        await loadUserProfile(savedToken);
+      } else {
+        setUserLoading(false);
       }
       await fetchFoodList();
+      await loadCategories();
+      await loadPublicSettings();
     }
     loadData();
   }, []);
+
+  // Update user profile whenever token changes manually (e.g. login/logout)
+  useEffect(() => {
+    if (token) {
+      loadUserProfile(token);
+    } else {
+      setUser(null);
+      setUserLoading(false);
+    }
+  }, [token]);
+
+  const [theme, setTheme] = useState(() => {
+    return localStorage.getItem("theme") || "light";
+  });
+
+  useEffect(() => {
+    document.documentElement.setAttribute("data-theme", theme);
+    localStorage.setItem("theme", theme);
+  }, [theme]);
+
+  const toggleTheme = () => {
+    setTheme(prev => (prev === "light" ? "dark" : "light"));
+  };
 
   const contextValue = {
     url,
@@ -128,9 +284,26 @@ const StoreContextProvider = (props) => {
     getTotalCartAmount,
     token,
     setToken,
+    user,
+    setUser,
+    userLoading,
+    loadUserProfile,
     loadCartData,
     searchQuery,
-    setSearchQuery
+    setSearchQuery,
+    categories,
+    loadCategories,
+    appliedCoupon,
+    applyCouponCode,
+    removeCoupon,
+    getDiscountAmount,
+    getFinalCartTotal,
+    theme,
+    toggleTheme,
+    settings,
+    loadPublicSettings,
+    getCurrencySymbol,
+    formatCurrency
   };
 
   return (

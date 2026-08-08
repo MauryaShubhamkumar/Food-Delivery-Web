@@ -6,6 +6,10 @@ import foodRouter from './routes/foodRoute.js';
 import userRouter from './routes/userRoute.js';
 import cartRouter from './routes/cartRoute.js';
 import orderRouter from './routes/orderRoute.js';
+import adminRouter from './routes/adminRoute.js';
+import categoryRouter from './routes/categoryRoute.js';
+import couponRouter from './routes/couponRoute.js';
+import settingsRouter from './routes/settingsRoute.js';
 import errorHandler from './middleware/errorHandler.js';
 
 // Load environment variables
@@ -28,6 +32,10 @@ app.use("/images", express.static('uploads'));
 app.use("/api/user", userRouter);
 app.use("/api/cart", cartRouter);
 app.use("/api/order", orderRouter);
+app.use("/api/admin", adminRouter);
+app.use("/api/categories", categoryRouter);
+app.use("/api/coupon", couponRouter);
+app.use("/api/settings", settingsRouter);
 
 app.get("/", (req, res) => {
   res.send("Food Delivery API Server is running!");

@@ -87,7 +87,11 @@ export const listFood = async (req, res, next) => {
     }
 
     const [foods] = await pool.query('SELECT * FROM food_items ORDER BY id ASC');
-    res.json({ success: true, data: foods });
+    const formattedFoods = foods.map(f => ({
+      ...f,
+      available: f.available === undefined ? true : Boolean(f.available)
+    }));
+    res.json({ success: true, data: formattedFoods });
   } catch (error) {
     next(error);
   }

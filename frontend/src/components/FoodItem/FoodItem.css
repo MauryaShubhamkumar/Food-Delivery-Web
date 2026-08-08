@@ -122,10 +122,49 @@
   flex-grow: 1;
 }
 
+.food-item-footer-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: auto;
+}
+
 .food-item-price {
   color: var(--primary-color);
   font-size: 22px;
   font-weight: 700;
-  margin-top: auto;
   letter-spacing: -0.5px;
+}
+
+.unavailable-item {
+  opacity: 0.85;
+}
+
+.unavailable-item .food-item-image {
+  filter: grayscale(40%);
+}
+
+.out-of-stock-badge {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  background: rgba(220, 38, 38, 0.9);
+  color: white;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 6px;
+  backdrop-filter: blur(4px);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.unavailable-text-tag {
+  font-size: 11px;
+  font-weight: 600;
+  color: #dc2626;
+  background: #fee2e2;
+  padding: 2px 8px;
+  border-radius: 4px;
 }

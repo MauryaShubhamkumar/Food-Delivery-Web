@@ -1,0 +1,329 @@
+.admin-products-page {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.admin-products-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.admin-products-title {
+  margin: 0;
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--text-dark, #0f172a);
+}
+
+.admin-products-subtitle {
+  margin: 4px 0 0 0;
+  font-size: 14px;
+  color: var(--text-muted, #64748b);
+}
+
+.add-food-btn {
+  padding: 10px 20px;
+  background-color: #ff4c24;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(255, 76, 36, 0.2);
+  transition: all 0.2s ease;
+}
+
+.add-food-btn:hover {
+  background-color: #e03b14;
+  transform: translateY(-1px);
+}
+
+/* Alert Banners */
+.alert-banner {
+  padding: 12px 18px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 14px;
+  font-weight: 500;
+  animation: fadeIn 0.3s ease;
+}
+
+.alert-success {
+  background-color: rgba(16, 185, 129, 0.15);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  color: #10b981;
+}
+
+.alert-error {
+  background-color: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #ef4444;
+}
+
+.alert-close {
+  background: none;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  color: inherit;
+}
+
+/* Controls Bar */
+.products-controls-bar {
+  background: var(--card-bg, #ffffff);
+  border: 1px solid var(--border-color, #e2e8f0);
+  border-radius: 12px;
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.search-input-group {
+  position: relative;
+  flex: 1;
+  min-width: 260px;
+}
+
+.search-icon-symbol {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted, #94a3b8);
+  font-size: 14px;
+}
+
+.products-search-input {
+  width: 100%;
+  padding: 10px 36px 10px 36px;
+  border: 1px solid var(--border-color, #cbd5e1);
+  background: var(--input-bg, #ffffff);
+  color: var(--text-dark);
+  border-radius: 8px;
+  font-size: 14px;
+  outline: none;
+}
+
+.products-search-input:focus {
+  border-color: #ff4c24;
+}
+
+.search-clear-btn {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-muted, #94a3b8);
+}
+
+.filter-dropdown-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.filter-dropdown-group label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-body, #475569);
+}
+
+.filter-select {
+  padding: 8px 12px;
+  border: 1px solid var(--border-color, #cbd5e1);
+  border-radius: 8px;
+  font-size: 14px;
+  background-color: var(--input-bg, #ffffff);
+  color: var(--text-dark);
+  outline: none;
+  cursor: pointer;
+}
+
+/* Products Table */
+.table-responsive-container {
+  background: var(--card-bg, #ffffff);
+  border: 1px solid var(--border-color, #e2e8f0);
+  border-radius: 14px;
+  overflow-x: auto;
+  box-shadow: var(--shadow-sm, 0 1px 3px rgba(0, 0, 0, 0.04));
+}
+
+.products-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.products-table th {
+  background-color: var(--input-bg, #f8fafc);
+  color: var(--text-muted, #475569);
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--border-color, #e2e8f0);
+}
+
+.products-table td {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border-color, #f1f5f9);
+  vertical-align: middle;
+  color: var(--text-body);
+}
+
+.products-table tr.row-unavailable {
+  background-color: var(--input-bg, #fafafa);
+  opacity: 0.75;
+}
+
+.table-food-img {
+  width: 54px;
+  height: 54px;
+  border-radius: 10px;
+  object-fit: cover;
+  border: 1px solid var(--border-color, #e2e8f0);
+}
+
+.table-food-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-dark, #0f172a);
+}
+
+.table-food-desc {
+  font-size: 12px;
+  color: var(--text-muted, #64748b);
+  max-width: 320px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-top: 2px;
+}
+
+.category-pill {
+  font-size: 12px;
+  font-weight: 600;
+  background-color: var(--input-bg, #f1f5f9);
+  color: var(--text-dark, #334155);
+  padding: 4px 10px;
+  border-radius: 6px;
+}
+
+.price-tag {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-dark, #0f172a);
+}
+
+/* Status Toggle Button */
+.status-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.status-toggle-btn.available {
+  background-color: rgba(16, 185, 129, 0.15);
+  color: #10b981;
+}
+
+.status-toggle-btn.unavailable {
+  background-color: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: currentColor;
+}
+
+.table-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.action-btn {
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  border: 1px solid var(--border-color, #cbd5e1);
+  background-color: var(--card-bg, #ffffff);
+  color: var(--text-dark);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.edit-btn:hover {
+  background-color: rgba(59, 130, 246, 0.15);
+  border-color: #60a5fa;
+  color: #3b82f6;
+}
+
+.delete-btn:hover {
+  background-color: rgba(239, 68, 68, 0.15);
+  border-color: #f87171;
+  color: #ef4444;
+}
+
+/* Empty State */
+.no-products-found {
+  padding: 48px 24px;
+  text-align: center;
+  color: var(--text-muted, #64748b);
+}
+
+.empty-icon {
+  font-size: 40px;
+  margin-bottom: 12px;
+}
+
+.no-products-found h3 {
+  margin: 0;
+  font-size: 18px;
+  color: var(--text-dark, #1e293b);
+}
+
+.no-products-found p {
+  margin: 6px 0 0 0;
+  font-size: 14px;
+}
+
+.table-loading-skeleton {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.skeleton-row {
+  height: 50px;
+  background-color: var(--input-bg, #f1f5f9);
+  border-radius: 8px;
+  animation: skeleton-pulse 1.5s infinite ease-in-out;
+}

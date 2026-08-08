@@ -48,6 +48,18 @@
   color: #fff;
 }
 
+.header-badge.status-open {
+  background: rgba(16, 185, 129, 0.3);
+  border-color: rgba(16, 185, 129, 0.6);
+  color: #a7f3d0;
+}
+
+.header-badge.status-closed {
+  background: rgba(239, 68, 68, 0.3);
+  border-color: rgba(239, 68, 68, 0.6);
+  color: #fca5a5;
+}
+
 .header-content h2 {
   font-weight: 700;
   color: #ffffff;

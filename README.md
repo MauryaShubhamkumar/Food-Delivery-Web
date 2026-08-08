@@ -156,7 +156,25 @@ DB_NAME=fooddel
 DB_PORT=3306
 DB_SSL=false
 JWT_SECRET=super_secret_food_del_jwt_key_2026
+
+# Cloudinary Image Storage Credentials
+CLOUDINARY_CLOUD_NAME=your_cloud_name
+CLOUDINARY_API_KEY=your_api_key
+CLOUDINARY_API_SECRET=your_api_secret
 ```
+
+### Cloudinary Image Storage Architecture
+- **In-Memory Streaming**: All future product, category, and restaurant logo image uploads stream directly to Cloudinary CDN via `multer.memoryStorage()`. No new images are saved to local disk.
+- **Folder Organization**:
+  - `FastBite/products/` — Food product photography
+  - `FastBite/restaurant/` — Restaurant logo & branding
+  - `FastBite/categories/` — Category imagery
+- **Automatic Asset Cleanup**: Replacing or deleting a product or restaurant logo automatically destroys the old Cloudinary asset via its `cloudinary_public_id`.
+- **One-Time Local Image Migration**: To migrate existing local images in `backend/uploads/` to Cloudinary, run:
+  ```bash
+  cd backend
+  node scripts/migrateImagesToCloudinary.js
+  ```
 
 Start the backend server:
 ```bash
