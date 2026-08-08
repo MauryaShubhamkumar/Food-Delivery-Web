@@ -1,5 +1,6 @@
 import React, { useContext } from 'react';
 import { StoreContext } from '../../context/StoreContext';
+import { Zap } from 'lucide-react';
 import './Header.css';
 
 const Header = () => {
@@ -15,7 +16,9 @@ const Header = () => {
     <div className="header">
       <div className="header-content">
         <div className="header-badges">
-          <span className="header-badge">⚡ Fast Delivery</span>
+          <span className="header-badge" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+            <Zap size={14} /> Fast Delivery
+          </span>
           <span className={`header-badge ${isOpen ? 'status-open' : 'status-closed'}`}>
             {isOpen ? `● Open Now (${hoursText})` : '● Restaurant Closed'}
           </span>

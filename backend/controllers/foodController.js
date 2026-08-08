@@ -69,24 +69,7 @@ const defaultSeedFoods = [
 export const listFood = async (req, res, next) => {
   try {
     const pool = getPool();
-
-    // Auto-update / seed items in MySQL table to match updated prices
-    for (const item of defaultSeedFoods) {
-      const [existing] = await pool.query('SELECT id FROM food_items WHERE name = ?', [item.name]);
-      if (existing.length === 0) {
-        await pool.query(
-          'INSERT INTO food_items (name, description, price, category, image) VALUES (?, ?, ?, ?, ?)',
-          [item.name, item.description, item.price, item.category, item.image]
-        );
-      } else {
-        await pool.query(
-          'UPDATE food_items SET price = ? WHERE name = ? AND price < 50',
-          [item.price, item.name]
-        );
-      }
-    }
-
-    const [foods] = await pool.query('SELECT * FROM food_items ORDER BY id ASC');
+    const [foods] = await pool.query('SELECT id, name, description, price, category, image, available FROM food_items ORDER BY id ASC');
     const formattedFoods = foods.map(f => ({
       ...f,
       available: f.available === undefined ? true : Boolean(f.available)

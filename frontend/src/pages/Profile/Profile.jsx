@@ -3,6 +3,7 @@ import './Profile.css';
 import { StoreContext } from '../../context/StoreContext';
 import { assets } from '../../assets/assets';
 import { useNavigate } from 'react-router-dom';
+import { Lock, Camera, Trash2, Briefcase, Calendar, Edit2, X, Save, Leaf, Utensils } from 'lucide-react';
 
 const Profile = () => {
   const { url, token, loadUserProfile, setUser: setGlobalUser } = useContext(StoreContext);
@@ -94,7 +95,7 @@ const Profile = () => {
         setUser(resData.user);
         if (setGlobalUser) setGlobalUser(resData.user);
         await loadUserProfile(token);
-        alert('📸 Profile photo updated successfully!');
+        alert('Profile photo updated successfully!');
       } else {
         alert(resData.message || 'Failed to upload profile photo');
       }
@@ -120,7 +121,7 @@ const Profile = () => {
         setUser(resData.user);
         if (setGlobalUser) setGlobalUser(resData.user);
         await loadUserProfile(token);
-        alert('🗑️ Profile photo removed');
+        alert('Profile photo removed');
       } else {
         alert(resData.message || 'Failed to remove profile photo');
       }
@@ -149,7 +150,7 @@ const Profile = () => {
         setUser(resData.user);
         if (setGlobalUser) setGlobalUser(resData.user);
         setIsEditing(false);
-        alert('🎉 Profile updated successfully!');
+        alert('Profile updated successfully!');
       } else {
         alert(resData.message || 'Failed to update profile');
       }
@@ -172,7 +173,7 @@ const Profile = () => {
   if (!token) {
     return (
       <div className="profile-empty">
-        <div className="empty-icon">🔒</div>
+        <div className="empty-icon"><Lock size={44} color="#94a3b8" /></div>
         <h3>Please Sign In</h3>
         <p>You must be logged in to view and manage your personal profile.</p>
         <button onClick={() => navigate('/')} className="explore-btn">Go to Home</button>
@@ -192,7 +193,7 @@ const Profile = () => {
             
             {/* Interactive Upload Overlay */}
             <label className="avatar-upload-overlay" title="Upload new profile photo">
-              <span>📷</span>
+              <Camera size={18} />
               <input
                 type="file"
                 accept="image/jpeg,image/png,image/webp"
@@ -211,8 +212,8 @@ const Profile = () => {
 
             {/* Avatar Action Controls */}
             <div className="avatar-actions-bar">
-              <label className="avatar-action-btn upload-btn">
-                📷 {uploadingAvatar ? 'Uploading...' : 'Change Photo'}
+              <label className="avatar-action-btn upload-btn" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                <Camera size={14} /> {uploadingAvatar ? 'Uploading...' : 'Change Photo'}
                 <input
                   type="file"
                   accept="image/jpeg,image/png,image/webp"
@@ -228,19 +229,24 @@ const Profile = () => {
                   onClick={handleRemoveAvatar}
                   disabled={removingAvatar}
                   className="avatar-action-btn remove-btn"
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
                 >
-                  🗑️ {removingAvatar ? 'Removing...' : 'Remove Photo'}
+                  <Trash2 size={14} /> {removingAvatar ? 'Removing...' : 'Remove Photo'}
                 </button>
               ) : null}
             </div>
 
             <div className="profile-badges">
-              <span className={`diet-badge ${user.dietary_preference ? user.dietary_preference.toLowerCase() : 'veg'}`}>
-                {user.dietary_preference === 'Veg' ? '🌱 Pure Veg' : user.dietary_preference === 'Non-Veg' ? '🍖 Non-Veg' : user.dietary_preference === 'Vegan' ? '🥗 Vegan' : '🥚 Eggetarian'}
+              <span className={`diet-badge ${user.dietary_preference ? user.dietary_preference.toLowerCase() : 'veg'}`} style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                <Leaf size={13} /> {user.dietary_preference || 'Veg'}
               </span>
-              {user.profession && <span className="profession-badge">💼 {user.profession}</span>}
-              <span className="member-badge">
-                📅 Member since {new Date(user.created_at || Date.now()).getFullYear()}
+              {user.profession && (
+                <span className="profession-badge" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                  <Briefcase size={13} /> {user.profession}
+                </span>
+              )}
+              <span className="member-badge" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                <Calendar size={13} /> Member since {new Date(user.created_at || Date.now()).getFullYear()}
               </span>
             </div>
           </div>
@@ -252,8 +258,8 @@ const Profile = () => {
             <div className="profile-details-view">
               <div className="details-header">
                 <h3>Personal Information</h3>
-                <button onClick={() => setIsEditing(true)} className="edit-profile-btn">
-                  ✏️ Edit Profile
+                <button onClick={() => setIsEditing(true)} className="edit-profile-btn" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                  <Edit2 size={14} /> Edit Profile
                 </button>
               </div>
 
@@ -299,8 +305,8 @@ const Profile = () => {
             <form onSubmit={handleSave} className="profile-edit-form">
               <div className="details-header">
                 <h3>Edit Profile Information</h3>
-                <button type="button" onClick={() => setIsEditing(false)} className="cancel-edit-btn">
-                  ✕ Cancel
+                <button type="button" onClick={() => setIsEditing(false)} className="cancel-edit-btn" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                  <X size={14} /> Cancel
                 </button>
               </div>
 
@@ -346,10 +352,10 @@ const Profile = () => {
                     value={formData.dietary_preference}
                     onChange={handleChange}
                   >
-                    <option value="Veg">🌱 Pure Veg</option>
-                    <option value="Non-Veg">🍖 Non-Veg</option>
-                    <option value="Eggetarian">🥚 Eggetarian</option>
-                    <option value="Vegan">🥗 Vegan</option>
+                    <option value="Veg">Pure Veg</option>
+                    <option value="Non-Veg">Non-Veg</option>
+                    <option value="Eggetarian">Eggetarian</option>
+                    <option value="Vegan">Vegan</option>
                   </select>
                 </div>
 
@@ -377,8 +383,8 @@ const Profile = () => {
               </div>
 
               <div className="form-actions">
-                <button type="submit" disabled={saving} className="save-profile-btn">
-                  {saving ? 'Saving...' : '💾 Save Profile'}
+                <button type="submit" disabled={saving} className="save-profile-btn" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                  <Save size={16} /> {saving ? 'Saving...' : 'Save Profile'}
                 </button>
               </div>
             </form>

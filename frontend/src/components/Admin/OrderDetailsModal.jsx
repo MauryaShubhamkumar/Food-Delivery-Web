@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { User, MapPin, CreditCard, UtensilsCrossed, Settings, AlertTriangle, X } from 'lucide-react';
 import './OrderDetailsModal.css';
 
 const VALID_TRANSITIONS = {
@@ -67,35 +68,39 @@ const OrderDetailsModal = ({ isOpen, onClose, order, onStatusChange }) => {
             </div>
             <p className="order-modal-date">Placed on {formattedDate}</p>
           </div>
-          <button className="close-btn" onClick={onClose} aria-label="Close modal">✕</button>
+          <button className="close-btn" onClick={onClose} aria-label="Close modal"><X size={16} /></button>
         </div>
 
-        {errorMsg ? <div className="order-error-alert">⚠️ {errorMsg}</div> : null}
+        {errorMsg ? (
+          <div className="order-error-alert" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <AlertTriangle size={16} /> {errorMsg}
+          </div>
+        ) : null}
 
         <div className="order-modal-body">
           {/* Customer & Address & Payment Details */}
           <div className="order-info-section">
             <div className="info-card">
-              <h4>👤 Customer Details</h4>
+              <h4 style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><User size={16} /> Customer Details</h4>
               <p><strong>Name:</strong> {customerName}</p>
               <p><strong>Email:</strong> {order.email || 'N/A'}</p>
               <p><strong>Phone:</strong> {order.phone || 'N/A'}</p>
             </div>
 
             <div className="info-card">
-              <h4>📍 Delivery Address</h4>
+              <h4 style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><MapPin size={16} /> Delivery Address</h4>
               <p>{order.street || 'No street address'}</p>
               <p>{order.city ? `${order.city}, ${order.state || ''} ${order.zip_code || ''}` : ''}</p>
               <p>{order.country || 'India'}</p>
             </div>
 
             <div className="info-card">
-              <h4>💳 Payment Information</h4>
-              <p><strong>Method:</strong> {order.payment_method === 'upi' ? '📲 Instant UPI' : '💵 Cash on Delivery'}</p>
+              <h4 style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><CreditCard size={16} /> Payment Information</h4>
+              <p><strong>Method:</strong> {order.payment_method === 'upi' ? 'Instant UPI' : 'Cash on Delivery'}</p>
               <p>
                 <strong>Status:</strong>{' '}
                 <span className={`pay-status-pill ${pStatus === 'paid' ? 'pay-paid' : pStatus === 'verification_required' ? 'pay-verify' : pStatus === 'rejected' ? 'pay-rejected' : 'pay-pending'}`}>
-                  {pStatus === 'paid' ? '✓ Paid' : pStatus === 'verification_required' ? '🟡 Verification Pending' : pStatus === 'rejected' ? '✕ Rejected' : '⏳ Pending (COD)'}
+                  {pStatus === 'paid' ? 'Paid' : pStatus === 'verification_required' ? 'Verification Pending' : pStatus === 'rejected' ? 'Rejected' : 'Pending (COD)'}
                 </span>
               </p>
               {order.payment_reference && (
@@ -109,7 +114,7 @@ const OrderDetailsModal = ({ isOpen, onClose, order, onStatusChange }) => {
 
           {/* Ordered Food Items */}
           <div className="order-items-section">
-            <h4>🍔 Ordered Food Items</h4>
+            <h4 style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><UtensilsCrossed size={16} /> Ordered Food Items</h4>
             <table className="order-items-table">
               <thead>
                 <tr>
@@ -154,7 +159,7 @@ const OrderDetailsModal = ({ isOpen, onClose, order, onStatusChange }) => {
 
           {/* Order Status Update Controls */}
           <div className="order-status-update-section">
-            <h4>⚙️ Update Order Status</h4>
+            <h4 style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Settings size={16} /> Update Order Status</h4>
             {allowedTransitions.length === 0 ? (
               <div className="terminal-status-notice">
                 This order is in terminal state <strong>"{currentStatus}"</strong> and cannot be modified further.

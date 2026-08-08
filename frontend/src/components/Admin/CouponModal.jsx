@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { X, AlertTriangle } from 'lucide-react';
 import './CouponModal.css';
 
 const CouponModal = ({ isOpen, onClose, onSave, coupon }) => {
@@ -96,10 +97,14 @@ const CouponModal = ({ isOpen, onClose, onSave, coupon }) => {
       <div className="coupon-modal-container" onClick={(e) => e.stopPropagation()}>
         <div className="coupon-modal-header">
           <h3>{coupon ? 'Edit Coupon' : 'Create New Coupon'}</h3>
-          <button className="close-btn" onClick={onClose} aria-label="Close modal">✕</button>
+          <button className="close-btn" onClick={onClose} aria-label="Close modal"><X size={16} /></button>
         </div>
 
-        {errorMsg ? <div className="modal-error-alert">⚠️ {errorMsg}</div> : null}
+        {errorMsg ? (
+          <div className="modal-error-alert" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <AlertTriangle size={16} /> {errorMsg}
+          </div>
+        ) : null}
 
         <form onSubmit={handleSubmit} className="coupon-modal-form">
           <div className="form-group">

@@ -1,4 +1,5 @@
 import React from 'react';
+import { AlertTriangle, X } from 'lucide-react';
 
 const DeleteConfirmModal = ({ isOpen, onClose, onConfirm, productName, deleting }) => {
   if (!isOpen) return null;
@@ -7,8 +8,10 @@ const DeleteConfirmModal = ({ isOpen, onClose, onConfirm, productName, deleting 
     <div className="product-modal-backdrop" onClick={onClose}>
       <div className="product-modal-container" style={{ maxWidth: '440px' }} onClick={(e) => e.stopPropagation()}>
         <div className="product-modal-header">
-          <h3 style={{ color: '#dc2626' }}>⚠️ Delete Product?</h3>
-          <button className="close-btn" onClick={onClose}>✕</button>
+          <h3 style={{ color: '#dc2626', display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <AlertTriangle size={18} /> Delete Product?
+          </h3>
+          <button className="close-btn" onClick={onClose}><X size={16} /></button>
         </div>
 
         <div style={{ margin: '12px 0', fontSize: '15px', color: '#334155', lineHeight: '1.5' }}>

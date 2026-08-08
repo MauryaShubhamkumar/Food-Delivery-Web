@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { StoreContext } from '../../context/StoreContext';
 import CategoryModal from './CategoryModal';
+import { Plus, Search, X, CheckCircle2, AlertTriangle, FolderTree, Edit2, Trash2 } from 'lucide-react';
 import './AdminCategories.css';
 
 const AdminCategories = () => {
@@ -140,31 +141,31 @@ const AdminCategories = () => {
           <h1 className="admin-categories-title">Category Management</h1>
           <p className="admin-categories-subtitle">Organize menu categories, active visibility, and assigned product counts.</p>
         </div>
-        <button className="add-category-btn" onClick={handleOpenAddModal}>
-          ➕ Add Category
+        <button className="add-category-btn" onClick={handleOpenAddModal} style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+          <Plus size={16} /> Add Category
         </button>
       </div>
 
       {/* Success Alert */}
       {successMsg ? (
         <div className="alert-banner alert-success">
-          <span>✅ {successMsg}</span>
-          <button className="alert-close" onClick={() => setSuccessMsg('')}>✕</button>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}><CheckCircle2 size={16} /> {successMsg}</span>
+          <button className="alert-close" onClick={() => setSuccessMsg('')}><X size={14} /></button>
         </div>
       ) : null}
 
       {/* Error / Deletion Warning Alert */}
       {error ? (
         <div className="alert-banner alert-error">
-          <span>⚠️ {error}</span>
-          <button className="alert-close" onClick={() => setError('')}>✕</button>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}><AlertTriangle size={16} /> {error}</span>
+          <button className="alert-close" onClick={() => setError('')}><X size={14} /></button>
         </div>
       ) : null}
 
       {/* Search Bar */}
       <div className="categories-controls-bar">
-        <div className="search-input-group">
-          <span className="search-icon-symbol">🔍</span>
+        <div className="search-input-group" style={{ position: 'relative', display: 'flex', alignItems: 'center', flex: '1', maxWidth: '420px' }}>
+          <Search size={16} style={{ position: 'absolute', left: '12px', color: '#94a3b8' }} />
           <input
             type="text"
             placeholder="Search categories by name..."
@@ -173,7 +174,7 @@ const AdminCategories = () => {
             className="categories-search-input"
           />
           {searchQuery ? (
-            <button className="search-clear-btn" onClick={() => setSearchQuery('')}>✕</button>
+            <button className="search-clear-btn" onClick={() => setSearchQuery('')} style={{ position: 'absolute', right: '12px' }}><X size={14} /></button>
           ) : null}
         </div>
       </div>
@@ -188,7 +189,7 @@ const AdminCategories = () => {
           </div>
         ) : categories.length === 0 ? (
           <div className="no-categories-found">
-            <div className="empty-icon">📁</div>
+            <div className="empty-icon"><FolderTree size={40} color="#94a3b8" /></div>
             <h3>No Categories Found</h3>
             <p>Click "+ Add Category" to create your first menu category.</p>
           </div>
@@ -233,15 +234,17 @@ const AdminCategories = () => {
                         className="action-btn edit-btn"
                         onClick={() => handleOpenEditModal(cat)}
                         title="Edit category"
+                        style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}
                       >
-                        ✏️ Edit
+                        <Edit2 size={13} /> Edit
                       </button>
                       <button
                         className="action-btn delete-btn"
                         onClick={() => handleDeleteCategory(cat)}
                         title="Delete category"
+                        style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}
                       >
-                        🗑️ Delete
+                        <Trash2 size={13} /> Delete
                       </button>
                     </div>
                   </td>

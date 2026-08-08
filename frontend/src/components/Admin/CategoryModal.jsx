@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { X, AlertTriangle } from 'lucide-react';
 import './CategoryModal.css';
 
 const CategoryModal = ({ isOpen, onClose, onSave, category }) => {
@@ -67,10 +68,14 @@ const CategoryModal = ({ isOpen, onClose, onSave, category }) => {
       <div className="category-modal-container" onClick={(e) => e.stopPropagation()}>
         <div className="category-modal-header">
           <h3>{category ? 'Edit Category' : 'Add New Category'}</h3>
-          <button className="close-btn" onClick={onClose} aria-label="Close modal">✕</button>
+          <button className="close-btn" onClick={onClose} aria-label="Close modal"><X size={16} /></button>
         </div>
 
-        {errorMsg ? <div className="modal-error-alert">⚠️ {errorMsg}</div> : null}
+        {errorMsg ? (
+          <div className="modal-error-alert" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <AlertTriangle size={16} /> {errorMsg}
+          </div>
+        ) : null}
 
         <form onSubmit={handleSubmit} className="category-modal-form">
           <div className="form-group">

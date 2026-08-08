@@ -1,5 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { StoreContext } from '../../context/StoreContext';
+import { Store, CreditCard, Clock, Truck, Globe, Save, CheckCircle2, AlertTriangle, X, Upload } from 'lucide-react';
 import './AdminSettings.css';
 
 const CURRENCY_OPTIONS = [
@@ -200,16 +201,16 @@ const AdminSettings = () => {
       {/* Success Alert */}
       {successMsg ? (
         <div className="alert-banner alert-success">
-          <span>✅ {successMsg}</span>
-          <button className="alert-close" onClick={() => setSuccessMsg('')}>✕</button>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}><CheckCircle2 size={16} /> {successMsg}</span>
+          <button className="alert-close" onClick={() => setSuccessMsg('')}><X size={14} /></button>
         </div>
       ) : null}
 
       {/* Error Alert */}
       {errorMsg ? (
         <div className="alert-banner alert-error">
-          <span>⚠️ {errorMsg}</span>
-          <button className="alert-close" onClick={() => setErrorMsg('')}>✕</button>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}><AlertTriangle size={16} /> {errorMsg}</span>
+          <button className="alert-close" onClick={() => setErrorMsg('')}><X size={14} /></button>
         </div>
       ) : null}
 
@@ -222,7 +223,9 @@ const AdminSettings = () => {
         <form onSubmit={handleSubmit} className="settings-form-layout">
           {/* Section 1: Restaurant Information */}
           <div className="settings-card">
-            <h3 className="settings-card-title">🏪 Restaurant Information</h3>
+            <h3 className="settings-card-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <Store size={18} /> Restaurant Information
+            </h3>
             <div className="settings-card-body">
               <div className="form-group">
                 <label htmlFor="restaurantName">Restaurant Name *</label>
@@ -246,8 +249,8 @@ const AdminSettings = () => {
                     <div className="logo-preview-placeholder">No Logo</div>
                   )}
                   <div className="logo-upload-controls">
-                    <label className="logo-file-btn">
-                      📁 Select Logo Image
+                    <label className="logo-file-btn" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                      <Upload size={14} /> Select Logo Image
                       <input
                         type="file"
                         accept="image/*"
@@ -325,7 +328,9 @@ const AdminSettings = () => {
 
           {/* Section 2: UPI Payment Settings */}
           <div className="settings-card">
-            <h3 className="settings-card-title">💳 Payment Settings (UPI)</h3>
+            <h3 className="settings-card-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <CreditCard size={18} /> Payment Settings (UPI)
+            </h3>
             <div className="settings-card-body">
               <div className="form-group">
                 <label htmlFor="upiId">Restaurant UPI ID (VPA) *</label>
@@ -350,8 +355,8 @@ const AdminSettings = () => {
                     <div className="logo-preview-placeholder">No QR Uploaded</div>
                   )}
                   <div className="logo-upload-controls">
-                    <label className="logo-file-btn">
-                      📷 Upload New QR Image
+                    <label className="logo-file-btn" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                      <Upload size={14} /> Upload New QR Image
                       <input
                         type="file"
                         accept="image/*"
@@ -379,7 +384,9 @@ const AdminSettings = () => {
 
           {/* Section 3: Business Hours & Operational Status */}
           <div className="settings-card">
-            <h3 className="settings-card-title">⏰ Business Hours & Operational Status</h3>
+            <h3 className="settings-card-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <Clock size={18} /> Business Hours & Operational Status
+            </h3>
             <div className="settings-card-body">
               <div className="form-row">
                 <div className="form-group">
@@ -425,7 +432,9 @@ const AdminSettings = () => {
 
           {/* Section 4: Delivery & Minimum Order Settings */}
           <div className="settings-card">
-            <h3 className="settings-card-title">🛵 Delivery & Minimum Order Settings</h3>
+            <h3 className="settings-card-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <Truck size={18} /> Delivery & Minimum Order Settings
+            </h3>
             <div className="settings-card-body">
               <div className="form-row">
                 <div className="form-group">
@@ -463,7 +472,9 @@ const AdminSettings = () => {
 
           {/* Section 5: Currency & Active Status */}
           <div className="settings-card">
-            <h3 className="settings-card-title">🌐 Currency & System Availability</h3>
+            <h3 className="settings-card-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <Globe size={18} /> Currency & System Availability
+            </h3>
             <div className="settings-card-body">
               <div className="form-group">
                 <label htmlFor="currency">Display Currency *</label>
@@ -500,8 +511,8 @@ const AdminSettings = () => {
 
           {/* Submit Actions */}
           <div className="settings-save-actions">
-            <button type="submit" className="save-settings-btn" disabled={saving}>
-              💾 {saving ? 'Saving Settings...' : 'Save Settings'}
+            <button type="submit" className="save-settings-btn" disabled={saving} style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+              <Save size={16} /> {saving ? 'Saving Settings...' : 'Save Settings'}
             </button>
           </div>
         </form>

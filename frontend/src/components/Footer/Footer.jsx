@@ -3,6 +3,7 @@ import "./Footer.css";
 import { assets } from "../../assets/assets";
 import Logo from "../Logo/Logo";
 import { StoreContext } from "../../context/StoreContext";
+import { Phone, Mail, MapPin } from 'lucide-react';
 
 const Footer = () => {
   const { settings } = useContext(StoreContext);
@@ -36,9 +37,9 @@ const Footer = () => {
         <div className="footer-content-right">
           <h2>GET IN TOUCH</h2>
           <ul>
-            <li>📞 {phone}</li>
-            <li>✉️ {email}</li>
-            {address ? <li>📍 {address}</li> : null}
+            <li style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><Phone size={15} /> {phone}</li>
+            <li style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><Mail size={15} /> {email}</li>
+            {address ? <li style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><MapPin size={15} /> {address}</li> : null}
           </ul>
         </div>
       </div>

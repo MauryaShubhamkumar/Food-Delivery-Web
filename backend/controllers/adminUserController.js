@@ -1,39 +1,52 @@
 import { getPool } from '../config/db.js';
 
-// GET registered customers for Admin with search, status filter & aggregated stats
+// GET registered customers for Admin with search, status filter, pagination & aggregated stats
 export const getAdminUsers = async (req, res, next) => {
   try {
-    const { search, status } = req.query;
+    const { search, status, page: reqPage, limit: reqLimit } = req.query;
     const pool = getPool();
 
-    let query = `
+    let whereClause = " WHERE u.role = 'customer'";
+    const params = [];
+
+    if (search && search.trim() !== '') {
+      const cleanSearch = `%${search.trim()}%`;
+      whereClause += ' AND (u.name LIKE ? OR u.email LIKE ? OR u.phone LIKE ?)';
+      params.push(cleanSearch, cleanSearch, cleanSearch);
+    }
+
+    if (status && status !== 'All') {
+      if (status === 'Active') {
+        whereClause += ' AND (u.is_active = TRUE OR u.is_active = 1 OR u.is_active IS NULL)';
+      } else if (status === 'Inactive') {
+        whereClause += ' AND (u.is_active = FALSE OR u.is_active = 0)';
+      }
+    }
+
+    // 1. Total count query
+    const [countRows] = await pool.query(`SELECT COUNT(DISTINCT u.id) as total FROM users u ${whereClause}`, params);
+    const total = Number(countRows[0].total || 0);
+
+    // 2. Pagination calculation
+    const page = Math.max(1, parseInt(reqPage) || 1);
+    const limit = Math.min(100, Math.max(1, parseInt(reqLimit) || 20));
+    const offset = (page - 1) * limit;
+    const totalPages = Math.ceil(total / limit) || 1;
+
+    // 3. Paginated user query
+    const query = `
       SELECT 
         u.id, u.name, u.email, u.role, u.is_active, u.created_at, u.phone, u.address,
         COUNT(o.id) as totalOrders,
         COALESCE(SUM(CASE WHEN o.status != 'Cancelled' THEN o.amount ELSE 0 END), 0) as totalSpent
       FROM users u
       LEFT JOIN orders o ON o.user_id = u.id
-      WHERE u.role = 'customer'
+      ${whereClause}
+      GROUP BY u.id ORDER BY u.created_at DESC
+      LIMIT ? OFFSET ?
     `;
-    const params = [];
 
-    if (search && search.trim() !== '') {
-      const cleanSearch = `%${search.trim()}%`;
-      query += ' AND (u.name LIKE ? OR u.email LIKE ? OR u.phone LIKE ?)';
-      params.push(cleanSearch, cleanSearch, cleanSearch);
-    }
-
-    if (status && status !== 'All') {
-      if (status === 'Active') {
-        query += ' AND (u.is_active = TRUE OR u.is_active = 1 OR u.is_active IS NULL)';
-      } else if (status === 'Inactive') {
-        query += ' AND (u.is_active = FALSE OR u.is_active = 0)';
-      }
-    }
-
-    query += ' GROUP BY u.id ORDER BY u.created_at DESC';
-
-    const [rows] = await pool.query(query, params);
+    const [rows] = await pool.query(query, [...params, limit, offset]);
 
     const formattedUsers = rows.map((u) => ({
       id: u.id,
@@ -51,6 +64,10 @@ export const getAdminUsers = async (req, res, next) => {
     res.json({
       success: true,
       count: formattedUsers.length,
+      page,
+      limit,
+      total,
+      totalPages,
       data: formattedUsers
     });
   } catch (error) {
@@ -118,9 +135,24 @@ export const getAdminUserOrders = async (req, res, next) => {
       [id]
     );
 
-    for (let order of orders) {
-      const [items] = await pool.query('SELECT * FROM order_items WHERE order_id = ?', [order.id]);
-      order.items = items;
+    if (orders.length > 0) {
+      const orderIds = orders.map(o => o.id);
+      const [allItems] = await pool.query(
+        'SELECT id, order_id, food_id, name, price, quantity FROM order_items WHERE order_id IN (?)',
+        [orderIds]
+      );
+
+      const itemsByOrderId = {};
+      for (const item of allItems) {
+        if (!itemsByOrderId[item.order_id]) {
+          itemsByOrderId[item.order_id] = [];
+        }
+        itemsByOrderId[item.order_id].push(item);
+      }
+
+      for (const order of orders) {
+        order.items = itemsByOrderId[order.id] || [];
+      }
     }
 
     res.json({

@@ -2,6 +2,7 @@ import React, { useContext, useState } from "react";
 import "./PlaceOrder.css";
 import { StoreContext } from "../../context/StoreContext";
 import { useNavigate } from "react-router-dom";
+import { Lock, AlertTriangle, Banknote, QrCode, Copy, Check, Zap, Info } from 'lucide-react';
 
 const PlaceOrder = () => {
   const {
@@ -135,9 +136,9 @@ const PlaceOrder = () => {
         setcartItems({});
         removeCoupon();
         if (paymentMethod === "upi") {
-          alert("🎉 Order placed successfully! Your payment is awaiting admin verification.");
+          alert("Order placed successfully! Your payment is awaiting admin verification.");
         } else {
-          alert("🎉 Cash on Delivery order placed successfully!");
+          alert("Cash on Delivery order placed successfully!");
         }
         navigate("/myorders");
       } else {
@@ -155,12 +156,12 @@ const PlaceOrder = () => {
       <div className="place-order-left">
         <h2 className="title">Delivery Information</h2>
         {isClosed ? (
-          <div className="cart-warning-banner closed-banner" style={{ marginBottom: '20px' }}>
-            🔒 <strong>Restaurant Closed:</strong> Orders cannot be placed at this time.
+          <div className="cart-warning-banner closed-banner" style={{ marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <Lock size={16} /> <strong>Restaurant Closed:</strong> Orders cannot be placed at this time.
           </div>
         ) : isBelowMinOrder ? (
-          <div className="cart-warning-banner min-order-banner" style={{ marginBottom: '20px' }}>
-            ⚠️ <strong>Minimum Order Notice:</strong> Minimum order requirement is <strong>{formatCurrency(minOrder)}</strong>.
+          <div className="cart-warning-banner min-order-banner" style={{ marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <AlertTriangle size={16} /> <strong>Minimum Order Notice:</strong> Minimum order requirement is <strong>{formatCurrency(minOrder)}</strong>.
           </div>
         ) : null}
 
@@ -222,7 +223,9 @@ const PlaceOrder = () => {
                   checked={paymentMethod === 'cod'}
                   onChange={() => setPaymentMethod('cod')}
                 />
-                <span className="payment-option-title">💵 Cash on Delivery</span>
+                <span className="payment-option-title" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                  <Banknote size={16} /> Cash on Delivery
+                </span>
               </label>
 
               <label className={`payment-option ${paymentMethod === 'upi' ? 'active' : ''}`}>
@@ -233,7 +236,9 @@ const PlaceOrder = () => {
                   checked={paymentMethod === 'upi'}
                   onChange={() => setPaymentMethod('upi')}
                 />
-                <span className="payment-option-title">📲 Instant UPI Payment</span>
+                <span className="payment-option-title" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                  <QrCode size={16} /> Instant UPI Payment
+                </span>
               </label>
             </div>
 
@@ -250,7 +255,7 @@ const PlaceOrder = () => {
                     <img src={upiQrUrl} alt="UPI Payment QR Code" className="upi-qr-img" />
                   ) : (
                     <div className="upi-qr-placeholder">
-                      <span>📲</span>
+                      <QrCode size={36} color="#64748b" />
                       <p>Scan & Pay via any UPI App</p>
                     </div>
                   )}
@@ -259,14 +264,14 @@ const PlaceOrder = () => {
                 <div className="upi-id-box">
                   <span className="upi-label">UPI ID / VPA:</span>
                   <strong className="upi-val">{upiId}</strong>
-                  <button type="button" onClick={copyUpiId} className="copy-upi-btn">
-                    {copiedUpi ? '✅ Copied!' : '📋 Copy UPI ID'}
+                  <button type="button" onClick={copyUpiId} className="copy-upi-btn" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                    {copiedUpi ? <><Check size={14} /> Copied!</> : <><Copy size={14} /> Copy UPI ID</>}
                   </button>
                 </div>
 
                 <div className="upi-deeplink-wrapper">
-                  <a href={upiDeepLink} className="upi-app-link-btn">
-                    ⚡ Pay using UPI App (GPay, PhonePe, Paytm)
+                  <a href={upiDeepLink} className="upi-app-link-btn" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', justifyContent: 'center' }}>
+                    <Zap size={15} /> Pay using UPI App (GPay, PhonePe, Paytm)
                   </a>
                 </div>
 
@@ -286,8 +291,8 @@ const PlaceOrder = () => {
                     required={paymentMethod === 'upi'}
                     className="utr-input"
                   />
-                  <p className="utr-note">
-                    ℹ️ Note: Payment status will be set to <strong>Verification Pending</strong> until verified by the restaurant admin.
+                  <p className="utr-note" style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                    <Info size={14} /> Note: Payment status will be set to <strong>Verification Pending</strong> until verified by the restaurant admin.
                   </p>
                 </div>
               </div>

@@ -3,6 +3,7 @@ import './MyOrders.css';
 import { StoreContext } from '../../context/StoreContext';
 import { assets } from '../../assets/assets';
 import { useNavigate } from 'react-router-dom';
+import { Package, Lock, CheckCircle2, Clock, XCircle, Banknote, Check } from 'lucide-react';
 
 const MyOrders = () => {
   const { url, token } = useContext(StoreContext);
@@ -102,13 +103,13 @@ const MyOrders = () => {
         </div>
       ) : !token ? (
         <div className="orders-empty">
-          <div className="empty-icon">🔒</div>
+          <div className="empty-icon"><Lock size={44} color="#94a3b8" /></div>
           <h3>Please log in to view your order summary</h3>
           <p>Your active and past order summaries will appear here once signed in.</p>
         </div>
       ) : filteredOrders.length === 0 ? (
         <div className="orders-empty">
-          <div className="empty-icon">📦</div>
+          <div className="empty-icon"><Package size={44} color="#94a3b8" /></div>
           <h3>{activeTab === 'today' ? "No orders placed today" : "No orders found"}</h3>
           <p>Looks like you haven't placed any orders {activeTab === 'today' ? "today" : "yet"}. Browse our menu and treat yourself!</p>
           <button onClick={() => navigate('/')} className="explore-btn">Explore Menu</button>
@@ -152,22 +153,22 @@ const MyOrders = () => {
                     {/* Customer Payment Status Badge */}
                     <div className="customer-pay-status-box">
                       {pStatus === 'paid' ? (
-                        <span className="cust-pay-badge cust-pay-confirmed">
-                          ✓ Payment Confirmed
+                        <span className="cust-pay-badge cust-pay-confirmed" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                          <CheckCircle2 size={13} /> Payment Confirmed
                         </span>
                       ) : pStatus === 'verification_required' ? (
-                        <span className="cust-pay-badge cust-pay-pending">
-                          🟡 Payment Verification Pending
+                        <span className="cust-pay-badge cust-pay-pending" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                          <Clock size={13} /> Payment Verification Pending
                           {order.payment_reference ? ` (UTR: ${order.payment_reference})` : ''}
                         </span>
                       ) : pStatus === 'rejected' ? (
-                        <span className="cust-pay-badge cust-pay-rejected">
-                          ✕ Payment Rejected
+                        <span className="cust-pay-badge cust-pay-rejected" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                          <XCircle size={13} /> Payment Rejected
                           {order.payment_rejection_reason ? ` — ${order.payment_rejection_reason}` : ' (Please contact restaurant)'}
                         </span>
                       ) : (
-                        <span className="cust-pay-badge cust-pay-cod">
-                          💵 Cash on Delivery
+                        <span className="cust-pay-badge cust-pay-cod" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                          <Banknote size={13} /> Cash on Delivery
                         </span>
                       )}
                     </div>
@@ -189,8 +190,8 @@ const MyOrders = () => {
                 {/* Live Order Progress Tracker */}
                 <div className="order-progress-tracker">
                   {isCancelled ? (
-                    <div className="order-cancelled-notice">
-                      ❌ Order #{order.id} was Cancelled.
+                    <div className="order-cancelled-notice" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                      <XCircle size={15} /> Order #{order.id} was Cancelled.
                     </div>
                   ) : (
                     <div className="tracker-steps-container">
@@ -203,7 +204,7 @@ const MyOrders = () => {
                             className={`tracker-step ${isCompleted ? 'completed' : ''} ${isCurrent ? 'active' : ''}`}
                           >
                             <div className="step-dot">
-                              {isCompleted ? '✓' : idx + 1}
+                              {isCompleted ? <Check size={14} /> : idx + 1}
                             </div>
                             <span className="step-label">{step.label}</span>
                           </div>

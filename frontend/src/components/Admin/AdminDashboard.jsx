@@ -3,6 +3,29 @@ import { useNavigate } from 'react-router-dom';
 import { StoreContext } from '../../context/StoreContext';
 import ProductModal from './ProductModal';
 import OrderDetailsModal from './OrderDetailsModal';
+import {
+  Calendar,
+  RefreshCw,
+  Zap,
+  Plus,
+  FolderPlus,
+  Tag,
+  Package,
+  QrCode,
+  Users,
+  DollarSign,
+  ShoppingBag,
+  TrendingUp,
+  UtensilsCrossed,
+  Clock,
+  BarChart3,
+  Star,
+  Flame,
+  AlertTriangle,
+  CheckCircle2,
+  Eye,
+  ArrowRight
+} from 'lucide-react';
 import './AdminDashboard.css';
 
 const PERIOD_OPTIONS = [
@@ -114,7 +137,9 @@ const AdminDashboard = () => {
 
         <div className="header-controls">
           <div className="period-filter-wrapper">
-            <label htmlFor="period-select">📅 Timeframe:</label>
+            <label htmlFor="period-select" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+              <Calendar size={15} /> Timeframe:
+            </label>
             <select
               id="period-select"
               value={period}
@@ -127,40 +152,42 @@ const AdminDashboard = () => {
             </select>
           </div>
           <button className="refresh-analytics-btn" onClick={fetchAnalytics} disabled={loading}>
-            🔄 {loading ? 'Updating...' : 'Refresh Data'}
+            <RefreshCw size={14} className={loading ? 'spin-icon' : ''} /> {loading ? 'Updating...' : 'Refresh Data'}
           </button>
         </div>
       </div>
 
-      {error ? <div className="alert-banner alert-error">⚠️ {error}</div> : null}
+      {error ? <div className="alert-banner alert-error"><AlertTriangle size={16} /> {error}</div> : null}
 
       {/* Quick Actions Bar */}
       <div className="quick-actions-bar">
-        <span className="quick-actions-title">⚡ Quick Actions:</span>
+        <span className="quick-actions-title" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+          <Zap size={15} /> Quick Actions:
+        </span>
         <button className="action-chip" onClick={() => setIsProductModalOpen(true)}>
-          ➕ Add Product
+          <Plus size={14} /> Add Product
         </button>
         <button className="action-chip" onClick={() => navigate('/admin/categories')}>
-          📁 Add Category
+          <FolderPlus size={14} /> Add Category
         </button>
         <button className="action-chip" onClick={() => navigate('/admin/coupons')}>
-          🏷️ Create Coupon
+          <Tag size={14} /> Create Coupon
         </button>
         <button className="action-chip highlight-chip" onClick={() => navigate('/admin/orders')}>
-          📦 View Pending Orders ({summary.pendingOrders})
+          <Package size={14} /> View Pending Orders ({summary.pendingOrders})
         </button>
         <button className="action-chip upi-chip" onClick={() => navigate('/admin/orders')}>
-          🟡 Pending Payments ({summary.pendingPaymentVerifications || 0})
+          <QrCode size={14} /> Pending Payments ({summary.pendingPaymentVerifications || 0})
         </button>
         <button className="action-chip" onClick={() => navigate('/admin/users')}>
-          👥 View Customers
+          <Users size={14} /> View Customers
         </button>
       </div>
 
       {/* Summary Cards Grid */}
       <div className="summary-cards-grid">
         <div className="stat-card card-revenue">
-          <div className="card-icon">💰</div>
+          <div className="card-icon"><DollarSign size={22} /></div>
           <div className="card-content">
             <span className="card-label">Total Revenue</span>
             <h2 className="card-value">₹{summary.totalRevenue.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</h2>
@@ -169,7 +196,7 @@ const AdminDashboard = () => {
         </div>
 
         <div className="stat-card card-orders">
-          <div className="card-icon">🛍️</div>
+          <div className="card-icon"><ShoppingBag size={22} /></div>
           <div className="card-content">
             <span className="card-label">Total Orders</span>
             <h2 className="card-value">{summary.totalOrders}</h2>
@@ -178,7 +205,7 @@ const AdminDashboard = () => {
         </div>
 
         <div className="stat-card card-aov">
-          <div className="card-icon">📈</div>
+          <div className="card-icon"><TrendingUp size={22} /></div>
           <div className="card-content">
             <span className="card-label">Avg Order Value (AOV)</span>
             <h2 className="card-value">₹{summary.avgOrderValue.toFixed(2)}</h2>
@@ -187,7 +214,7 @@ const AdminDashboard = () => {
         </div>
 
         <div className="stat-card card-customers">
-          <div className="card-icon">👥</div>
+          <div className="card-icon"><Users size={22} /></div>
           <div className="card-content">
             <span className="card-label">Registered Customers</span>
             <h2 className="card-value">{summary.totalCustomers}</h2>
@@ -196,7 +223,7 @@ const AdminDashboard = () => {
         </div>
 
         <div className="stat-card card-products">
-          <div className="card-icon">🍔</div>
+          <div className="card-icon"><UtensilsCrossed size={22} /></div>
           <div className="card-content">
             <span className="card-label">Total Menu Products</span>
             <h2 className="card-value">{summary.totalProducts}</h2>
@@ -205,7 +232,7 @@ const AdminDashboard = () => {
         </div>
 
         <div className="stat-card card-pending" onClick={() => navigate('/admin/orders')} style={{ cursor: 'pointer' }}>
-          <div className="card-icon">⏳</div>
+          <div className="card-icon"><Clock size={22} /></div>
           <div className="card-content">
             <span className="card-label">Pending Orders</span>
             <h2 className="card-value urgent">{summary.pendingOrders}</h2>
@@ -214,11 +241,11 @@ const AdminDashboard = () => {
         </div>
 
         <div className="stat-card card-upi-verify" onClick={() => navigate('/admin/orders')} style={{ cursor: 'pointer' }}>
-          <div className="card-icon">📲</div>
+          <div className="card-icon"><QrCode size={22} /></div>
           <div className="card-content">
             <span className="card-label">Pending Payment Verification</span>
             <h2 className="card-value urgent-yellow">{summary.pendingPaymentVerifications || 0}</h2>
-            <span className="card-subtext">Payments awaiting verification ➔</span>
+            <span className="card-subtext">Payments awaiting verification &rarr;</span>
           </div>
         </div>
       </div>
@@ -228,7 +255,9 @@ const AdminDashboard = () => {
         {/* Revenue Over Time Chart */}
         <div className="dashboard-card chart-card">
           <div className="card-header-row">
-            <h3>📈 Revenue Trend ({PERIOD_OPTIONS.find(p => p.value === period)?.label})</h3>
+            <h3 style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <TrendingUp size={18} /> Revenue Trend ({PERIOD_OPTIONS.find(p => p.value === period)?.label})
+            </h3>
             <span className="chart-legend">₹ Total Daily Sales</span>
           </div>
           {analytics?.revenueOverTime?.length === 0 ? (
@@ -253,7 +282,9 @@ const AdminDashboard = () => {
 
         {/* Orders by Status Breakdown */}
         <div className="dashboard-card status-distribution-card">
-          <h3>📊 Orders Status Breakdown</h3>
+          <h3 style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <BarChart3 size={18} /> Orders Status Breakdown
+          </h3>
           <div className="status-progress-list">
             {analytics?.ordersByStatus?.length === 0 ? (
               <div className="chart-empty-state">No orders recorded in this period.</div>
@@ -286,7 +317,9 @@ const AdminDashboard = () => {
         {/* Best Selling Products */}
         <div className="dashboard-card">
           <div className="card-header-row">
-            <h3>⭐ Best Selling Food Products</h3>
+            <h3 style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <Star size={18} color="#f59e0b" /> Best Selling Food Products
+            </h3>
             <button className="link-btn" onClick={() => navigate('/admin/products')}>View All Menu</button>
           </div>
           <table className="analytics-table">
@@ -304,7 +337,9 @@ const AdminDashboard = () => {
               ) : (
                 analytics?.bestSellingProducts?.map((item, idx) => (
                   <tr key={idx}>
-                    <td className="product-name-cell">🔥 {item.name}</td>
+                    <td className="product-name-cell" style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                      <Flame size={14} color="#f97316" /> {item.name}
+                    </td>
                     <td>{item.category || 'General'}</td>
                     <td><strong>{item.quantitySold}</strong> units</td>
                     <td className="amount-cell">₹{Number(item.totalRevenue).toFixed(2)}</td>
@@ -318,13 +353,15 @@ const AdminDashboard = () => {
         {/* Menu Alerts / Out of Stock */}
         <div className="dashboard-card alerts-card">
           <div className="card-header-row">
-            <h3>⚠️ Out-of-Stock Menu Alerts</h3>
+            <h3 style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <AlertTriangle size={18} color="#ef4444" /> Out-of-Stock Menu Alerts
+            </h3>
             <button className="link-btn" onClick={() => navigate('/admin/products')}>Manage Products</button>
           </div>
 
           {analytics?.lowStockAlerts?.length === 0 ? (
             <div className="no-alerts-box">
-              <span className="success-icon">✅</span>
+              <CheckCircle2 size={18} className="success-icon" />
               <p>All menu products are currently available for ordering!</p>
             </div>
           ) : (
@@ -349,9 +386,11 @@ const AdminDashboard = () => {
       {/* Recent Orders Section */}
       <div className="dashboard-card recent-orders-card">
         <div className="card-header-row">
-          <h3>📦 Recent Customer Orders</h3>
-          <button className="link-btn primary-link" onClick={() => navigate('/admin/orders')}>
-            View All Orders ➔
+          <h3 style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <Package size={18} /> Recent Customer Orders
+          </h3>
+          <button className="link-btn primary-link" onClick={() => navigate('/admin/orders')} style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+            View All Orders <ArrowRight size={14} />
           </button>
         </div>
 
@@ -391,8 +430,8 @@ const AdminDashboard = () => {
                       </span>
                     </td>
                     <td>
-                      <button className="btn-table-action" onClick={() => handleViewOrder(order)}>
-                        👁️ View
+                      <button className="btn-table-action" onClick={() => handleViewOrder(order)} style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                        <Eye size={13} /> View
                       </button>
                     </td>
                   </tr>

@@ -3,6 +3,14 @@ import './FoodItem.css'
 import { assets } from '../../assets/assets'
 import { StoreContext } from '../../context/StoreContext'
 
+const getOptimizedImgSrc = (src) => {
+  if (!src) return src;
+  if (src.includes('res.cloudinary.com') && !src.includes('/f_auto,q_auto')) {
+    return src.replace('/upload/', '/upload/f_auto,q_auto,w_500/');
+  }
+  return src;
+};
+
 const FoodItem = ({ id, name, price, description, image, available = true }) => {
   const { cartItems, addToCart, removeFromCart } = useContext(StoreContext);
 
@@ -11,7 +19,7 @@ const FoodItem = ({ id, name, price, description, image, available = true }) => 
   return (
     <div className={`food-item ${!isAvailable ? 'unavailable-item' : ''}`}>
       <div className="food-item-img-container">
-        <img className='food-item-image' src={image} alt={name} />
+        <img className='food-item-image' src={getOptimizedImgSrc(image)} alt={name} loading="lazy" />
         {!isAvailable ? (
           <div className="out-of-stock-badge">
             Out of Stock

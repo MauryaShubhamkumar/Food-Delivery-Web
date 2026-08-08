@@ -2,6 +2,7 @@ import React, { useContext, useState } from "react";
 import "./Cart.css";
 import { StoreContext } from "../../context/StoreContext";
 import { useNavigate } from "react-router-dom";
+import { Lock, AlertTriangle, ShoppingCart, Tag, X } from 'lucide-react';
 
 const Cart = () => {
   const {
@@ -60,21 +61,21 @@ const Cart = () => {
 
       {/* Closed Restaurant Banner */}
       {isClosed ? (
-        <div className="cart-warning-banner closed-banner">
-          🔒 <strong>Restaurant Currently Closed:</strong> We are not accepting new orders right now ({settings?.openingTime || '10:00'} - {settings?.closingTime || '22:00'}). You can browse our menu and return during opening hours!
+        <div className="cart-warning-banner closed-banner" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <Lock size={16} /> <strong>Restaurant Currently Closed:</strong> We are not accepting new orders right now ({settings?.openingTime || '10:00'} - {settings?.closingTime || '22:00'}). You can browse our menu and return during opening hours!
         </div>
       ) : null}
 
       {/* Below Minimum Order Banner */}
       {isBelowMinOrder && !isClosed ? (
-        <div className="cart-warning-banner min-order-banner">
-          ⚠️ <strong>Minimum Order Notice:</strong> Minimum order amount is <strong>{formatCurrency(minOrder)}</strong>. Please add <strong>{formatCurrency(remainingForMinOrder)}</strong> more to your cart to proceed to checkout.
+        <div className="cart-warning-banner min-order-banner" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <AlertTriangle size={16} /> <strong>Minimum Order Notice:</strong> Minimum order amount is <strong>{formatCurrency(minOrder)}</strong>. Please add <strong>{formatCurrency(remainingForMinOrder)}</strong> more to your cart to proceed to checkout.
         </div>
       ) : null}
 
       {subtotal === 0 ? (
         <div className="cart-empty">
-          <div className="cart-empty-icon">🛒</div>
+          <div className="cart-empty-icon"><ShoppingCart size={48} color="#94a3b8" /></div>
           <h3>Your cart is currently empty</h3>
           <p>Explore our delicious menu and add your favorite dishes to get started.</p>
           <button onClick={() => navigate("/")} className="cart-empty-btn">Explore Menu</button>
@@ -105,7 +106,7 @@ const Cart = () => {
                       <p className="quantity-badge">{qty}</p>
                       <p className="item-total">{formatCurrency(qty * item.price)}</p>
                       <p onClick={() => removeFromCart(itemId)} className="cross">
-                        ✕
+                        <X size={16} />
                       </p>
                     </div>
                     <hr />
@@ -156,7 +157,9 @@ const Cart = () => {
                 <p>If you have a promo code, enter it here (e.g. FAST20, WELCOME100, FLAT50)</p>
                 {appliedCoupon ? (
                   <div className="applied-coupon-box">
-                    <span>🏷️ Coupon <strong>{appliedCoupon.code}</strong> Applied (-{formatCurrency(discount)})</span>
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                      <Tag size={14} /> Coupon <strong>{appliedCoupon.code}</strong> Applied (-{formatCurrency(discount)})
+                    </span>
                     <button className="remove-promo-btn" onClick={handleRemovePromo}>Remove</button>
                   </div>
                 ) : (

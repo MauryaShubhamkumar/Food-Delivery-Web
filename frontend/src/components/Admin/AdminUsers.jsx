@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { StoreContext } from '../../context/StoreContext';
 import UserDetailsModal from './UserDetailsModal';
+import { RefreshCw, Search, X, CheckCircle2, AlertTriangle, Users, Eye } from 'lucide-react';
 import './AdminUsers.css';
 
 const AdminUsers = () => {
@@ -86,31 +87,31 @@ const AdminUsers = () => {
           <h1 className="admin-users-title">Customer Management</h1>
           <p className="admin-users-subtitle">View registered customers, total spending, order history, and account status.</p>
         </div>
-        <button className="refresh-users-btn" onClick={fetchAdminUsers} disabled={loading}>
-          🔄 {loading ? 'Refreshing...' : 'Refresh List'}
+        <button className="refresh-users-btn" onClick={fetchAdminUsers} disabled={loading} style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+          <RefreshCw size={15} className={loading ? 'spin-icon' : ''} /> {loading ? 'Refreshing...' : 'Refresh List'}
         </button>
       </div>
 
       {/* Success Alert */}
       {successMsg ? (
         <div className="alert-banner alert-success">
-          <span>✅ {successMsg}</span>
-          <button className="alert-close" onClick={() => setSuccessMsg('')}>✕</button>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}><CheckCircle2 size={16} /> {successMsg}</span>
+          <button className="alert-close" onClick={() => setSuccessMsg('')}><X size={14} /></button>
         </div>
       ) : null}
 
       {/* Error Alert */}
       {error ? (
         <div className="alert-banner alert-error">
-          <span>⚠️ {error}</span>
-          <button className="alert-close" onClick={() => setError('')}>✕</button>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}><AlertTriangle size={16} /> {error}</span>
+          <button className="alert-close" onClick={() => setError('')}><X size={14} /></button>
         </div>
       ) : null}
 
       {/* Search & Filter Bar */}
       <div className="users-controls-bar">
-        <div className="search-input-group">
-          <span className="search-icon-symbol">🔍</span>
+        <div className="search-input-group" style={{ position: 'relative', display: 'flex', alignItems: 'center', flex: '1', maxWidth: '420px' }}>
+          <Search size={16} style={{ position: 'absolute', left: '12px', color: '#94a3b8' }} />
           <input
             type="text"
             placeholder="Search customers by name or email..."
@@ -119,7 +120,7 @@ const AdminUsers = () => {
             className="users-search-input"
           />
           {searchQuery ? (
-            <button className="search-clear-btn" onClick={() => setSearchQuery('')}>✕</button>
+            <button className="search-clear-btn" onClick={() => setSearchQuery('')} style={{ position: 'absolute', right: '12px' }}><X size={14} /></button>
           ) : null}
         </div>
 
@@ -148,7 +149,7 @@ const AdminUsers = () => {
           </div>
         ) : users.length === 0 ? (
           <div className="no-users-found">
-            <div className="empty-icon">👥</div>
+            <div className="empty-icon"><Users size={40} color="#94a3b8" /></div>
             <h3>No Customers Found</h3>
             <p>Try clearing your search or status filter parameters.</p>
           </div>
@@ -188,8 +189,9 @@ const AdminUsers = () => {
                     <button
                       className="btn-view-user"
                       onClick={() => handleOpenDetails(user.id)}
+                      style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}
                     >
-                      👁️ View Details
+                      <Eye size={13} /> View Details
                     </button>
                   </td>
                 </tr>

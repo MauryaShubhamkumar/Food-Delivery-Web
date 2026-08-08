@@ -2,6 +2,7 @@ import React, { useContext } from 'react';
 import './FoodDisplay.css';
 import { StoreContext } from '../../context/StoreContext';
 import FoodItem from '../FoodItem/FoodItem';
+import { Search } from 'lucide-react';
 
 const FoodDisplay = ({ category }) => {
   const { food_list, searchQuery } = useContext(StoreContext);
@@ -20,7 +21,7 @@ const FoodDisplay = ({ category }) => {
 
       {filteredFoods.length === 0 ? (
         <div className="food-no-results">
-          <div className="no-results-icon">🔍</div>
+          <div className="no-results-icon"><Search size={40} color="#94a3b8" /></div>
           <h3>No matching dishes found</h3>
           <p>Try searching for a different dish, ingredient, or category.</p>
         </div>
@@ -44,4 +45,3 @@ const FoodDisplay = ({ category }) => {
 };
 
 export default FoodDisplay;
-

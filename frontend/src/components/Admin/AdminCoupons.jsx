@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { StoreContext } from '../../context/StoreContext';
 import CouponModal from './CouponModal';
+import { Plus, Search, X, CheckCircle2, AlertTriangle, Tag, Edit2, Trash2 } from 'lucide-react';
 import './AdminCoupons.css';
 
 const AdminCoupons = () => {
@@ -138,31 +139,31 @@ const AdminCoupons = () => {
           <h1 className="admin-coupons-title">Coupons & Discount Management</h1>
           <p className="admin-coupons-subtitle">Create promotional codes, set minimum order requirements, and track usage limits.</p>
         </div>
-        <button className="add-coupon-btn" onClick={handleOpenAddModal}>
-          ➕ Create Coupon
+        <button className="add-coupon-btn" onClick={handleOpenAddModal} style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+          <Plus size={16} /> Create Coupon
         </button>
       </div>
 
       {/* Success Alert */}
       {successMsg ? (
         <div className="alert-banner alert-success">
-          <span>✅ {successMsg}</span>
-          <button className="alert-close" onClick={() => setSuccessMsg('')}>✕</button>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}><CheckCircle2 size={16} /> {successMsg}</span>
+          <button className="alert-close" onClick={() => setSuccessMsg('')}><X size={14} /></button>
         </div>
       ) : null}
 
       {/* Error Alert */}
       {error ? (
         <div className="alert-banner alert-error">
-          <span>⚠️ {error}</span>
-          <button className="alert-close" onClick={() => setError('')}>✕</button>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}><AlertTriangle size={16} /> {error}</span>
+          <button className="alert-close" onClick={() => setError('')}><X size={14} /></button>
         </div>
       ) : null}
 
       {/* Controls Bar */}
       <div className="coupons-controls-bar">
-        <div className="search-input-group">
-          <span className="search-icon-symbol">🔍</span>
+        <div className="search-input-group" style={{ position: 'relative', display: 'flex', alignItems: 'center', flex: '1', maxWidth: '420px' }}>
+          <Search size={16} style={{ position: 'absolute', left: '12px', color: '#94a3b8' }} />
           <input
             type="text"
             placeholder="Search coupons by code..."
@@ -171,7 +172,7 @@ const AdminCoupons = () => {
             className="coupons-search-input"
           />
           {searchQuery ? (
-            <button className="search-clear-btn" onClick={() => setSearchQuery('')}>✕</button>
+            <button className="search-clear-btn" onClick={() => setSearchQuery('')} style={{ position: 'absolute', right: '12px' }}><X size={14} /></button>
           ) : null}
         </div>
 
@@ -201,7 +202,7 @@ const AdminCoupons = () => {
           </div>
         ) : coupons.length === 0 ? (
           <div className="no-coupons-found">
-            <div className="empty-icon">🏷️</div>
+            <div className="empty-icon"><Tag size={40} color="#94a3b8" /></div>
             <h3>No Coupons Found</h3>
             <p>Click "+ Create Coupon" to add promotional codes for your customers.</p>
           </div>
@@ -237,7 +238,9 @@ const AdminCoupons = () => {
                 return (
                   <tr key={cp.id} className={!cp.is_active || isExpired ? 'row-inactive' : ''}>
                     <td>
-                      <span className="coupon-code-badge">🏷️ {cp.code}</span>
+                      <span className="coupon-code-badge" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                        <Tag size={13} /> {cp.code}
+                      </span>
                     </td>
                     <td>
                       <span className="discount-value-tag">{discountDisplay}</span>
@@ -264,15 +267,17 @@ const AdminCoupons = () => {
                           className="action-btn edit-btn"
                           onClick={() => handleOpenEditModal(cp)}
                           title="Edit coupon"
+                          style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}
                         >
-                          ✏️ Edit
+                          <Edit2 size={13} /> Edit
                         </button>
                         <button
                           className="action-btn delete-btn"
                           onClick={() => handleDeleteCoupon(cp)}
                           title="Delete coupon"
+                          style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}
                         >
-                          🗑️ Delete
+                          <Trash2 size={13} /> Delete
                         </button>
                       </div>
                     </td>

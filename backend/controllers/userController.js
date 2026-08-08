@@ -22,7 +22,7 @@ export const loginUser = async (req, res, next) => {
     const [rows] = await pool.query('SELECT * FROM users WHERE email = ?', [email]);
 
     if (rows.length === 0) {
-      return res.status(404).json({ success: false, message: "User does not exist" });
+      return res.status(400).json({ success: false, message: "Invalid email or password" });
     }
 
     const user = rows[0];

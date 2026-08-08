@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { StoreContext } from '../../context/StoreContext';
 import OrderDetailsModal from './OrderDetailsModal';
+import { User, X, AlertTriangle, Package, Eye, CheckCircle2, XCircle } from 'lucide-react';
 import './UserDetailsModal.css';
 
 const UserDetailsModal = ({ isOpen, onClose, userId, onStatusChange }) => {
@@ -106,13 +107,17 @@ const UserDetailsModal = ({ isOpen, onClose, userId, onStatusChange }) => {
         {/* Modal Header */}
         <div className="user-modal-header">
           <div>
-            <h3>👤 Customer Profile Details</h3>
+            <h3 style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><User size={18} /> Customer Profile Details</h3>
             <p className="user-modal-subtitle">View profile information, total spending, and order history.</p>
           </div>
-          <button className="close-btn" onClick={onClose} aria-label="Close modal">✕</button>
+          <button className="close-btn" onClick={onClose} aria-label="Close modal"><X size={16} /></button>
         </div>
 
-        {errorMsg ? <div className="user-error-alert">⚠️ {errorMsg}</div> : null}
+        {errorMsg ? (
+          <div className="user-error-alert" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <AlertTriangle size={16} /> {errorMsg}
+          </div>
+        ) : null}
 
         {loading ? (
           <div className="user-modal-loading">
@@ -151,15 +156,16 @@ const UserDetailsModal = ({ isOpen, onClose, userId, onStatusChange }) => {
                   className={`btn-status-toggle ${userData.isActive ? 'btn-deactivate' : 'btn-activate'}`}
                   onClick={handleToggleAccountStatus}
                   disabled={updating}
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', justifyContent: 'center' }}
                 >
-                  {updating ? 'Updating...' : userData.isActive ? '🚫 Deactivate Account' : '✅ Activate Account'}
+                  {updating ? 'Updating...' : userData.isActive ? <><XCircle size={14} /> Deactivate Account</> : <><CheckCircle2 size={14} /> Activate Account</>}
                 </button>
               </div>
             </div>
 
             {/* Customer Orders Section */}
             <div className="user-orders-section">
-              <h4>📦 Order History ({orders.length})</h4>
+              <h4 style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Package size={16} /> Order History ({orders.length})</h4>
               {orders.length === 0 ? (
                 <div className="no-user-orders">This customer has not placed any orders yet.</div>
               ) : (
@@ -192,8 +198,8 @@ const UserDetailsModal = ({ isOpen, onClose, userId, onStatusChange }) => {
                             <span className="mini-status-pill">{order.status}</span>
                           </td>
                           <td>
-                            <button className="btn-view-order" onClick={() => handleViewOrder(order)}>
-                              👁️ Details
+                            <button className="btn-view-order" onClick={() => handleViewOrder(order)} style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                              <Eye size={13} /> Details
                             </button>
                           </td>
                         </tr>

@@ -1,5 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { StoreContext } from '../../context/StoreContext';
+import { Upload, X } from 'lucide-react';
 import './ProductModal.css';
 
 const DEFAULT_CATEGORIES = [
@@ -120,7 +121,7 @@ const ProductModal = ({ isOpen, onClose, onSave, product }) => {
       <div className="product-modal-container" onClick={(e) => e.stopPropagation()}>
         <div className="product-modal-header">
           <h3>{product ? 'Edit Food Item' : 'Add New Food Item'}</h3>
-          <button className="close-btn" onClick={onClose} aria-label="Close modal">✕</button>
+          <button className="close-btn" onClick={onClose} aria-label="Close modal"><X size={16} /></button>
         </div>
 
         {errorMsg ? <div className="modal-error-alert">{errorMsg}</div> : null}
@@ -193,8 +194,8 @@ const ProductModal = ({ isOpen, onClose, onSave, product }) => {
                 onChange={handleFileChange}
                 className="file-input"
               />
-              <label htmlFor="image-file" className="file-upload-btn">
-                📁 {imageFile ? imageFile.name : 'Choose Image File'}
+              <label htmlFor="image-file" className="file-upload-btn" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                <Upload size={14} /> {imageFile ? imageFile.name : 'Choose Image File'}
               </label>
 
               {imagePreview ? (

@@ -13,52 +13,83 @@ const VALID_TRANSITIONS = {
 
 const VALID_STATUS_LIST = ['Pending', 'Confirmed', 'Preparing', 'Out for Delivery', 'Delivered', 'Cancelled'];
 
-// GET all orders for Admin with optional status, paymentStatus & search filter
+// GET all orders for Admin with optional status, paymentStatus, search filter & pagination
 export const getAdminOrders = async (req, res, next) => {
   try {
-    const { status, paymentStatus, search } = req.query;
+    const { status, paymentStatus, search, page: reqPage, limit: reqLimit } = req.query;
     const pool = getPool();
 
-    let query = 'SELECT * FROM orders WHERE 1=1';
+    let whereClause = ' WHERE 1=1';
     const params = [];
 
     if (status && status !== 'All') {
       if (status === 'Pending') {
-        query += " AND (status = 'Pending' OR status = 'Food Processing')";
+        whereClause += " AND (status = 'Pending' OR status = 'Food Processing')";
       } else {
-        query += ' AND status = ?';
+        whereClause += ' AND status = ?';
         params.push(status);
       }
     }
 
     if (paymentStatus && paymentStatus !== 'All') {
-      query += ' AND payment_status = ?';
+      whereClause += ' AND payment_status = ?';
       params.push(paymentStatus);
     }
 
     if (search && search.trim() !== '') {
       const cleanSearch = search.trim().replace(/^#/, '');
       if (!isNaN(cleanSearch)) {
-        query += ' AND (id = ? OR first_name LIKE ? OR last_name LIKE ? OR email LIKE ? OR phone LIKE ? OR payment_reference LIKE ?)';
+        whereClause += ' AND (id = ? OR first_name LIKE ? OR last_name LIKE ? OR email LIKE ? OR phone LIKE ? OR payment_reference LIKE ?)';
         params.push(Number(cleanSearch), `%${cleanSearch}%`, `%${cleanSearch}%`, `%${cleanSearch}%`, `%${cleanSearch}%`, `%${cleanSearch}%`);
       } else {
-        query += ' AND (first_name LIKE ? OR last_name LIKE ? OR email LIKE ? OR phone LIKE ? OR payment_reference LIKE ?)';
+        whereClause += ' AND (first_name LIKE ? OR last_name LIKE ? OR email LIKE ? OR phone LIKE ? OR payment_reference LIKE ?)';
         params.push(`%${cleanSearch}%`, `%${cleanSearch}%`, `%${cleanSearch}%`, `%${cleanSearch}%`, `%${cleanSearch}%`);
       }
     }
 
-    query += ' ORDER BY created_at DESC';
+    // 1. Get total matching count
+    const [countRows] = await pool.query(`SELECT COUNT(*) as total FROM orders ${whereClause}`, params);
+    const total = Number(countRows[0].total || 0);
 
-    const [orders] = await pool.query(query, params);
+    // 2. Pagination calculation
+    const page = Math.max(1, parseInt(reqPage) || 1);
+    const limit = Math.min(100, Math.max(1, parseInt(reqLimit) || 20));
+    const offset = (page - 1) * limit;
+    const totalPages = Math.ceil(total / limit) || 1;
 
-    for (let order of orders) {
-      const [items] = await pool.query('SELECT * FROM order_items WHERE order_id = ?', [order.id]);
-      order.items = items;
+    // 3. Fetch paginated orders
+    const query = `SELECT * FROM orders ${whereClause} ORDER BY created_at DESC LIMIT ? OFFSET ?`;
+    const [orders] = await pool.query(query, [...params, limit, offset]);
+
+    if (orders.length > 0) {
+      // 4. Single batch query for order items to eliminate N+1 query problem
+      const orderIds = orders.map(o => o.id);
+      const [allItems] = await pool.query(
+        `SELECT id, order_id, food_id, name, price, quantity FROM order_items WHERE order_id IN (?)`,
+        [orderIds]
+      );
+
+      // Group items by order_id
+      const itemsByOrderId = {};
+      for (const item of allItems) {
+        if (!itemsByOrderId[item.order_id]) {
+          itemsByOrderId[item.order_id] = [];
+        }
+        itemsByOrderId[item.order_id].push(item);
+      }
+
+      for (const order of orders) {
+        order.items = itemsByOrderId[order.id] || [];
+      }
     }
 
     res.json({
       success: true,
       count: orders.length,
+      page,
+      limit,
+      total,
+      totalPages,
       data: orders
     });
   } catch (error) {

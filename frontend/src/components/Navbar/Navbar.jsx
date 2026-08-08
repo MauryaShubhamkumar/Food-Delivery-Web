@@ -4,6 +4,7 @@ import { assets } from "../../assets/assets";
 import { Link, useNavigate } from "react-router-dom";
 import { StoreContext } from "../../context/StoreContext";
 import Logo from "../Logo/Logo";
+import { Moon, Sun, Settings, X } from 'lucide-react';
 
 const Navbar = ({ setShowLogin }) => {
   const [menu, setMenu] = useState("home");
@@ -64,7 +65,7 @@ const Navbar = ({ setShowLogin }) => {
       </ul>
       <div className="navbar-right">
         <div className="theme-toggle" onClick={toggleTheme} title="Toggle Dark/Light Mode">
-          {theme === "light" ? "🌙" : "☀️"}
+          {theme === "light" ? <Moon size={18} /> : <Sun size={18} />}
         </div>
         <div className={`navbar-search-box ${showSearchInput || searchQuery ? "active" : ""}`}>
           <img src={assets.search_icon} alt="Search" onClick={handleSearchToggle} className="search-icon" />
@@ -76,7 +77,7 @@ const Navbar = ({ setShowLogin }) => {
             className="search-input"
           />
           {searchQuery ? (
-            <span className="search-clear" onClick={clearSearch}>✕</span>
+            <span className="search-clear" onClick={clearSearch}><X size={14} /></span>
           ) : null}
         </div>
         <div className="navbar-search-icon">
@@ -92,7 +93,7 @@ const Navbar = ({ setShowLogin }) => {
               {user?.role === 'admin' && (
                 <>
                   <li onClick={() => navigate('/admin')}>
-                    <span style={{ fontSize: '18px', width: '20px', textAlign: 'center' }}>⚙️</span>
+                    <Settings size={18} style={{ marginRight: '8px' }} />
                     <p>Admin Dashboard</p>
                   </li>
                   <hr />
@@ -121,4 +122,3 @@ const Navbar = ({ setShowLogin }) => {
 };
 
 export default Navbar;
-

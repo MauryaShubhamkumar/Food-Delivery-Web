@@ -240,18 +240,20 @@ const StoreContextProvider = (props) => {
       if (savedToken) {
         setToken(savedToken);
         await loadCartData(savedToken);
-        await loadUserProfile(savedToken);
       } else {
         setUserLoading(false);
       }
-      await fetchFoodList();
-      await loadCategories();
-      await loadPublicSettings();
+      // Concurrently fetch initial public storefront data
+      await Promise.all([
+        fetchFoodList(),
+        loadCategories(),
+        loadPublicSettings()
+      ]);
     }
     loadData();
   }, []);
 
-  // Update user profile whenever token changes manually (e.g. login/logout)
+  // Update user profile whenever token changes (login, mount, or logout)
   useEffect(() => {
     if (token) {
       loadUserProfile(token);

@@ -238,6 +238,28 @@ const initTables = async () => {
     await pool.query(createCouponsTable);
     await pool.query(createSettingsTable);
 
+    // Create high-performance database indexes for search, filters & joins
+    const indexQueries = [
+      "CREATE INDEX idx_orders_user_created ON orders (user_id, created_at DESC);",
+      "CREATE INDEX idx_orders_status ON orders (status);",
+      "CREATE INDEX idx_orders_payment_status ON orders (payment_status);",
+      "CREATE INDEX idx_orders_created_at ON orders (created_at);",
+      "CREATE INDEX idx_orders_payment_ref ON orders (payment_reference);",
+      "CREATE INDEX idx_food_items_avail_cat ON food_items (available, category_id);",
+      "CREATE INDEX idx_food_items_category ON food_items (category);",
+      "CREATE INDEX idx_order_items_order_id ON order_items (order_id);",
+      "CREATE INDEX idx_order_items_food_id ON order_items (food_id);",
+      "CREATE INDEX idx_users_role_created ON users (role, created_at);"
+    ];
+
+    for (const idxQuery of indexQueries) {
+      try {
+        await pool.query(idxQuery);
+      } catch (idxErr) {
+        // Ignore if index already exists
+      }
+    }
+
     // Auto-seed default restaurant settings if table is empty
     const [settingsRows] = await pool.query('SELECT id FROM restaurant_settings LIMIT 1');
     if (settingsRows.length === 0) {

@@ -1,15 +1,28 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { StoreContext } from '../../context/StoreContext';
 import OrderDetailsModal from './OrderDetailsModal';
+import {
+  RefreshCw,
+  Search,
+  X,
+  Package,
+  CheckCircle2,
+  XCircle,
+  Clock,
+  Banknote,
+  QrCode,
+  Eye,
+  AlertTriangle
+} from 'lucide-react';
 import './AdminOrders.css';
 
 const STATUS_OPTIONS = ['All', 'Pending', 'Confirmed', 'Preparing', 'Out for Delivery', 'Delivered', 'Cancelled'];
 const PAYMENT_STATUS_OPTIONS = [
   { value: 'All', label: 'All Payments' },
-  { value: 'verification_required', label: '🟡 Pending Verification' },
-  { value: 'paid', label: '✓ Paid' },
-  { value: 'rejected', label: '✕ Rejected' },
-  { value: 'pending', label: '💵 Pending (COD)' }
+  { value: 'verification_required', label: 'Pending Verification' },
+  { value: 'paid', label: 'Paid' },
+  { value: 'rejected', label: 'Rejected' },
+  { value: 'pending', label: 'Pending (COD)' }
 ];
 
 const STATUS_COLOR_MAP = {
@@ -101,7 +114,7 @@ const AdminOrders = () => {
 
     triggerSuccess(data.message || 'Order status updated successfully');
     setSelectedOrder(data.data);
-    await fetchAdminOrders();
+    setOrders(prev => prev.map(o => o.id === data.data.id ? data.data : o));
   };
 
   const handleApprovePayment = async () => {
@@ -116,8 +129,10 @@ const AdminOrders = () => {
 
       if (response.ok && data.success) {
         triggerSuccess(data.message || `Payment for Order #${approveModalOrder.id} approved!`);
+        if (data.data) {
+          setOrders(prev => prev.map(o => o.id === data.data.id ? data.data : o));
+        }
         setApproveModalOrder(null);
-        await fetchAdminOrders();
       } else {
         alert(data.message || 'Failed to approve payment');
       }
@@ -144,9 +159,11 @@ const AdminOrders = () => {
 
       if (response.ok && data.success) {
         triggerSuccess(data.message || `Payment for Order #${rejectModalOrder.id} rejected.`);
+        if (data.data) {
+          setOrders(prev => prev.map(o => o.id === data.data.id ? data.data : o));
+        }
         setRejectModalOrder(null);
         setRejectionReason('');
-        await fetchAdminOrders();
       } else {
         alert(data.message || 'Failed to reject payment');
       }
@@ -165,31 +182,31 @@ const AdminOrders = () => {
           <h1 className="admin-orders-title">Customer Order Management</h1>
           <p className="admin-orders-subtitle">Track, verify UPI payments, and manage live order delivery workflows.</p>
         </div>
-        <button className="refresh-orders-btn" onClick={fetchAdminOrders} disabled={loading}>
-          🔄 {loading ? 'Refreshing...' : 'Refresh Orders'}
+        <button className="refresh-orders-btn" onClick={fetchAdminOrders} disabled={loading} style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+          <RefreshCw size={15} className={loading ? 'spin-icon' : ''} /> {loading ? 'Refreshing...' : 'Refresh Orders'}
         </button>
       </div>
 
       {/* Success Alert */}
       {successMsg ? (
         <div className="alert-banner alert-success">
-          <span>✅ {successMsg}</span>
-          <button className="alert-close" onClick={() => setSuccessMsg('')}>✕</button>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}><CheckCircle2 size={16} /> {successMsg}</span>
+          <button className="alert-close" onClick={() => setSuccessMsg('')}><X size={14} /></button>
         </div>
       ) : null}
 
       {/* Error Alert */}
       {error ? (
         <div className="alert-banner alert-error">
-          <span>⚠️ {error}</span>
-          <button className="alert-close" onClick={() => setError('')}>✕</button>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}><AlertTriangle size={16} /> {error}</span>
+          <button className="alert-close" onClick={() => setError('')}><X size={14} /></button>
         </div>
       ) : null}
 
       {/* Search & Filter Bar */}
       <div className="orders-controls-bar">
-        <div className="search-input-group">
-          <span className="search-icon-symbol">🔍</span>
+        <div className="search-input-group" style={{ position: 'relative', display: 'flex', alignItems: 'center', flex: '1', maxWidth: '420px' }}>
+          <Search size={16} className="search-icon-symbol" style={{ position: 'absolute', left: '12px', color: '#94a3b8' }} />
           <input
             type="text"
             placeholder="Search by Order ID (#1045), UTR, name, or phone..."
@@ -198,7 +215,7 @@ const AdminOrders = () => {
             className="orders-search-input"
           />
           {searchQuery ? (
-            <button className="search-clear-btn" onClick={() => setSearchQuery('')}>✕</button>
+            <button className="search-clear-btn" onClick={() => setSearchQuery('')} style={{ position: 'absolute', right: '12px' }}><X size={14} /></button>
           ) : null}
         </div>
 
@@ -240,7 +257,7 @@ const AdminOrders = () => {
           </div>
         ) : orders.length === 0 ? (
           <div className="no-orders-found">
-            <div className="empty-icon">📦</div>
+            <div className="empty-icon"><Package size={40} color="#94a3b8" /></div>
             <h3>No Customer Orders Found</h3>
             <p>Try clearing your search or status filter parameters.</p>
           </div>
@@ -279,7 +296,9 @@ const AdminOrders = () => {
                     <td>
                       <span className="order-id-badge">#{order.id}</span>
                       {isUpiPending && (
-                        <div className="pending-badge-pulse" title="Requires Payment Verification">⚠️ Needs Verification</div>
+                        <div className="pending-badge-pulse" title="Requires Payment Verification" style={{ display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
+                          <AlertTriangle size={11} /> Needs Verification
+                        </div>
                       )}
                     </td>
                     <td>
@@ -288,18 +307,19 @@ const AdminOrders = () => {
                     </td>
                     <td>
                       <div className="payment-info-cell">
-                        <span className="payment-method-tag">
-                          {order.payment_method === 'upi' ? '📲 UPI' : '💵 COD'}
+                        <span className="payment-method-tag" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                          {order.payment_method === 'upi' ? <QrCode size={13} /> : <Banknote size={13} />}
+                          {order.payment_method === 'upi' ? 'UPI' : 'COD'}
                         </span>
 
                         {pStatus === 'paid' ? (
-                          <span className="pay-status-pill pay-paid">✓ Paid</span>
+                          <span className="pay-status-pill pay-paid">Paid</span>
                         ) : pStatus === 'verification_required' ? (
-                          <span className="pay-status-pill pay-verify">🟡 Verification Pending</span>
+                          <span className="pay-status-pill pay-verify">Verification Pending</span>
                         ) : pStatus === 'rejected' ? (
-                          <span className="pay-status-pill pay-rejected">✕ Rejected</span>
+                          <span className="pay-status-pill pay-rejected">Rejected</span>
                         ) : (
-                          <span className="pay-status-pill pay-pending">⏳ Pending (COD)</span>
+                          <span className="pay-status-pill pay-pending">Pending (COD)</span>
                         )}
 
                         {order.payment_reference && (
@@ -331,8 +351,9 @@ const AdminOrders = () => {
                             <button
                               className="btn-approve-pay"
                               onClick={() => setApproveModalOrder(order)}
+                              style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}
                             >
-                              ✓ Approve
+                              <CheckCircle2 size={13} /> Approve
                             </button>
                             <button
                               className="btn-reject-pay"
@@ -340,8 +361,9 @@ const AdminOrders = () => {
                                 setRejectModalOrder(order);
                                 setRejectionReason('');
                               }}
+                              style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}
                             >
-                              ✕ Reject
+                              <XCircle size={13} /> Reject
                             </button>
                           </>
                         ) : null}
@@ -349,8 +371,9 @@ const AdminOrders = () => {
                         <button
                           className="btn-view-details"
                           onClick={() => handleOpenDetails(order)}
+                          style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}
                         >
-                          👁️ View
+                          <Eye size={13} /> View
                         </button>
                       </div>
                     </td>

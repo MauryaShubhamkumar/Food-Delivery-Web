@@ -2,6 +2,16 @@ import React, { useContext, useEffect, useState } from 'react';
 import { StoreContext } from '../../context/StoreContext';
 import ProductModal from './ProductModal';
 import DeleteConfirmModal from './DeleteConfirmModal';
+import {
+  Plus,
+  Search,
+  X,
+  CheckCircle2,
+  AlertTriangle,
+  Utensils,
+  Edit2,
+  Trash2
+} from 'lucide-react';
 import './AdminProducts.css';
 
 const CATEGORY_OPTIONS = [
@@ -174,31 +184,31 @@ const AdminProducts = () => {
           <h1 className="admin-products-title">Product & Menu Management</h1>
           <p className="admin-products-subtitle">Manage food items, pricing, categories, images, and availability.</p>
         </div>
-        <button className="add-food-btn" onClick={handleOpenAddModal}>
-          ➕ Add New Food
+        <button className="add-food-btn" onClick={handleOpenAddModal} style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+          <Plus size={16} /> Add New Food
         </button>
       </div>
 
       {/* Success Notification Banner */}
       {successMsg ? (
         <div className="alert-banner alert-success">
-          <span>✅ {successMsg}</span>
-          <button className="alert-close" onClick={() => setSuccessMsg('')}>✕</button>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}><CheckCircle2 size={16} /> {successMsg}</span>
+          <button className="alert-close" onClick={() => setSuccessMsg('')}><X size={14} /></button>
         </div>
       ) : null}
 
       {/* Error Notification Banner */}
       {error ? (
         <div className="alert-banner alert-error">
-          <span>⚠️ {error}</span>
-          <button className="alert-close" onClick={() => setError('')}>✕</button>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}><AlertTriangle size={16} /> {error}</span>
+          <button className="alert-close" onClick={() => setError('')}><X size={14} /></button>
         </div>
       ) : null}
 
       {/* Filters & Search Control Bar */}
       <div className="products-controls-bar">
-        <div className="search-input-group">
-          <span className="search-icon-symbol">🔍</span>
+        <div className="search-input-group" style={{ position: 'relative', display: 'flex', alignItems: 'center', flex: '1', maxWidth: '420px' }}>
+          <Search size={16} style={{ position: 'absolute', left: '12px', color: '#94a3b8' }} />
           <input
             type="text"
             placeholder="Search food by name or ingredient..."
@@ -207,7 +217,7 @@ const AdminProducts = () => {
             className="products-search-input"
           />
           {searchQuery ? (
-            <button className="search-clear-btn" onClick={() => setSearchQuery('')}>✕</button>
+            <button className="search-clear-btn" onClick={() => setSearchQuery('')} style={{ position: 'absolute', right: '12px' }}><X size={14} /></button>
           ) : null}
         </div>
 
@@ -247,7 +257,7 @@ const AdminProducts = () => {
           </div>
         ) : products.length === 0 ? (
           <div className="no-products-found">
-            <div className="empty-icon">🍽️</div>
+            <div className="empty-icon"><Utensils size={40} color="#94a3b8" /></div>
             <h3>No Food Items Found</h3>
             <p>Try adjusting your search query or filter settings, or click "+ Add New Food" to create one.</p>
           </div>
@@ -300,15 +310,17 @@ const AdminProducts = () => {
                         className="action-btn edit-btn"
                         onClick={() => handleOpenEditModal(item)}
                         title="Edit product"
+                        style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}
                       >
-                        ✏️ Edit
+                        <Edit2 size={13} /> Edit
                       </button>
                       <button
                         className="action-btn delete-btn"
                         onClick={() => handleOpenDeleteModal(item)}
                         title="Delete product"
+                        style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}
                       >
-                        🗑️ Delete
+                        <Trash2 size={13} /> Delete
                       </button>
                     </div>
                   </td>
