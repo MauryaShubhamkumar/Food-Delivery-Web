@@ -51,20 +51,36 @@ app.use('/api', generalLimiter);
 app.use('/api/user/login', authLimiter);
 app.use('/api/user/register', authLimiter);
 
-// CORS configuration
-const allowedOrigins = [
-  process.env.FRONTEND_URL,
-  'http://localhost:5173',
-  'http://localhost:3000',
-  'http://127.0.0.1:5173'
-].filter(Boolean);
+// CORS configuration supporting dynamic env vars, multiple comma-separated origins, and trailing slash normalization
+const getAllowedOrigins = () => {
+  const envOrigins = [process.env.FRONTEND_URL, process.env.ALLOWED_ORIGINS]
+    .filter(Boolean)
+    .flatMap(url => url.split(',').map(item => item.trim()));
+
+  const defaultOrigins = [
+    'http://localhost:5173',
+    'http://localhost:5174',
+    'http://localhost:3000',
+    'http://127.0.0.1:5173',
+    'http://127.0.0.1:5174'
+  ];
+
+  return [...envOrigins, ...defaultOrigins].map(url => url.replace(/\/+$/, ''));
+};
 
 app.use(cors({
   origin: (origin, callback) => {
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
+    // Allow requests with no origin (e.g. mobile apps, Curl, Postman, server-to-server)
+    if (!origin) return callback(null, true);
+
+    const allowedOrigins = getAllowedOrigins();
+    const normalizedOrigin = origin.replace(/\/+$/, '');
+
+    if (allowedOrigins.includes('*') || allowedOrigins.includes(normalizedOrigin)) {
+      return callback(null, true);
     } else {
-      callback(new Error('CORS Policy restriction: Origin not allowed.'));
+      console.warn(`[CORS Blocked] Request origin "${origin}" is not allowed. Configured allowed origins:`, allowedOrigins);
+      return callback(new Error(`CORS Policy restriction: Origin "${origin}" is not allowed.`));
     }
   },
   credentials: true
