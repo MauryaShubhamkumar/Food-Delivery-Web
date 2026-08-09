@@ -69,6 +69,22 @@
   border-color: #ff4c24;
 }
 
+.filter-select {
+  padding: 8px 12px;
+  border: 1px solid var(--border-color, #cbd5e1);
+  border-radius: 8px;
+  font-size: 14px;
+  background-color: var(--card-bg, #ffffff);
+  color: var(--text-dark, #0f172a);
+  outline: none;
+  cursor: pointer;
+}
+
+.filter-select option {
+  background-color: var(--card-bg, #ffffff);
+  color: var(--text-dark, #0f172a);
+}
+
 .users-table {
   width: 100%;
   border-collapse: collapse;

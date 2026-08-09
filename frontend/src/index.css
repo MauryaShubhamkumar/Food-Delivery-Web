@@ -95,9 +95,26 @@ a {
   color: inherit;
 }
 
-button, input, select, textarea {
+button, input, textarea {
   font-family: inherit;
   color: var(--text-dark);
+}
+
+select, .filter-select {
+  font-family: inherit;
+  color: var(--text-dark) !important;
+  background-color: var(--card-bg) !important;
+  border: 1px solid var(--border-color) !important;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 14px;
+  outline: none;
+  cursor: pointer;
+}
+
+select option, .filter-select option {
+  background-color: var(--card-bg) !important;
+  color: var(--text-dark) !important;
 }
 
 :focus-visible {
@@ -244,19 +261,26 @@ input:-webkit-autofill:focus {
   gap: 8px;
 }
 
-.action-btn {
+.action-btn, .btn-table-action, .btn-view-details, .btn-view-user {
   padding: 6px 14px;
   border-radius: 8px;
   font-size: 13px;
   font-weight: 600;
-  border: 1px solid var(--border-color);
-  background-color: var(--card-bg);
-  color: var(--text-dark);
+  border: 1px solid rgba(255, 94, 58, 0.3) !important;
+  background-color: rgba(255, 94, 58, 0.12) !important;
+  color: var(--primary-color) !important;
   cursor: pointer;
   transition: all 0.2s ease;
   display: inline-flex;
   align-items: center;
   gap: 6px;
+}
+
+.action-btn:hover, .btn-table-action:hover, .btn-view-details:hover, .btn-view-user:hover {
+  background-color: var(--primary-color) !important;
+  color: #ffffff !important;
+  border-color: var(--primary-color) !important;
+  transform: translateY(-1px);
 }
 
 .action-btn.edit-btn {
@@ -281,6 +305,89 @@ input:-webkit-autofill:focus {
   background-color: #ef4444 !important;
   color: #ffffff !important;
   border-color: #ef4444 !important;
+}
+
+/* Global Order Status Badges */
+.order-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.order-status-badge.status-pending,
+.order-status-badge.status-food-processing,
+.order-status-badge.processing,
+.order-status-badge.pending,
+.pill-food-processing,
+.pill-pending {
+  background-color: rgba(245, 158, 11, 0.18) !important;
+  color: #f59e0b !important;
+  border: 1px solid rgba(245, 158, 11, 0.3) !important;
+}
+
+.order-status-badge.status-confirmed,
+.pill-confirmed {
+  background-color: rgba(14, 165, 233, 0.18) !important;
+  color: #0284c7 !important;
+  border: 1px solid rgba(14, 165, 233, 0.3) !important;
+}
+
+.order-status-badge.status-preparing,
+.pill-preparing {
+  background-color: rgba(147, 51, 234, 0.18) !important;
+  color: #a855f7 !important;
+  border: 1px solid rgba(147, 51, 234, 0.3) !important;
+}
+
+.order-status-badge.status-out-for-delivery,
+.pill-out-for-delivery {
+  background-color: rgba(234, 88, 12, 0.18) !important;
+  color: #f97316 !important;
+  border: 1px solid rgba(234, 88, 12, 0.3) !important;
+}
+
+.order-status-badge.status-delivered,
+.pill-delivered {
+  background-color: rgba(16, 185, 129, 0.18) !important;
+  color: #10b981 !important;
+  border: 1px solid rgba(16, 185, 129, 0.3) !important;
+}
+
+.order-status-badge.status-cancelled,
+.pill-cancelled {
+  background-color: rgba(239, 68, 68, 0.18) !important;
+  color: #ef4444 !important;
+  border: 1px solid rgba(239, 68, 68, 0.3) !important;
+}
+
+/* User Status Pills */
+.user-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.user-status-pill.status-active {
+  background-color: rgba(16, 185, 129, 0.18) !important;
+  color: #10b981 !important;
+  border: 1px solid rgba(16, 185, 129, 0.3) !important;
+}
+
+.user-status-pill.status-inactive {
+  background-color: rgba(239, 68, 68, 0.18) !important;
+  color: #ef4444 !important;
+  border: 1px solid rgba(239, 68, 68, 0.3) !important;
 }
 
 /* Keyframe Animations */

@@ -75,6 +75,22 @@
   border-color: #ff4c24;
 }
 
+.filter-select {
+  padding: 8px 12px;
+  border: 1px solid var(--border-color, #cbd5e1);
+  border-radius: 8px;
+  font-size: 14px;
+  background-color: var(--card-bg, #ffffff);
+  color: var(--text-dark, #0f172a);
+  outline: none;
+  cursor: pointer;
+}
+
+.filter-select option {
+  background-color: var(--card-bg, #ffffff);
+  color: var(--text-dark, #0f172a);
+}
+
 /* Table Styles */
 .orders-table {
   width: 100%;
@@ -213,6 +229,17 @@
 .order-date-text {
   font-size: 13px;
   color: var(--text-muted, #64748b);
+}
+
+.order-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
 }
 
 .order-action-buttons {
