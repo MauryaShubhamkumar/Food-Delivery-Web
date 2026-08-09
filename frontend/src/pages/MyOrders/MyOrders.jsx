@@ -3,7 +3,8 @@ import './MyOrders.css';
 import { StoreContext } from '../../context/StoreContext';
 import { assets } from '../../assets/assets';
 import { useNavigate } from 'react-router-dom';
-import { Package, Lock, CheckCircle2, Clock, XCircle, Banknote, Check } from 'lucide-react';
+import { Package, Lock, CheckCircle2, Clock, XCircle, Banknote, Check, Star } from 'lucide-react';
+import ProductReviewsModal from '../../components/Reviews/ProductReviewsModal';
 
 const MyOrders = () => {
   const { url, token } = useContext(StoreContext);
@@ -11,6 +12,21 @@ const MyOrders = () => {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('all'); // 'all' | 'today'
   const navigate = useNavigate();
+
+  // Review modal state
+  const [selectedReviewProduct, setSelectedReviewProduct] = useState(null);
+  const [selectedReviewOrderId, setSelectedReviewOrderId] = useState(null);
+  const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
+
+  const handleOpenReview = (product, orderId) => {
+    setSelectedReviewProduct({
+      id: product.food_id || product.id,
+      _id: product.food_id || product.id,
+      name: product.name
+    });
+    setSelectedReviewOrderId(orderId);
+    setIsReviewModalOpen(true);
+  };
 
   const fetchOrders = async () => {
     setLoading(true);
@@ -213,10 +229,37 @@ const MyOrders = () => {
                     </div>
                   )}
                 </div>
+
+                {/* Delivered Order Review Items Section */}
+                {order.status === 'Delivered' && order.items && order.items.length > 0 && (
+                  <div className="delivered-review-items-bar">
+                    <span className="review-items-title"><Star size={14} fill="#f59e0b" color="#f59e0b" /> Rate Delivered Dishes:</span>
+                    <div className="review-item-chips">
+                      {order.items.map((item, idx) => (
+                        <button
+                          key={item.food_id || idx}
+                          className="btn-review-chip"
+                          onClick={() => handleOpenReview(item, order.id)}
+                        >
+                          <Star size={12} fill="#f59e0b" color="#f59e0b" /> Review {item.name}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             );
           })}
         </div>
+      )}
+
+      {selectedReviewProduct && (
+        <ProductReviewsModal
+          isOpen={isReviewModalOpen}
+          onClose={() => setIsReviewModalOpen(false)}
+          product={selectedReviewProduct}
+          initialOrderId={selectedReviewOrderId}
+        />
       )}
     </div>
   );

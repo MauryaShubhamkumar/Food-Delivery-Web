@@ -258,6 +258,28 @@
   color: var(--primary-color);
 }
 
+.navbar-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.mobile-nav-toggle {
+  display: none;
+  background: transparent;
+  border: none;
+  color: var(--text-dark);
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 6px;
+  align-items: center;
+  justify-content: center;
+}
+
+.mobile-nav-backdrop {
+  display: none;
+}
+
 .nav-profile-dropdown img {
   width: 18px;
   height: 18px;
@@ -277,9 +299,43 @@
 }
 
 @media (max-width: 750px) {
+  .mobile-nav-toggle {
+    display: flex;
+  }
+
   .navbar-menu {
     display: none;
+    position: fixed;
+    top: 75px;
+    left: 16px;
+    right: 16px;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 20px;
+    flex-direction: column;
+    gap: 16px;
+    box-shadow: var(--shadow-lg);
+    z-index: 101;
+    animation: fadeIn 0.25s ease-in-out;
   }
+
+  .navbar-menu.mobile-open {
+    display: flex;
+  }
+
+  .mobile-nav-backdrop {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(15, 23, 42, 0.5);
+    backdrop-filter: blur(4px);
+    z-index: 100;
+  }
+
   .navbar-button {
     padding: 7px 18px;
     font-size: 14px;

@@ -1,10 +1,9 @@
-import { getPool } from '../config/db.js';
+import { querySafe } from '../config/db.js';
 
 // GET active categories for public customer menu
 export const getPublicCategories = async (req, res, next) => {
   try {
-    const pool = getPool();
-    const [rows] = await pool.query(
+    const [rows] = await querySafe(
       'SELECT id, name, description, image, is_active FROM categories WHERE is_active = TRUE ORDER BY name ASC'
     );
     res.json({
@@ -21,7 +20,6 @@ export const getPublicCategories = async (req, res, next) => {
 export const getAdminCategories = async (req, res, next) => {
   try {
     const { search } = req.query;
-    const pool = getPool();
 
     let query = `
       SELECT c.*, COUNT(f.id) as product_count 
@@ -38,7 +36,7 @@ export const getAdminCategories = async (req, res, next) => {
 
     query += ' GROUP BY c.id ORDER BY c.name ASC';
 
-    const [rows] = await pool.query(query, params);
+    const [rows] = await querySafe(query, params);
 
     const formattedData = rows.map(item => ({
       ...item,

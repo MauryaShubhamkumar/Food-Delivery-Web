@@ -322,32 +322,34 @@ const AdminDashboard = () => {
             </h3>
             <button className="link-btn" onClick={() => navigate('/admin/products')}>View All Menu</button>
           </div>
-          <table className="analytics-table">
-            <thead>
-              <tr>
-                <th>Product</th>
-                <th>Category</th>
-                <th>Qty Sold</th>
-                <th>Revenue (₹)</th>
-              </tr>
-            </thead>
-            <tbody>
-              {analytics?.bestSellingProducts?.length === 0 ? (
-                <tr><td colSpan="4" className="empty-table-cell">No sales data recorded yet</td></tr>
-              ) : (
-                analytics?.bestSellingProducts?.map((item, idx) => (
-                  <tr key={idx}>
-                    <td className="product-name-cell" style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                      <Flame size={14} color="#f97316" /> {item.name}
-                    </td>
-                    <td>{item.category || 'General'}</td>
-                    <td><strong>{item.quantitySold}</strong> units</td>
-                    <td className="amount-cell">₹{Number(item.totalRevenue).toFixed(2)}</td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
+          <div className="table-responsive-box">
+            <table className="analytics-table">
+              <thead>
+                <tr>
+                  <th>Product</th>
+                  <th>Category</th>
+                  <th>Qty Sold</th>
+                  <th>Revenue (₹)</th>
+                </tr>
+              </thead>
+              <tbody>
+                {analytics?.bestSellingProducts?.length === 0 ? (
+                  <tr><td colSpan="4" className="empty-table-cell">No sales data recorded yet</td></tr>
+                ) : (
+                  analytics?.bestSellingProducts?.map((item, idx) => (
+                    <tr key={idx}>
+                      <td className="product-name-cell" style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                        <Flame size={14} color="#f97316" /> {item.name}
+                      </td>
+                      <td>{item.category || 'General'}</td>
+                      <td><strong>{item.quantitySold}</strong> units</td>
+                      <td className="amount-cell">₹{Number(item.totalRevenue).toFixed(2)}</td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
 
         {/* Menu Alerts / Out of Stock */}
@@ -394,52 +396,54 @@ const AdminDashboard = () => {
           </button>
         </div>
 
-        <table className="analytics-table">
-          <thead>
-            <tr>
-              <th>Order ID</th>
-              <th>Customer</th>
-              <th>Date & Time</th>
-              <th>Amount</th>
-              <th>Status</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {analytics?.recentOrders?.length === 0 ? (
-              <tr><td colSpan="6" className="empty-table-cell">No recent customer orders</td></tr>
-            ) : (
-              analytics?.recentOrders?.map((order) => {
-                const customerName = `${order.first_name || ''} ${order.last_name || ''}`.trim() || 'Guest';
-                const orderDate = new Date(order.created_at || Date.now()).toLocaleDateString('en-IN', {
-                  day: 'numeric',
-                  month: 'short',
-                  hour: '2-digit',
-                  minute: '2-digit'
-                });
+        <div className="table-responsive-box">
+          <table className="analytics-table">
+            <thead>
+              <tr>
+                <th>Order ID</th>
+                <th>Customer</th>
+                <th>Date & Time</th>
+                <th>Amount</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {analytics?.recentOrders?.length === 0 ? (
+                <tr><td colSpan="6" className="empty-table-cell">No recent customer orders</td></tr>
+              ) : (
+                analytics?.recentOrders?.map((order) => {
+                  const customerName = `${order.first_name || ''} ${order.last_name || ''}`.trim() || 'Guest';
+                  const orderDate = new Date(order.created_at || Date.now()).toLocaleDateString('en-IN', {
+                    day: 'numeric',
+                    month: 'short',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                  });
 
-                return (
-                  <tr key={order.id}>
-                    <td><span className="order-id-badge">#{order.id}</span></td>
-                    <td><strong>{customerName}</strong></td>
-                    <td>{orderDate}</td>
-                    <td className="amount-cell">₹{Number(order.amount).toFixed(2)}</td>
-                    <td>
-                      <span className={`status-pill pill-${order.status?.toLowerCase().replace(/\s+/g, '-')}`}>
-                        ● {order.status}
-                      </span>
-                    </td>
-                    <td>
-                      <button className="btn-table-action" onClick={() => handleViewOrder(order)} style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
-                        <Eye size={13} /> View
-                      </button>
-                    </td>
-                  </tr>
-                );
-              })
-            )}
-          </tbody>
-        </table>
+                  return (
+                    <tr key={order.id}>
+                      <td><span className="order-id-badge">#{order.id}</span></td>
+                      <td><strong>{customerName}</strong></td>
+                      <td>{orderDate}</td>
+                      <td className="amount-cell">₹{Number(order.amount).toFixed(2)}</td>
+                      <td>
+                        <span className={`status-pill pill-${order.status?.toLowerCase().replace(/\s+/g, '-')}`}>
+                          ● {order.status}
+                        </span>
+                      </td>
+                      <td>
+                        <button className="btn-table-action" onClick={() => handleViewOrder(order)} style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                          <Eye size={13} /> View
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       {/* Quick Add Product Modal */}

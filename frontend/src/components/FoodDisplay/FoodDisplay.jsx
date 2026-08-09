@@ -5,7 +5,7 @@ import FoodItem from '../FoodItem/FoodItem';
 import { Search } from 'lucide-react';
 
 const FoodDisplay = ({ category }) => {
-  const { food_list, searchQuery } = useContext(StoreContext);
+  const { food_list, searchQuery, setSearchQuery } = useContext(StoreContext);
 
   const filteredFoods = food_list.filter((item) => {
     const matchesCategory = category === "All" || category === item.category;
@@ -24,6 +24,11 @@ const FoodDisplay = ({ category }) => {
           <div className="no-results-icon"><Search size={40} color="#94a3b8" /></div>
           <h3>No matching dishes found</h3>
           <p>Try searching for a different dish, ingredient, or category.</p>
+          {searchQuery && (
+            <button className="btn-primary" style={{ marginTop: '12px' }} onClick={() => setSearchQuery('')}>
+              Clear Search
+            </button>
+          )}
         </div>
       ) : (
         <div className="food-display-list">

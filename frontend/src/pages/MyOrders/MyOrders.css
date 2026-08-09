@@ -290,6 +290,51 @@
   box-shadow: var(--shadow-md);
 }
 
+.delivered-review-items-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-top: 12px;
+  border-top: 1px dashed var(--border-color);
+  flex-wrap: wrap;
+}
+
+.review-items-title {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text-dark);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.review-item-chips {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.btn-review-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 12px;
+  background-color: rgba(245, 158, 11, 0.12);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  border-radius: 16px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-dark);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-review-chip:hover {
+  background-color: rgba(245, 158, 11, 0.25);
+  transform: translateY(-1px);
+}
+
 .order-main-row {
   display: grid;
   grid-template-columns: 0.5fr 2.5fr 1fr 1.2fr;

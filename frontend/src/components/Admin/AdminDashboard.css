@@ -55,6 +55,11 @@
   cursor: pointer;
 }
 
+.period-dropdown option {
+  background-color: var(--card-bg, #ffffff);
+  color: var(--text-dark, #0f172a);
+}
+
 .refresh-analytics-btn {
   padding: 8px 16px;
   background-color: var(--card-bg, #ffffff);

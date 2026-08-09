@@ -17,11 +17,21 @@ const AdminCategories = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState(null);
 
-  const fetchAdminCategories = async () => {
-    setLoading(true);
+  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState('');
+
+  // Debounce search query
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchQuery(searchQuery);
+    }, 250);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
+  const fetchAdminCategories = async (showSkeleton = false) => {
+    if (showSkeleton) setLoading(true);
     setError('');
     try {
-      const endpoint = `${url}/api/admin/categories?search=${encodeURIComponent(searchQuery)}`;
+      const endpoint = `${url}/api/admin/categories?search=${encodeURIComponent(debouncedSearchQuery)}`;
       const response = await fetch(endpoint, {
         method: 'GET',
         headers: { token: token }
@@ -42,9 +52,9 @@ const AdminCategories = () => {
 
   useEffect(() => {
     if (token) {
-      fetchAdminCategories();
+      fetchAdminCategories(categories.length === 0);
     }
-  }, [token, searchQuery]);
+  }, [token, debouncedSearchQuery]);
 
   const triggerSuccess = (msg) => {
     setSuccessMsg(msg);
@@ -181,7 +191,7 @@ const AdminCategories = () => {
 
       {/* Categories Table Container */}
       <div className="table-responsive-container">
-        {loading ? (
+        {loading && categories.length === 0 ? (
           <div className="table-loading-skeleton">
             <div className="skeleton-row"></div>
             <div className="skeleton-row"></div>

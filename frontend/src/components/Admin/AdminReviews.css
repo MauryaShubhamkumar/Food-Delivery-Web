@@ -1,0 +1,374 @@
+.admin-reviews-page {
+  padding: 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.admin-reviews-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.admin-reviews-title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--text-dark, #111827);
+  margin-bottom: 4px;
+}
+
+.admin-reviews-subtitle {
+  font-size: 0.9rem;
+  color: var(--text-muted, #6b7280);
+}
+
+.refresh-reviews-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  background-color: var(--card-bg, #ffffff);
+  border: 1px solid var(--border-color, #e5e7eb);
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-body, #374151);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.refresh-reviews-btn:hover:not(:disabled) {
+  background-color: var(--bg-hover, #f3f4f6);
+}
+
+/* Filter Bar */
+.reviews-filter-bar {
+  background-color: var(--card-bg, #ffffff);
+  border: 1px solid var(--border-color, #e5e7eb);
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin-bottom: 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.search-input-wrapper {
+  position: relative;
+  flex: 1;
+  min-width: 280px;
+}
+
+.search-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted, #9ca3af);
+}
+
+.search-input-wrapper input {
+  width: 100%;
+  padding: 8px 36px 8px 36px;
+  border: 1px solid var(--border-color, #d1d5db);
+  border-radius: 8px;
+  background-color: var(--input-bg, #ffffff);
+  color: var(--text-dark, #111827);
+  font-size: 0.88rem;
+  outline: none;
+}
+
+.search-input-wrapper input:focus {
+  border-color: #3b82f6;
+}
+
+.clear-search-btn {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: var(--text-muted, #9ca3af);
+  cursor: pointer;
+}
+
+.filter-dropdowns {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.dropdown-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text-body, #374151);
+}
+
+.dropdown-group select {
+  padding: 6px 12px;
+  border: 1px solid var(--border-color, #d1d5db);
+  border-radius: 6px;
+  background-color: var(--card-bg, #ffffff);
+  color: var(--text-dark, #111827);
+  font-size: 0.88rem;
+  outline: none;
+}
+
+.dropdown-group select option {
+  background-color: var(--card-bg, #ffffff);
+  color: var(--text-dark, #111827);
+}
+
+/* Table Wrapper */
+.admin-reviews-table-wrapper {
+  background-color: var(--card-bg, #ffffff);
+  border: 1px solid var(--border-color, #e5e7eb);
+  border-radius: 12px;
+  overflow-x: auto;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  margin-bottom: 24px;
+}
+
+.admin-reviews-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 0.88rem;
+}
+
+.admin-reviews-table th {
+  padding: 12px 16px;
+  background-color: var(--bg-hover, #f9fafb);
+  border-bottom: 1px solid var(--border-color, #e5e7eb);
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--text-muted, #6b7280);
+  text-transform: uppercase;
+}
+
+.admin-reviews-table td {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border-color, #f3f4f6);
+  color: var(--text-dark, #374151);
+  vertical-align: middle;
+}
+
+.row-hidden {
+  opacity: 0.65;
+  background-color: var(--input-bg, #f9fafb);
+}
+
+.rev-id-badge {
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 2px 6px;
+  background-color: var(--input-bg, #f3f4f6);
+  border-radius: 4px;
+  color: var(--text-muted, #6b7280);
+}
+
+.user-info-cell, .product-info-cell {
+  display: flex;
+  flex-direction: column;
+}
+
+.user-email-text {
+  font-size: 0.76rem;
+  color: var(--text-muted, #6b7280);
+}
+
+.stars-cell {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.rating-val-text {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--text-dark, #111827);
+  margin-left: 4px;
+}
+
+.comment-cell-text {
+  max-width: 260px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.85rem;
+}
+
+.order-link-badge {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #3b82f6;
+}
+
+.status-pill {
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.pill-visible {
+  background-color: rgba(16, 185, 129, 0.12);
+  color: #10b981;
+}
+
+.pill-hidden {
+  background-color: rgba(239, 68, 68, 0.12);
+  color: #ef4444;
+}
+
+.review-actions-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+}
+
+.btn-hide {
+  background-color: var(--bg-hover, #f3f4f6);
+  color: var(--text-body, #374151);
+  border-color: var(--border-color, #d1d5db);
+}
+
+.btn-hide:hover {
+  background-color: #e5e7eb;
+}
+
+.btn-show {
+  background-color: rgba(16, 185, 129, 0.1);
+  color: #10b981;
+  border-color: rgba(16, 185, 129, 0.3);
+}
+
+.btn-show:hover {
+  background-color: rgba(16, 185, 129, 0.2);
+}
+
+.btn-delete {
+  background-color: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+  border-color: rgba(239, 68, 68, 0.3);
+}
+
+.btn-delete:hover {
+  background-color: rgba(239, 68, 68, 0.2);
+}
+
+.admin-reviews-loading, .admin-reviews-empty {
+  padding: 60px 20px;
+  text-align: center;
+  color: var(--text-muted, #6b7280);
+  background-color: var(--card-bg, #ffffff);
+  border: 1px solid var(--border-color, #e5e7eb);
+  border-radius: 12px;
+}
+
+/* Delete Modal */
+.delete-modal-content {
+  background-color: var(--card-bg, #ffffff);
+  border: 1px solid var(--border-color, #e5e7eb);
+  border-radius: 12px;
+  padding: 24px;
+  width: 100%;
+  max-width: 480px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+}
+
+.delete-modal-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.delete-modal-header h3 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text-dark, #111827);
+}
+
+.delete-modal-body p {
+  font-size: 0.9rem;
+  color: var(--text-body, #374151);
+  margin-bottom: 12px;
+}
+
+.review-preview-quote {
+  font-style: italic;
+  padding: 10px 14px;
+  background-color: var(--input-bg, #f9fafb);
+  border-left: 3px solid #ef4444;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  color: var(--text-dark, #111827);
+  margin-bottom: 12px;
+}
+
+.danger-text-warning {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #ef4444;
+}
+
+.delete-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.btn-cancel {
+  padding: 8px 16px;
+  background-color: var(--bg-hover, #f3f4f6);
+  border: 1px solid var(--border-color, #d1d5db);
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-dark, #374151);
+  cursor: pointer;
+}
+
+.btn-confirm-delete {
+  padding: 8px 16px;
+  background-color: #dc2626;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #ffffff;
+  cursor: pointer;
+}
+
+.btn-confirm-delete:hover {
+  background-color: #b91c1c;
+}

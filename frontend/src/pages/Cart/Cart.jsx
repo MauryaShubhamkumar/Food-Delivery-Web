@@ -2,12 +2,14 @@ import React, { useContext, useState } from "react";
 import "./Cart.css";
 import { StoreContext } from "../../context/StoreContext";
 import { useNavigate } from "react-router-dom";
-import { Lock, AlertTriangle, ShoppingCart, Tag, X } from 'lucide-react';
+import { Lock, AlertTriangle, ShoppingCart, Tag, X, Plus, Minus, Trash2 } from 'lucide-react';
+import ImageWithSkeleton from "../../components/Common/ImageWithSkeleton";
 
 const Cart = () => {
   const {
     cartItems,
     food_list,
+    addToCart,
     removeFromCart,
     getTotalCartAmount,
     appliedCoupon,
@@ -89,9 +91,8 @@ const Cart = () => {
               <p>Price</p>
               <p>Quantity</p>
               <p>Total</p>
-              <p>Remove</p>
+              <p className="text-center">Action</p>
             </div>
-            <br />
             <hr />
             {food_list.map((item) => {
               const itemId = String(item._id || item.id);
@@ -100,14 +101,36 @@ const Cart = () => {
                 return (
                   <div key={itemId}>
                     <div className="cart-items-title cart-items-item">
-                      <img src={item.image} alt={item.name} />
+                      <div className="cart-img-cell">
+                        <ImageWithSkeleton src={item.image} alt={item.name} className="cart-item-img-wrapper" width={120} />
+                      </div>
                       <p className="item-name">{item.name}</p>
-                      <p>{formatCurrency(item.price)}</p>
-                      <p className="quantity-badge">{qty}</p>
+                      <p className="item-unit-price">{formatCurrency(item.price)}</p>
+                      <div className="cart-qty-counter">
+                        <button type="button" className="btn-qty-step" onClick={() => removeFromCart(itemId)} title="Decrease quantity">
+                          <Minus size={13} />
+                        </button>
+                        <span className="qty-val-display">{qty}</span>
+                        <button type="button" className="btn-qty-step" onClick={() => addToCart(itemId)} title="Increase quantity">
+                          <Plus size={13} />
+                        </button>
+                      </div>
                       <p className="item-total">{formatCurrency(qty * item.price)}</p>
-                      <p onClick={() => removeFromCart(itemId)} className="cross">
-                        <X size={16} />
-                      </p>
+                      <div className="text-center">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            // Remove all quantity of this item
+                            for (let i = 0; i < qty; i++) {
+                              removeFromCart(itemId);
+                            }
+                          }}
+                          className="btn-remove-cart-item"
+                          title="Remove item from cart"
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
                     </div>
                     <hr />
                   </div>

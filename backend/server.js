@@ -13,6 +13,7 @@ import adminRouter from './routes/adminRoute.js';
 import categoryRouter from './routes/categoryRoute.js';
 import couponRouter from './routes/couponRoute.js';
 import settingsRouter from './routes/settingsRoute.js';
+import reviewRouter from './routes/reviewRoute.js';
 import errorHandler from './middleware/errorHandler.js';
 
 // Load environment variables
@@ -103,6 +104,7 @@ app.use("/api/admin", adminRouter);
 app.use("/api/categories", categoryRouter);
 app.use("/api/coupon", couponRouter);
 app.use("/api/settings", settingsRouter);
+app.use("/api/reviews", reviewRouter);
 
 app.get("/", (req, res) => {
   res.send("Food Delivery API Server is running!");

@@ -9,6 +9,7 @@ import {
   FolderTree,
   Tag,
   TrendingUp,
+  MessageSquare,
   Settings,
   Moon,
   Sun,
@@ -39,6 +40,7 @@ const AdminLayout = ({ children }) => {
     { name: "Categories", path: "/admin/categories", icon: <FolderTree size={18} />, functional: true },
     { name: "Coupons", path: "/admin/coupons", icon: <Tag size={18} />, functional: true },
     { name: "Analytics", path: "/admin/analytics", icon: <TrendingUp size={18} />, functional: true },
+    { name: "Reviews", path: "/admin/reviews", icon: <MessageSquare size={18} />, functional: true },
     { name: "Settings", path: "/admin/settings", icon: <Settings size={18} />, functional: true }
   ];
 

@@ -29,6 +29,8 @@
   overflow-x: auto;
   padding: 12px 6px;
   scroll-behavior: smooth;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
 }
 
 .explore-menu-list::-webkit-scrollbar {

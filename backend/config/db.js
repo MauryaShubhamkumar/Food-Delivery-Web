@@ -41,8 +41,10 @@ export const connectDB = async () => {
       database: DB_NAME,
       ssl: sslConfig,
       waitForConnections: true,
-      connectionLimit: 10,
-      queueLimit: 0
+      connectionLimit: 15,
+      queueLimit: 0,
+      enableKeepAlive: true,
+      keepAliveInitialDelay: 10000
     });
 
     // Test pool connection
@@ -230,6 +232,24 @@ const initTables = async () => {
       }
     }
 
+    const createReviewsTable = `
+      CREATE TABLE IF NOT EXISTS reviews (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        user_id INT NOT NULL,
+        product_id INT NOT NULL,
+        order_id INT NOT NULL,
+        rating INT NOT NULL,
+        comment TEXT,
+        status VARCHAR(20) DEFAULT 'visible',
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        UNIQUE KEY unique_user_order_product (user_id, order_id, product_id),
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+        FOREIGN KEY (product_id) REFERENCES food_items(id) ON DELETE CASCADE,
+        FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE
+      );
+    `;
+
     await pool.query(createCategoriesTable);
     await pool.query(createFoodItemsTable);
     await pool.query(createCartItemsTable);
@@ -237,6 +257,7 @@ const initTables = async () => {
     await pool.query(createOrderItemsTable);
     await pool.query(createCouponsTable);
     await pool.query(createSettingsTable);
+    await pool.query(createReviewsTable);
 
     // Create high-performance database indexes for search, filters & joins
     const indexQueries = [
@@ -249,7 +270,9 @@ const initTables = async () => {
       "CREATE INDEX idx_food_items_category ON food_items (category);",
       "CREATE INDEX idx_order_items_order_id ON order_items (order_id);",
       "CREATE INDEX idx_order_items_food_id ON order_items (food_id);",
-      "CREATE INDEX idx_users_role_created ON users (role, created_at);"
+      "CREATE INDEX idx_users_role_created ON users (role, created_at);",
+      "CREATE INDEX idx_reviews_prod_status ON reviews (product_id, status);",
+      "CREATE INDEX idx_reviews_status_created ON reviews (status, created_at DESC);"
     ];
 
     for (const idxQuery of indexQueries) {
@@ -337,3 +360,26 @@ const initTables = async () => {
 };
 
 export const getPool = () => pool;
+
+// Resilient Query Execution Helper with automatic single-retry for ECONNRESET / dropped cloud connections
+export const querySafe = async (sql, params = []) => {
+  if (!pool) throw new Error("Database connection pool is not initialized.");
+  try {
+    return await pool.query(sql, params);
+  } catch (err) {
+    const isConnErr =
+      err.code === 'ECONNRESET' ||
+      err.code === 'PROTOCOL_CONNECTION_LOST' ||
+      err.code === 'ETIMEDOUT' ||
+      err.code === 'EPIPE' ||
+      err.code === 'ER_CON_COUNT_ERROR' ||
+      (err.message && (err.message.includes('ECONNRESET') || err.message.includes('read ECONNRESET')));
+
+    if (isConnErr) {
+      console.warn(`[MySQL Resilient Query] Connection reset detected (${err.code || err.message}). Retrying query...`);
+      await new Promise((resolve) => setTimeout(resolve, 150));
+      return await pool.query(sql, params);
+    }
+    throw err;
+  }
+};

@@ -4,17 +4,17 @@ import { assets } from "../../assets/assets";
 import { Link, useNavigate } from "react-router-dom";
 import { StoreContext } from "../../context/StoreContext";
 import Logo from "../Logo/Logo";
-import { Moon, Sun, Settings, X } from 'lucide-react';
+import { Moon, Sun, Settings, X, Menu as MenuIcon } from 'lucide-react';
 
 const Navbar = ({ setShowLogin }) => {
   const [menu, setMenu] = useState("home");
   const { getTotalCartAmount, token, setToken, user, searchQuery, setSearchQuery, theme, toggleTheme } = useContext(StoreContext);
   const [showSearchInput, setShowSearchInput] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
 
   const handleSearchChange = (e) => {
     setSearchQuery(e.target.value);
-    // If not on home page, navigate to home page so food list is visible
     if (window.location.pathname !== '/') {
       navigate('/');
     }
@@ -31,38 +31,54 @@ const Navbar = ({ setShowLogin }) => {
   const logout = () => {
     localStorage.removeItem("token");
     setToken("");
+    setMobileMenuOpen(false);
     navigate("/");
   };
 
   return (
     <div className="navbar">
-      <Link to='/'><Logo /></Link>
-      <ul className="navbar-menu">
+      <div className="navbar-left">
+        <button
+          className="mobile-nav-toggle"
+          onClick={() => setMobileMenuOpen(prev => !prev)}
+          aria-label="Toggle Navigation Menu"
+        >
+          {mobileMenuOpen ? <X size={20} /> : <MenuIcon size={20} />}
+        </button>
+        <Link to='/' onClick={() => setMobileMenuOpen(false)}><Logo /></Link>
+      </div>
+
+      <ul className={`navbar-menu ${mobileMenuOpen ? 'mobile-open' : ''}`}>
         <Link to='/'
-          onClick={() => setMenu("home")}
+          onClick={() => { setMenu("home"); setMobileMenuOpen(false); }}
           className={menu === "home" ? "active" : ""}
         >
           Home
         </Link>
         <a href="#explore-menu"
-          onClick={() => setMenu("menu")}
+          onClick={() => { setMenu("menu"); setMobileMenuOpen(false); }}
           className={menu === "menu" ? "active" : ""}
         >
           Menu
         </a>
         <a href="#app-download"
-          onClick={() => setMenu("mobile-app")}
+          onClick={() => { setMenu("mobile-app"); setMobileMenuOpen(false); }}
           className={menu === "mobile-app" ? "active" : ""}
         >
           Mobile App
         </a>
         <a href="#footer"
-          onClick={() => setMenu("contact-us")}
+          onClick={() => { setMenu("contact-us"); setMobileMenuOpen(false); }}
           className={menu === "contact-us" ? "active" : ""}
         >
           Contact Us
         </a>
       </ul>
+
+      {mobileMenuOpen && (
+        <div className="mobile-nav-backdrop" onClick={() => setMobileMenuOpen(false)}></div>
+      )}
+
       <div className="navbar-right">
         <div className="theme-toggle" onClick={toggleTheme} title="Toggle Dark/Light Mode">
           {theme === "light" ? <Moon size={18} /> : <Sun size={18} />}

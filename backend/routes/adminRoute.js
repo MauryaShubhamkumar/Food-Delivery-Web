@@ -36,6 +36,11 @@ import {
 } from '../controllers/couponController.js';
 import { getAnalyticsData } from '../controllers/analyticsController.js';
 import { getAdminSettings, updateAdminSettings } from '../controllers/settingsController.js';
+import {
+  getAdminReviews,
+  toggleReviewStatus,
+  deleteAdminReview
+} from '../controllers/adminReviewController.js';
 import authMiddleware from '../middleware/auth.js';
 import adminMiddleware from '../middleware/adminAuth.js';
 import upload from '../middleware/upload.js';
@@ -79,6 +84,11 @@ adminRouter.post('/coupons', authMiddleware, adminMiddleware, createAdminCoupon)
 adminRouter.put('/coupons/:id', authMiddleware, adminMiddleware, updateAdminCoupon);
 adminRouter.delete('/coupons/:id', authMiddleware, adminMiddleware, deleteAdminCoupon);
 adminRouter.patch('/coupons/:id/status', authMiddleware, adminMiddleware, toggleCouponStatus);
+
+// Protected Admin Review Moderation Endpoints
+adminRouter.get('/reviews', authMiddleware, adminMiddleware, getAdminReviews);
+adminRouter.patch('/reviews/:id/status', authMiddleware, adminMiddleware, toggleReviewStatus);
+adminRouter.delete('/reviews/:id', authMiddleware, adminMiddleware, deleteAdminReview);
 
 // Protected Admin Restaurant Settings Endpoints
 adminRouter.get('/settings', authMiddleware, adminMiddleware, getAdminSettings);

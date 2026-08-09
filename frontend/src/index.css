@@ -9,6 +9,8 @@
   
   --bg-gradient: linear-gradient(180deg, #fbfcfd 0%, #f1f5f9 100%);
   --card-bg: #ffffff;
+  --bg-card: #ffffff;
+  --bg-hover: #f1f5f9;
   --navbar-bg: rgba(251, 252, 253, 0.85);
   --glass-bg: rgba(255, 255, 255, 0.85);
   --glass-border: rgba(255, 255, 255, 0.3);
@@ -16,10 +18,18 @@
   --input-bg: #f8fafc;
   
   --text-dark: #0f172a;
+  --text-color: #0f172a;
   --text-body: #334155;
   --text-muted: #64748b;
+  --text-secondary: #64748b;
   --text-light: #94a3b8;
   
+  --chart-grid: #e2e8f0;
+  --chart-axis: #64748b;
+  --chart-tooltip-bg: #ffffff;
+  --chart-tooltip-border: #e2e8f0;
+  --chart-tooltip-text: #0f172a;
+
   --shadow-sm: 0 2px 8px rgba(15, 23, 42, 0.04);
   --shadow-md: 0 8px 24px rgba(15, 23, 42, 0.08);
   --shadow-lg: 0 16px 40px rgba(15, 23, 42, 0.12);
@@ -37,6 +47,8 @@
 [data-theme='dark'] {
   --bg-gradient: linear-gradient(180deg, #0b0f19 0%, #0f172a 100%);
   --card-bg: #1e293b;
+  --bg-card: #1e293b;
+  --bg-hover: #334155;
   --navbar-bg: rgba(15, 23, 42, 0.85);
   --glass-bg: rgba(30, 41, 59, 0.85);
   --glass-border: rgba(255, 255, 255, 0.1);
@@ -44,10 +56,18 @@
   --input-bg: #0f172a;
   
   --text-dark: #f8fafc;
+  --text-color: #f8fafc;
   --text-body: #cbd5e1;
   --text-muted: #94a3b8;
+  --text-secondary: #94a3b8;
   --text-light: #64748b;
   
+  --chart-grid: #334155;
+  --chart-axis: #94a3b8;
+  --chart-tooltip-bg: #0f172a;
+  --chart-tooltip-border: #334155;
+  --chart-tooltip-text: #f8fafc;
+
   --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
   --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.4);
   --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.5);
@@ -67,6 +87,7 @@ body {
   background: var(--bg-gradient);
   color: var(--text-body);
   -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
 }
 
 a {
@@ -74,9 +95,14 @@ a {
   color: inherit;
 }
 
-button, input {
+button, input, select, textarea {
   font-family: inherit;
   color: var(--text-dark);
+}
+
+:focus-visible {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
 }
 
 ::placeholder {
@@ -98,6 +124,7 @@ input:-webkit-autofill:focus {
   max-width: 1280px;
   margin: auto;
   min-height: 100vh;
+  overflow-x: hidden;
 }
 
 /* Custom Scrollbar */
@@ -107,7 +134,7 @@ input:-webkit-autofill:focus {
 }
 
 ::-webkit-scrollbar-track {
-  background: #f1f5f9;
+  background: var(--bg-hover);
 }
 
 ::-webkit-scrollbar-thumb {
@@ -119,14 +146,147 @@ input:-webkit-autofill:focus {
   background: #94a3b8;
 }
 
+/* Button & Form Utilities */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 20px;
+  background: var(--primary-gradient);
+  color: #ffffff;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: var(--transition-fast);
+
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: var(--primary-gradient-hover);
+  transform: translateY(-1px);
+}
+
+.btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.table-responsive-box {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Text Clamping Utilities */
+.text-clamp-1 {
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.text-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Status Pill Badges & Toggle Buttons */
+.badge-pill, .status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: var(--radius-pill);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.status-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.status-toggle-btn.available, .status-toggle-btn.active {
+  background-color: rgba(16, 185, 129, 0.15) !important;
+  color: #10b981 !important;
+}
+
+.status-toggle-btn.unavailable, .status-toggle-btn.inactive {
+  background-color: rgba(239, 68, 68, 0.15) !important;
+  color: #ef4444 !important;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: currentColor;
+}
+
+/* Global Table Action Buttons */
+.table-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.action-btn {
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  border: 1px solid var(--border-color);
+  background-color: var(--card-bg);
+  color: var(--text-dark);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.action-btn.edit-btn {
+  background-color: rgba(59, 130, 246, 0.15) !important;
+  border-color: rgba(59, 130, 246, 0.3) !important;
+  color: #3b82f6 !important;
+}
+
+.action-btn.edit-btn:hover {
+  background-color: #3b82f6 !important;
+  color: #ffffff !important;
+  border-color: #3b82f6 !important;
+}
+
+.action-btn.delete-btn {
+  background-color: rgba(239, 68, 68, 0.15) !important;
+  border-color: rgba(239, 68, 68, 0.3) !important;
+  color: #ef4444 !important;
+}
+
+.action-btn.delete-btn:hover {
+  background-color: #ef4444 !important;
+  color: #ffffff !important;
+  border-color: #ef4444 !important;
+}
+
 /* Keyframe Animations */
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 @keyframes fadeInUp {
@@ -152,24 +312,14 @@ input:-webkit-autofill:focus {
 }
 
 @keyframes pulseGlow {
-  0% {
-    box-shadow: 0 0 0 0 rgba(255, 94, 58, 0.4);
-  }
-  70% {
-    box-shadow: 0 0 0 10px rgba(255, 94, 58, 0);
-  }
-  100% {
-    box-shadow: 0 0 0 0 rgba(255, 94, 58, 0);
-  }
+  0% { box-shadow: 0 0 0 0 rgba(255, 94, 58, 0.4); }
+  70% { box-shadow: 0 0 0 10px rgba(255, 94, 58, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(255, 94, 58, 0); }
 }
 
-@keyframes floatAnimation {
-  0%, 100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-8px);
-  }
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
 }
 
 @media (max-width: 1050px) {
@@ -180,6 +330,6 @@ input:-webkit-autofill:focus {
 
 @media (max-width: 750px) {
   .app {
-    width: 92%;
+    width: 94%;
   }
 }
