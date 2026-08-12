@@ -1,0 +1,201 @@
+/* ==========================================================================
+   Single-Restaurant Cart Conflict Warning Modal
+   ========================================================================== */
+
+.cart-conflict-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  animation: fadeIn 0.25s ease-out;
+}
+
+.cart-conflict-modal {
+  position: relative;
+  width: 100%;
+  max-width: 440px;
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 24px;
+  padding: 32px 28px 24px 28px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+  text-align: center;
+  animation: scaleIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.cart-conflict-close-btn {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: var(--input-bg);
+  border: 1px solid var(--border-color);
+  color: var(--text-muted);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.cart-conflict-close-btn:hover {
+  background: var(--primary-color);
+  color: #ffffff;
+  border-color: var(--primary-color);
+}
+
+.cart-conflict-icon-wrap {
+  width: 64px;
+  height: 64px;
+  border-radius: 20px;
+  background: rgba(255, 94, 58, 0.12);
+  border: 1px solid rgba(255, 94, 58, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 18px auto;
+  box-shadow: 0 8px 20px rgba(255, 94, 58, 0.15);
+}
+
+.cart-conflict-title {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--text-dark);
+  letter-spacing: -0.4px;
+  margin-bottom: 10px;
+  font-family: 'Outfit', sans-serif;
+}
+
+.cart-conflict-desc {
+  font-size: 14px;
+  color: var(--text-muted);
+  line-height: 1.55;
+  margin-bottom: 20px;
+}
+
+.cart-conflict-desc strong {
+  color: var(--text-dark);
+}
+
+.cart-conflict-comparison {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  background: var(--input-bg);
+  border: 1px solid var(--border-color);
+  padding: 12px 14px;
+  border-radius: 16px;
+  margin-bottom: 24px;
+}
+
+.conflict-store-pill {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+  flex: 1;
+}
+
+.pill-label {
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  margin-bottom: 2px;
+}
+
+.old-store .pill-label {
+  color: #ef4444;
+}
+
+.new-store .pill-label {
+  color: #10b981;
+}
+
+.pill-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-dark);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 130px;
+}
+
+.conflict-arrow-icon {
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.cart-conflict-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.btn-conflict-confirm {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 20px;
+  border-radius: var(--radius-pill);
+  background: var(--primary-gradient);
+  color: #ffffff;
+  border: none;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 16px rgba(255, 94, 58, 0.3);
+}
+
+.btn-conflict-confirm:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(255, 94, 58, 0.45);
+}
+
+.btn-conflict-cancel {
+  width: 100%;
+  padding: 11px 20px;
+  border-radius: var(--radius-pill);
+  background: transparent;
+  color: var(--text-muted);
+  border: 1px solid var(--border-color);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-conflict-cancel:hover {
+  background: var(--input-bg);
+  color: var(--text-dark);
+}
+
+@media (max-width: 480px) {
+  .cart-conflict-modal {
+    padding: 24px 18px 20px 18px;
+  }
+  .cart-conflict-title {
+    font-size: 19px;
+  }
+  .cart-conflict-desc {
+    font-size: 13px;
+  }
+  .pill-name {
+    max-width: 100px;
+  }
+}

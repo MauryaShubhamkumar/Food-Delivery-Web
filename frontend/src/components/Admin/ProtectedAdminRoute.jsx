@@ -1,10 +1,11 @@
 import React, { useContext } from 'react';
 import { Navigate } from 'react-router-dom';
 import { StoreContext } from '../../context/StoreContext';
+import AccessDenied from './AccessDenied';
 import './ProtectedAdminRoute.css';
 
-const ProtectedAdminRoute = ({ children }) => {
-  const { token, user, userLoading } = useContext(StoreContext);
+const ProtectedAdminRoute = ({ children, requiredPermission }) => {
+  const { token, user, userLoading, hasPermission } = useContext(StoreContext);
 
   if (userLoading) {
     return (
@@ -19,8 +20,14 @@ const ProtectedAdminRoute = ({ children }) => {
     return <Navigate to="/" replace />;
   }
 
-  if (user.role !== 'admin') {
+  // Reject customer role from admin dashboard
+  if (user.role === 'customer') {
     return <Navigate to="/" replace />;
+  }
+
+  // Check granular permission if specified
+  if (requiredPermission && !hasPermission(requiredPermission)) {
+    return <AccessDenied requiredPermission={requiredPermission} />;
   }
 
   return children;

@@ -42,6 +42,7 @@ const AdminDashboard = () => {
 
   const [period, setPeriod] = useState('30d');
   const [analytics, setAnalytics] = useState(null);
+  const [restaurantState, setRestaurantState] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
@@ -49,6 +50,18 @@ const AdminDashboard = () => {
   const [isProductModalOpen, setIsProductModalOpen] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
+
+  const fetchRestaurantInfo = async () => {
+    try {
+      const res = await fetch(`${url}/api/restaurant/me`, { headers: { token } });
+      const data = await res.json();
+      if (data.success && data.data) {
+        setRestaurantState(data.data);
+      }
+    } catch (err) {
+      console.error("Fetch restaurant info error:", err);
+    }
+  };
 
   const fetchAnalytics = async () => {
     setLoading(true);
@@ -74,6 +87,7 @@ const AdminDashboard = () => {
   useEffect(() => {
     if (token) {
       fetchAnalytics();
+      fetchRestaurantInfo();
     }
   }, [token, period]);
 
@@ -128,6 +142,22 @@ const AdminDashboard = () => {
 
   return (
     <div className="admin-dashboard-container">
+      {/* Setup Progress Banner for Incomplete Onboarding */}
+      {restaurantState && !restaurantState.onboarding_completed && (
+        <div className="onboarding-dashboard-banner">
+          <div className="banner-content">
+            <Flame size={22} className="banner-sparkle-icon" />
+            <div>
+              <h4>Complete your restaurant setup</h4>
+              <p>Step {restaurantState.onboarding_step || 1} of 6 — finish your menu & payment details to accept orders live.</p>
+            </div>
+          </div>
+          <button onClick={() => navigate('/onboarding')} className="btn-continue-setup">
+            Continue Setup <ArrowRight size={16} />
+          </button>
+        </div>
+      )}
+
       {/* Top Header */}
       <div className="dashboard-top-header">
         <div>

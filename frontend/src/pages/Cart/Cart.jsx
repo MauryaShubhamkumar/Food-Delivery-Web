@@ -9,6 +9,8 @@ const Cart = () => {
   const {
     cartItems,
     food_list,
+    cartItemsDetails,
+    cartRestaurant,
     addToCart,
     removeFromCart,
     getTotalCartAmount,
@@ -49,17 +51,41 @@ const Cart = () => {
     setPromoMsg({ text: 'Promo code removed', isError: false });
   };
 
+  const totalCartCount = Object.values(cartItems).reduce((sum, qty) => sum + (Number(qty) || 0), 0);
   const subtotal = getTotalCartAmount();
   const discount = getDiscountAmount();
-  const deliveryFee = settings?.deliveryFee !== undefined ? Number(settings.deliveryFee) : 40.0;
-  const minOrder = settings?.minimumOrderAmount !== undefined ? Number(settings.minimumOrderAmount) : 199.0;
+  const deliveryFee = cartRestaurant?.settings?.delivery_fee !== undefined
+    ? Number(cartRestaurant.settings.delivery_fee)
+    : (settings?.deliveryFee !== undefined ? Number(settings.deliveryFee) : 40.0);
+  const minOrder = cartRestaurant?.settings?.minimum_order_amount !== undefined
+    ? Number(cartRestaurant.settings.minimum_order_amount)
+    : (settings?.minimumOrderAmount !== undefined ? Number(settings.minimumOrderAmount) : 199.0);
   const isClosed = !settings?.isOpen || !settings?.isActive;
   const isBelowMinOrder = subtotal > 0 && subtotal < minOrder;
   const remainingForMinOrder = (minOrder - subtotal).toFixed(2);
 
   return (
     <div className="cart">
-      <h2 className="cart-header-title">Your Shopping Cart</h2>
+      <div className="cart-header-row">
+        <div className="cart-header-left">
+          <h2 className="cart-header-title">
+            Your Shopping Cart {cartRestaurant?.name ? `(${cartRestaurant.name})` : ''}
+          </h2>
+          {cartRestaurant?.name && (
+            <p className="cart-header-subtitle">
+              Order items prepared fresh by <strong>{cartRestaurant.name}</strong>
+            </p>
+          )}
+        </div>
+        {cartRestaurant?.slug && (
+          <button
+            className="btn-add-more-store"
+            onClick={() => navigate(`/r/${cartRestaurant.slug}`)}
+          >
+            + Add More Items from {cartRestaurant.name}
+          </button>
+        )}
+      </div>
 
       {/* Closed Restaurant Banner */}
       {isClosed ? (
@@ -75,12 +101,28 @@ const Cart = () => {
         </div>
       ) : null}
 
-      {subtotal === 0 ? (
+      {totalCartCount === 0 ? (
         <div className="cart-empty">
           <div className="cart-empty-icon"><ShoppingCart size={48} color="#94a3b8" /></div>
           <h3>Your cart is currently empty</h3>
-          <p>Explore our delicious menu and add your favorite dishes to get started.</p>
-          <button onClick={() => navigate("/")} className="cart-empty-btn">Explore Menu</button>
+          <p>Explore our partner restaurants to choose a kitchen and order your favorite dishes.</p>
+          <div className="cart-empty-actions" style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap', marginTop: '16px' }}>
+            <button
+              onClick={() => navigate("/#restaurants")}
+              className="cart-empty-btn"
+            >
+              Explore Partner Restaurants
+            </button>
+            {cartRestaurant?.slug && (
+              <button
+                onClick={() => navigate(`/r/${cartRestaurant.slug}`)}
+                className="cart-empty-btn secondary"
+                style={{ background: 'var(--input-bg)', color: 'var(--text-dark)', border: '1px solid var(--border-color)' }}
+              >
+                Return to {cartRestaurant.name}
+              </button>
+            )}
+          </div>
         </div>
       ) : (
         <>
@@ -94,49 +136,55 @@ const Cart = () => {
               <p className="text-center">Action</p>
             </div>
             <hr />
-            {food_list.map((item) => {
-              const itemId = String(item._id || item.id);
-              const qty = cartItems[itemId] || cartItems[item._id] || cartItems[item.id] || 0;
-              if (qty > 0) {
-                return (
-                  <div key={itemId}>
-                    <div className="cart-items-title cart-items-item">
-                      <div className="cart-img-cell">
-                        <ImageWithSkeleton src={item.image} alt={item.name} className="cart-item-img-wrapper" width={120} />
-                      </div>
-                      <p className="item-name">{item.name}</p>
-                      <p className="item-unit-price">{formatCurrency(item.price)}</p>
-                      <div className="cart-qty-counter">
-                        <button type="button" className="btn-qty-step" onClick={() => removeFromCart(itemId)} title="Decrease quantity">
-                          <Minus size={13} />
-                        </button>
-                        <span className="qty-val-display">{qty}</span>
-                        <button type="button" className="btn-qty-step" onClick={() => addToCart(itemId)} title="Increase quantity">
-                          <Plus size={13} />
-                        </button>
-                      </div>
-                      <p className="item-total">{formatCurrency(qty * item.price)}</p>
-                      <div className="text-center">
-                        <button
-                          type="button"
-                          onClick={() => {
-                            // Remove all quantity of this item
-                            for (let i = 0; i < qty; i++) {
-                              removeFromCart(itemId);
-                            }
-                          }}
-                          className="btn-remove-cart-item"
-                          title="Remove item from cart"
-                        >
-                          <Trash2 size={16} />
-                        </button>
-                      </div>
+            {Object.keys(cartItems).map((itemId) => {
+              const qty = cartItems[itemId] || 0;
+              if (qty <= 0) return null;
+
+              const item = food_list.find((product) => String(product._id || product.id) === String(itemId)) ||
+                (cartItemsDetails && cartItemsDetails[itemId]) || {
+                  _id: itemId,
+                  id: itemId,
+                  name: `Dish #${itemId}`,
+                  price: 0,
+                  image: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=80'
+                };
+
+              return (
+                <div key={itemId}>
+                  <div className="cart-items-title cart-items-item">
+                    <div className="cart-img-cell">
+                      <ImageWithSkeleton src={item.image} alt={item.name} className="cart-item-img-wrapper" width={120} />
                     </div>
-                    <hr />
+                    <p className="item-name">{item.name}</p>
+                    <p className="item-unit-price">{formatCurrency(item.price)}</p>
+                    <div className="cart-qty-counter">
+                      <button type="button" className="btn-qty-step" onClick={() => removeFromCart(itemId)} title="Decrease quantity">
+                        <Minus size={13} />
+                      </button>
+                      <span className="qty-val-display">{qty}</span>
+                      <button type="button" className="btn-qty-step" onClick={() => addToCart(itemId, cartRestaurant, item)} title="Increase quantity">
+                        <Plus size={13} />
+                      </button>
+                    </div>
+                    <p className="item-total">{formatCurrency(qty * Number(item.price || 0))}</p>
+                    <div className="text-center">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          for (let i = 0; i < qty; i++) {
+                            removeFromCart(itemId);
+                          }
+                        }}
+                        className="btn-remove-cart-item"
+                        title="Remove item from cart"
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    </div>
                   </div>
-                );
-              }
-              return null;
+                  <hr />
+                </div>
+              );
             })}
           </div>
           <div className="cart-bottom">

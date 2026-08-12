@@ -1,10 +1,17 @@
 import { createContext, useEffect, useState } from "react";
 import { food_list as defaultFoodList } from "../assets/assets";
+import { resolveFoodImage, resolveCategoryImage } from "../utils/imageHelper";
 
 export const StoreContext = createContext(null);
 
 const StoreContextProvider = (props) => {
-  const [cartItems, setcartItems] = useState({});
+  const [cartItems, setcartItems] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem("cartItems") || "{}");
+    } catch (e) {
+      return {};
+    }
+  });
   const [foodList, setFoodList] = useState(defaultFoodList);
   const [token, setToken] = useState(() => localStorage.getItem("token") || "");
   const [user, setUser] = useState(null);
@@ -38,12 +45,146 @@ const StoreContextProvider = (props) => {
     }
   };
 
-  const addToCart = async (itemId) => {
-    // Check if food item is available before adding to cart
-    const itemInfo = foodList.find((product) => String(product._id || product.id) === String(itemId));
-    if (itemInfo && itemInfo.available === false) {
+  const [cartRestaurant, setCartRestaurantState] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem("cartRestaurant") || "null");
+    } catch (e) {
+      return null;
+    }
+  });
+  const [cartConflictModal, setCartConflictModal] = useState(null);
+
+  const [storefrontRestaurant, setStorefrontRestaurantState] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem('storefrontRestaurant') || 'null');
+    } catch (e) {
+      return null;
+    }
+  });
+
+  const setStorefrontRestaurant = (data) => {
+    setStorefrontRestaurantState(data);
+    if (data) {
+      localStorage.setItem('storefrontRestaurant', JSON.stringify(data));
+    } else {
+      localStorage.removeItem('storefrontRestaurant');
+    }
+  };
+
+  const [cartItemsDetails, setCartItemsDetails] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem("cartItemsDetails") || "{}");
+    } catch (e) {
+      return {};
+    }
+  });
+
+  useEffect(() => {
+    localStorage.setItem("cartItems", JSON.stringify(cartItems));
+  }, [cartItems]);
+
+  const setCartRestaurant = (rest) => {
+    setCartRestaurantState(rest);
+    if (rest) {
+      localStorage.setItem("cartRestaurant", JSON.stringify(rest));
+    } else {
+      localStorage.removeItem("cartRestaurant");
+    }
+  };
+
+  const clearCart = () => {
+    setcartItems({});
+    setCartItemsDetails({});
+    localStorage.removeItem("cartItems");
+    localStorage.removeItem("cartItemsDetails");
+    setCartRestaurant(null);
+    setAppliedCoupon(null);
+    setCartConflictModal(null);
+  };
+
+  const clearCartAndAdd = async (itemId, targetRestaurantInfo, foodItemObj) => {
+    clearCart();
+    setCartRestaurant(targetRestaurantInfo);
+    setcartItems({ [itemId]: 1 });
+
+    if (foodItemObj) {
+      const resolvedImg = resolveFoodImage(foodItemObj.image, foodItemObj.name);
+      const normalizedItem = {
+        ...foodItemObj,
+        _id: String(foodItemObj._id || foodItemObj.id),
+        id: foodItemObj.id || foodItemObj._id,
+        image: resolvedImg,
+        price: Number(foodItemObj.price)
+      };
+      setCartItemsDetails({ [String(itemId)]: normalizedItem });
+      localStorage.setItem("cartItemsDetails", JSON.stringify({ [String(itemId)]: normalizedItem }));
+      setFoodList(prev => {
+        const exists = prev.some(p => String(p._id || p.id) === String(itemId));
+        return exists ? prev : [...prev, normalizedItem];
+      });
+    }
+
+    if (token) {
+      try {
+        await fetch(`${url}/api/cart/add`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json", token },
+          body: JSON.stringify({ itemId })
+        });
+      } catch (err) {
+        console.error("Cart sync error:", err);
+      }
+    }
+  };
+
+  const addToCart = async (itemId, targetRestaurantInfo = null, foodItemObj = null) => {
+    // Determine item info
+    let itemInfo = foodItemObj || foodList.find((product) => String(product._id || product.id) === String(itemId)) || cartItemsDetails[itemId];
+    if (itemInfo && (itemInfo.available === false || itemInfo.available === 0)) {
       alert(`"${itemInfo.name}" is currently out of stock and unavailable.`);
-      return;
+      return false;
+    }
+
+    const totalCartCount = Object.values(cartItems).reduce((sum, qty) => sum + qty, 0);
+
+    // Single-restaurant boundary check
+    if (
+      totalCartCount > 0 &&
+      cartRestaurant &&
+      targetRestaurantInfo &&
+      Number(cartRestaurant.id) !== Number(targetRestaurantInfo.id)
+    ) {
+      setCartConflictModal({
+        targetRestaurant: targetRestaurantInfo,
+        newItemId: itemId,
+        itemInfo,
+        foodItemObj
+      });
+      return false;
+    }
+
+    if (targetRestaurantInfo && totalCartCount === 0) {
+      setCartRestaurant(targetRestaurantInfo);
+    }
+
+    if (foodItemObj) {
+      const resolvedImg = resolveFoodImage(foodItemObj.image, foodItemObj.name);
+      const normalizedItem = {
+        ...foodItemObj,
+        _id: String(foodItemObj._id || foodItemObj.id),
+        id: foodItemObj.id || foodItemObj._id,
+        image: resolvedImg,
+        price: Number(foodItemObj.price)
+      };
+      setCartItemsDetails(prev => {
+        const updated = { ...prev, [String(itemId)]: normalizedItem };
+        localStorage.setItem("cartItemsDetails", JSON.stringify(updated));
+        return updated;
+      });
+      setFoodList(prev => {
+        const exists = prev.some(p => String(p._id || p.id) === String(itemId));
+        return exists ? prev : [...prev, normalizedItem];
+      });
     }
 
     if (!cartItems[itemId]) {
@@ -66,6 +207,7 @@ const StoreContextProvider = (props) => {
         console.error("Cart sync error:", err);
       }
     }
+    return true;
   };
 
   const removeFromCart = async (itemId) => {
@@ -91,9 +233,9 @@ const StoreContextProvider = (props) => {
     let totalAmount = 0;
     for (const item in cartItems) {
       if (cartItems[item] > 0) {
-        let itemInfo = foodList.find((product) => String(product._id || product.id) === String(item));
+        let itemInfo = foodList.find((product) => String(product._id || product.id) === String(item)) || cartItemsDetails[item];
         if (itemInfo) {
-          totalAmount += itemInfo.price * cartItems[item];
+          totalAmount += Number(itemInfo.price || 0) * cartItems[item];
         }
       }
     }
@@ -107,23 +249,27 @@ const StoreContextProvider = (props) => {
       if (data.success && data.data && data.data.length > 0) {
         // Map MySQL id to _id and resolve image source
         const mappedData = data.data.map(item => {
-          let imageSrc = item.image;
-          if (!imageSrc.startsWith('http')) {
-            // Find local asset match if available, or static server upload route
-            const localMatch = defaultFoodList.find(d => String(d._id) === String(item.id) || d.name === item.name);
-            imageSrc = localMatch ? localMatch.image : `${url}/images/${item.image}`;
-          }
           return {
             ...item,
             _id: String(item.id),
-            image: imageSrc,
+            image: resolveFoodImage(item.image, item.name),
             available: item.available === undefined ? true : Boolean(item.available)
           };
         });
-        setFoodList(mappedData);
+        setFoodList(prev => {
+          // Merge with any existing items in cartItemsDetails
+          const detailItems = Object.values(cartItemsDetails);
+          const combined = [...mappedData];
+          detailItems.forEach(d => {
+            if (!combined.some(c => String(c._id || c.id) === String(d._id || d.id))) {
+              combined.push(d);
+            }
+          });
+          return combined;
+        });
       }
     } catch (err) {
-      console.log("Backend offline or using default assets food list");
+      console.log("Failed to fetch food list from backend");
     }
   };
 
@@ -276,6 +422,15 @@ const StoreContextProvider = (props) => {
     setTheme(prev => (prev === "light" ? "dark" : "light"));
   };
 
+  const hasPermission = (permission) => {
+    if (!user) return false;
+    if (user.role === 'super_admin') return true;
+    if (user.permissions && Array.isArray(user.permissions)) {
+      return user.permissions.includes(permission);
+    }
+    return false;
+  };
+
   const contextValue = {
     url,
     food_list: foodList,
@@ -305,7 +460,17 @@ const StoreContextProvider = (props) => {
     settings,
     loadPublicSettings,
     getCurrencySymbol,
-    formatCurrency
+    formatCurrency,
+    hasPermission,
+    cartRestaurant,
+    setCartRestaurant,
+    cartConflictModal,
+    setCartConflictModal,
+    storefrontRestaurant,
+    setStorefrontRestaurant,
+    cartItemsDetails,
+    clearCart,
+    clearCartAndAdd
   };
 
   return (

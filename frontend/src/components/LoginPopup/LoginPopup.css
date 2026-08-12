@@ -16,13 +16,13 @@
 }
 
 .login-popup-container {
-  width: max(24vw, 360px);
+  width: min(420px, calc(100vw - 32px));
   color: var(--text-muted);
   background-color: var(--card-bg);
   display: flex;
   flex-direction: column;
   gap: 22px;
-  padding: 32px 36px;
+  padding: 28px 24px;
   border-radius: var(--radius-lg);
   font-size: 14px;
   animation: scaleIn 0.35s cubic-bezier(0.16, 1, 0.3, 1);
@@ -54,6 +54,43 @@
 .login-popup-title img:hover {
   transform: rotate(90deg);
   opacity: 1;
+}
+
+.account-type-selector {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.account-type-selector .type-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-dark);
+}
+
+.type-pills {
+  display: flex;
+  gap: 8px;
+}
+
+.type-pill {
+  flex: 1;
+  padding: 8px 10px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--border-color);
+  background: var(--bg-hover, #f8fafc);
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.type-pill.active {
+  background: var(--primary-gradient);
+  color: white;
+  border-color: transparent;
+  box-shadow: 0 4px 12px rgba(255, 94, 58, 0.25);
 }
 
 .login-error {

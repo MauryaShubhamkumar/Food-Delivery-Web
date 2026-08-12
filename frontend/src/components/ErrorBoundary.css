@@ -1,0 +1,65 @@
+.error-boundary-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-color, #f8fafc);
+  padding: 24px;
+}
+
+.error-boundary-card {
+  background: var(--card-bg, #ffffff);
+  border: 1px solid var(--border-color, #e2e8f0);
+  border-radius: 16px;
+  padding: 40px 32px;
+  max-width: 480px;
+  text-align: center;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+}
+
+.error-icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+}
+
+.error-boundary-card h2 {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--text-dark, #0f172a);
+  margin-bottom: 8px;
+}
+
+.error-boundary-card p {
+  font-size: 14px;
+  color: var(--text-muted, #64748b);
+  line-height: 1.5;
+  margin-bottom: 24px;
+}
+
+.error-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+.btn-error-reload {
+  padding: 10px 20px;
+  border-radius: 20px;
+  background: var(--primary-color, #ff5e3a);
+  color: white;
+  border: none;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-error-home {
+  padding: 10px 20px;
+  border-radius: 20px;
+  background: transparent;
+  color: var(--text-dark, #0f172a);
+  border: 1px solid var(--border-color, #cbd5e1);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}

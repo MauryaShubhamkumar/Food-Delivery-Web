@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { StoreContext } from '../../context/StoreContext';
 import {
@@ -15,15 +15,31 @@ import {
   Sun,
   Store,
   LogOut,
-  Menu
+  Menu,
+  Boxes,
+  UserCheck
 } from 'lucide-react';
 import './AdminLayout.css';
 
 const AdminLayout = ({ children }) => {
-  const { user, setToken, setUser, theme, toggleTheme, settings } = useContext(StoreContext);
+  const { url, token, user, setToken, setUser, theme, toggleTheme, settings, hasPermission } = useContext(StoreContext);
   const location = useLocation();
   const navigate = useNavigate();
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
+  const [restSlug, setRestSlug] = useState(null);
+
+  useEffect(() => {
+    if (token) {
+      fetch(`${url}/api/restaurant/me`, { headers: { token } })
+        .then(res => res.json())
+        .then(data => {
+          if (data.success && data.data?.slug) {
+            setRestSlug(data.data.slug);
+          }
+        })
+        .catch(err => console.error(err));
+    }
+  }, [token]);
 
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -32,17 +48,26 @@ const AdminLayout = ({ children }) => {
     navigate("/");
   };
 
+  const getRoleBadge = (role) => {
+    if (role === 'super_admin') return 'Super Admin';
+    if (role === 'restaurant_owner') return 'Restaurant Owner';
+    return 'Owner';
+  };
+
   const navItems = [
-    { name: "Dashboard", path: "/admin", icon: <LayoutDashboard size={18} />, functional: true },
-    { name: "Products", path: "/admin/products", icon: <UtensilsCrossed size={18} />, functional: true },
-    { name: "Orders", path: "/admin/orders", icon: <Package size={18} />, functional: true },
-    { name: "Users", path: "/admin/users", icon: <Users size={18} />, functional: true },
-    { name: "Categories", path: "/admin/categories", icon: <FolderTree size={18} />, functional: true },
-    { name: "Coupons", path: "/admin/coupons", icon: <Tag size={18} />, functional: true },
-    { name: "Analytics", path: "/admin/analytics", icon: <TrendingUp size={18} />, functional: true },
-    { name: "Reviews", path: "/admin/reviews", icon: <MessageSquare size={18} />, functional: true },
-    { name: "Settings", path: "/admin/settings", icon: <Settings size={18} />, functional: true }
+    { name: "Dashboard", path: "/admin", permission: "VIEW_DASHBOARD", icon: <LayoutDashboard size={18} />, functional: true },
+    { name: "Products", path: "/admin/products", permission: "VIEW_PRODUCTS", icon: <UtensilsCrossed size={18} />, functional: true },
+    { name: "Inventory", path: "/admin/inventory", permission: "VIEW_INVENTORY", icon: <Boxes size={18} />, functional: true },
+    { name: "Orders", path: "/admin/orders", permission: "VIEW_ORDERS", icon: <Package size={18} />, functional: true },
+    { name: "Users", path: "/admin/users", permission: "VIEW_CUSTOMERS", icon: <Users size={18} />, functional: true },
+    { name: "Categories", path: "/admin/categories", permission: "VIEW_CATEGORIES", icon: <FolderTree size={18} />, functional: true },
+    { name: "Coupons", path: "/admin/coupons", permission: "VIEW_COUPONS", icon: <Tag size={18} />, functional: true },
+    { name: "Analytics", path: "/admin/analytics", permission: "VIEW_ANALYTICS", icon: <TrendingUp size={18} />, functional: true },
+    { name: "Reviews", path: "/admin/reviews", permission: "VIEW_REVIEWS", icon: <MessageSquare size={18} />, functional: true },
+    { name: "Settings", path: "/admin/settings", permission: "MANAGE_RESTAURANT_SETTINGS", icon: <Settings size={18} />, functional: true }
   ];
+
+  const visibleNavItems = navItems.filter(item => hasPermission(item.permission));
 
   return (
     <div className="admin-container">
@@ -66,8 +91,8 @@ const AdminLayout = ({ children }) => {
           <div className="admin-theme-toggle" onClick={toggleTheme} title="Toggle Dark/Light Mode">
             {theme === "light" ? <Moon size={18} /> : <Sun size={18} />}
           </div>
-          <Link to="/" className="back-to-store-btn">
-            <Store size={16} /> Back to Store
+          <Link to={restSlug ? `/r/${restSlug}` : "/"} className="back-to-store-btn" target="_blank" rel="noopener noreferrer">
+            <Store size={16} /> View Storefront
           </Link>
           <div className="admin-user-info">
             <div className="admin-avatar">
@@ -75,7 +100,7 @@ const AdminLayout = ({ children }) => {
             </div>
             <div className="admin-details">
               <span className="admin-name">{user?.name || 'Administrator'}</span>
-              <span className="admin-role-badge">Super Admin</span>
+              <span className="admin-role-badge">{getRoleBadge(user?.role)}</span>
             </div>
             <button className="admin-logout-btn" onClick={handleLogout} title="Logout">
               <LogOut size={16} />
@@ -90,7 +115,7 @@ const AdminLayout = ({ children }) => {
           <nav className="sidebar-nav">
             <div className="sidebar-section-title">MAIN MENU</div>
             <ul>
-              {navItems.map((item) => {
+              {visibleNavItems.map((item) => {
                 const isActive = location.pathname === item.path || (item.path === '/admin' && location.pathname === '/admin/');
                 return (
                   <li key={item.name}>

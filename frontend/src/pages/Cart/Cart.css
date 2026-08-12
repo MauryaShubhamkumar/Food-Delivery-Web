@@ -4,12 +4,47 @@
   animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+.cart-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
 .cart-header-title {
-  font-size: max(2vw, 26px);
-  font-weight: 700;
+  font-size: max(2vw, 24px);
+  font-weight: 800;
   color: var(--text-dark);
-  margin-bottom: 20px;
+  margin-bottom: 4px;
   letter-spacing: -0.5px;
+}
+
+.cart-header-subtitle {
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+.btn-add-more-store {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 18px;
+  border-radius: var(--radius-pill);
+  background: rgba(255, 94, 58, 0.1);
+  border: 1px solid rgba(255, 94, 58, 0.3);
+  color: var(--primary-color);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-add-more-store:hover {
+  background: var(--primary-color);
+  color: #ffffff;
+  transform: translateY(-1px);
 }
 
 .cart-warning-banner {
@@ -394,19 +429,31 @@
   color: #dc2626;
 }
 
-@media (max-width: 750px) {
+@media (max-width: 768px) {
   .cart-bottom {
     flex-direction: column-reverse;
+    gap: 24px;
+  }
+  .cart-items {
+    padding: 16px;
+  }
+  .cart-items-title {
+    grid-template-columns: 55px 1.8fr 1.2fr 1fr 40px;
+    gap: 10px;
+    font-size: 0.85rem;
+  }
+  .cart-items-title p:nth-child(3) {
+    display: none; /* Hide unit price header on tablets */
   }
 }
 
 @media (max-width: 650px) {
   .cart-items {
-    padding: 14px;
+    padding: 12px;
   }
 
   .cart-items-title {
-    grid-template-columns: 50px 1.5fr 1fr 40px;
+    grid-template-columns: 48px 1.5fr 1fr 36px;
     gap: 8px;
     font-size: 0.8rem;
   }
@@ -418,8 +465,8 @@
 
   .cart-img-cell,
   .cart-item-img-wrapper {
-    width: 48px !important;
-    height: 48px !important;
+    width: 44px !important;
+    height: 44px !important;
   }
 
   .cart-qty-counter {
@@ -430,5 +477,24 @@
   .btn-qty-step {
     width: 20px;
     height: 20px;
+  }
+  .cart-total, .cart-promocode {
+    padding: 20px 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .cart-header-row h1 {
+    font-size: 1.6rem;
+  }
+  .cart-items-item .item-name {
+    font-size: 0.85rem;
+  }
+  .cart-total-details p, .cart-total-details b {
+    font-size: 0.9rem;
+  }
+  .cart-total button {
+    padding: 12px 16px;
+    font-size: 0.9rem;
   }
 }

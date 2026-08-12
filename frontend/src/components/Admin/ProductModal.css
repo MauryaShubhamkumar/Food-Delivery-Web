@@ -239,3 +239,15 @@
   opacity: 0.6;
   cursor: not-allowed;
 }
+
+@media (max-width: 600px) {
+  .product-modal-container {
+    padding: 16px;
+    max-height: 94vh;
+    border-radius: 12px;
+  }
+  .form-row {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+}

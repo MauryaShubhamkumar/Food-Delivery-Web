@@ -108,4 +108,36 @@
     max-width: 100%;
     font-size: 14px;
   }
+}
+
+@media (max-width: 768px) {
+  .explore-menu {
+    gap: 16px;
+    margin-top: 28px;
+  }
+  .explore-menu-list {
+    gap: 20px;
+    padding: 8px 2px;
+  }
+  .explore-menu-list-item img {
+    min-width: 70px;
+    min-height: 70px;
+  }
+}
+
+@media (max-width: 480px) {
+  .explore-menu-header h2 {
+    font-size: 22px;
+  }
+  .explore-menu-list {
+    gap: 16px;
+  }
+  .explore-menu-list-item img {
+    min-width: 62px;
+    min-height: 62px;
+  }
+  .explore-menu-list-item p {
+    font-size: 13px;
+    margin-top: 8px;
+  }
 }

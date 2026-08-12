@@ -4,7 +4,7 @@ import { StoreContext } from '../../context/StoreContext';
 import FoodItem from '../FoodItem/FoodItem';
 import { Search } from 'lucide-react';
 
-const FoodDisplay = ({ category }) => {
+const FoodDisplay = ({ category, isHomePage = true }) => {
   const { food_list, searchQuery, setSearchQuery } = useContext(StoreContext);
 
   const filteredFoods = food_list.filter((item) => {
@@ -34,13 +34,16 @@ const FoodDisplay = ({ category }) => {
         <div className="food-display-list">
           {filteredFoods.map((item, index) => (
             <FoodItem
-              key={item._id || index}
-              id={item._id}
+              key={item._id || item.id || index}
+              id={item._id || item.id}
               name={item.name}
               description={item.description}
               price={item.price}
               image={item.image}
               available={item.available}
+              restaurantName={item.restaurant_name}
+              restaurantSlug={item.restaurant_slug}
+              isHomePage={isHomePage}
             />
           ))}
         </div>

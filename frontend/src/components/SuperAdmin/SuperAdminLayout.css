@@ -1,0 +1,234 @@
+.superadmin-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: var(--bg-main, #0b0f19);
+  color: var(--text-dark, #f8fafc);
+}
+
+.superadmin-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 64px;
+  padding: 0 24px;
+  background-color: var(--card-bg, #111827);
+  border-bottom: 1px solid var(--border-color, #1f2937);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.superadmin-header-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.superadmin-sidebar-toggle {
+  display: none;
+  background: transparent;
+  border: none;
+  color: var(--text-dark);
+  cursor: pointer;
+}
+
+.superadmin-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  color: inherit;
+}
+
+.platform-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
+  color: white;
+  font-size: 11px;
+  font-weight: 700;
+  border-radius: 20px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.superadmin-brand h2 {
+  font-size: 18px;
+  font-weight: 700;
+  margin: 0;
+  background: linear-gradient(135deg, #a78bfa 0%, #818cf8 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.superadmin-header-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.superadmin-theme-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.05);
+  cursor: pointer;
+}
+
+.btn-visit-store {
+  padding: 6px 14px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #e2e8f0;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.superadmin-user-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.superadmin-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.superadmin-details {
+  display: flex;
+  flex-direction: column;
+}
+
+.superadmin-name {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.superadmin-role-badge {
+  font-size: 11px;
+  color: #a78bfa;
+  font-weight: 600;
+}
+
+.superadmin-logout-btn {
+  background: transparent;
+  border: none;
+  color: #ef4444;
+  cursor: pointer;
+  padding: 6px;
+  display: flex;
+  align-items: center;
+}
+
+/* Body & Sidebar */
+.superadmin-body {
+  display: flex;
+  flex: 1;
+}
+
+.superadmin-sidebar {
+  width: 250px;
+  background-color: var(--card-bg, #111827);
+  border-right: 1px solid var(--border-color, #1f2937);
+  padding: 20px 0;
+  flex-shrink: 0;
+}
+
+.sa-sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.sa-section-title {
+  padding: 0 20px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #6b7280;
+  letter-spacing: 1px;
+}
+
+.sa-sidebar-nav ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.sa-sidebar-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 20px;
+  color: #9ca3af;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.sa-sidebar-link:hover {
+  color: #f3f4f6;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.sa-sidebar-link.active {
+  color: white;
+  background: linear-gradient(90deg, rgba(99, 102, 241, 0.2) 0%, transparent 100%);
+  border-left: 3px solid #6366f1;
+  font-weight: 600;
+}
+
+.superadmin-main-content {
+  flex: 1;
+  padding: 28px;
+  overflow-y: auto;
+}
+
+@media (max-width: 768px) {
+  .superadmin-sidebar-toggle {
+    display: block;
+  }
+
+  .superadmin-sidebar {
+    position: fixed;
+    top: 64px;
+    bottom: 0;
+    left: -260px;
+    z-index: 99;
+    transition: left 0.3s ease;
+  }
+
+  .superadmin-sidebar.open {
+    left: 0;
+  }
+
+  .sa-sidebar-backdrop {
+    position: fixed;
+    inset: 0;
+    top: 64px;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 98;
+  }
+
+  .superadmin-details {
+    display: none;
+  }
+}

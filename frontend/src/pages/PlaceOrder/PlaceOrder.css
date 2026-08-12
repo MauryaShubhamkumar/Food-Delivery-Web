@@ -338,3 +338,24 @@
     max-width: 100%;
   }
 }
+
+@media (max-width: 480px) {
+  .place-order {
+    margin-top: 20px;
+    margin-bottom: 40px;
+  }
+  .place-order-left {
+    padding: 16px;
+  }
+  .place-order-left .multi-fields {
+    flex-direction: column;
+    gap: 0;
+  }
+  .upi-payment-box {
+    padding: 14px;
+  }
+  .upi-qr-img {
+    max-width: 220px;
+    min-height: 200px;
+  }
+}

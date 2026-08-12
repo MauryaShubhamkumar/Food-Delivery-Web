@@ -121,12 +121,13 @@
 @media (max-width: 750px) {
   .header {
     height: 52vw;
-    min-height: 320px;
+    min-height: 280px;
     margin: 15px auto 30px;
   }
   .header-content {
-    max-width: 85%;
-    bottom: 10%;
+    max-width: 90%;
+    bottom: 8%;
+    left: 4vw;
   }
   .header-content p {
     display: none;
@@ -134,5 +135,38 @@
   .header-btn {
     padding: 10px 22px;
     font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .header {
+    height: 65vw;
+    min-height: 240px;
+    border-radius: var(--radius-md);
+  }
+  .header-content {
+    max-width: 92%;
+    bottom: 6%;
+    gap: 0.8rem;
+  }
+  .header-content h2 {
+    font-size: 22px;
+  }
+  .header-btn {
+    padding: 8px 18px;
+    font-size: 13px;
+  }
+  .header-badge {
+    padding: 4px 10px;
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 360px) {
+  .header {
+    min-height: 210px;
+  }
+  .header-content h2 {
+    font-size: 19px;
   }
 }

@@ -1,0 +1,22 @@
+# FastBite Production Readiness Checklist
+
+- [x] Environment variables configured and validated at startup
+- [x] Hardcoded JWT fallback secret eliminated
+- [x] HTTPS enforced on production deployment URLs
+- [x] Dynamic CORS origins configured
+- [x] Helmet security headers & CSP enabled
+- [x] Express rate limiting active on `/api`, `/api/user/*`, and `/api/order/place`
+- [x] TiDB Cloud automated database backups enabled
+- [x] Schema migrations and index queries tested
+- [x] Cloudinary image asset uploading & memory storage configured
+- [x] Direct user registration & immediate JWT authentication active (Email verification postponed)
+- [x] Frontend `VITE_BACKEND_URL` configured for production
+- [x] Centralized production error sanitization & correlation IDs (`X-Request-ID`) verified
+- [x] `audit_logs` database table & logger active for critical actions
+- [x] Health check endpoint `GET /health` active
+- [x] Graceful process shutdown (`SIGTERM`/`SIGINT`) implemented
+- [x] Authentication & RBAC backend protection verified
+- [x] Tenant isolation & IDOR prevention verified across all APIs
+- [x] Concurrency-safe atomic inventory deductions & cancellation stock restoration verified
+- [x] React Error Boundary active on frontend
+- [x] Production build tested with zero compilation errors

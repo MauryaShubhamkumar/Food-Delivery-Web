@@ -17,7 +17,8 @@ const PlaceOrder = () => {
     getDiscountAmount,
     getFinalCartTotal,
     settings,
-    formatCurrency
+    formatCurrency,
+    cartRestaurant
   } = useContext(StoreContext);
   const navigate = useNavigate();
 
@@ -46,16 +47,17 @@ const PlaceOrder = () => {
 
   const subtotal = getTotalCartAmount();
   const discount = getDiscountAmount();
-  const deliveryFee = settings?.deliveryFee !== undefined ? Number(settings.deliveryFee) : 40.0;
-  const minOrder = settings?.minimumOrderAmount !== undefined ? Number(settings.minimumOrderAmount) : 199.0;
-  const isClosed = !settings?.isOpen || !settings?.isActive;
+  const activeSettings = cartRestaurant?.settings || settings;
+  const deliveryFee = activeSettings?.delivery_fee !== undefined ? Number(activeSettings.delivery_fee) : (activeSettings?.deliveryFee !== undefined ? Number(activeSettings.deliveryFee) : 40.0);
+  const minOrder = activeSettings?.minimum_order_amount !== undefined ? Number(activeSettings.minimum_order_amount) : (activeSettings?.minimumOrderAmount !== undefined ? Number(activeSettings.minimumOrderAmount) : 199.0);
+  const isClosed = activeSettings?.is_open === false || activeSettings?.isOpen === false || activeSettings?.is_active === false || activeSettings?.isActive === false;
   const isBelowMinOrder = subtotal > 0 && subtotal < minOrder;
 
-  const upiId = settings?.upiId || "shubhamkumarmaurya155@okaxis";
-  const upiQrUrl = settings?.upiQrUrl || null;
-  const restaurantName = settings?.restaurantName || "FastBite";
+  const upiId = activeSettings?.upi_id || activeSettings?.upiId || "shubhamkumarmaurya155@okaxis";
+  const upiQrUrl = activeSettings?.upi_qr_url || activeSettings?.upiQrUrl || null;
+  const restaurantName = cartRestaurant?.name || activeSettings?.restaurant_name || activeSettings?.restaurantName || "FastBite";
   const finalTotalAmount = getFinalCartTotal();
-  const currencyCode = settings?.currency || "INR";
+  const currencyCode = activeSettings?.currency || "INR";
 
   // Dynamic UPI Deep Link
   const upiDeepLink = `upi://pay?pa=${encodeURIComponent(upiId)}&pn=${encodeURIComponent(restaurantName)}&am=${finalTotalAmount.toFixed(2)}&cu=${currencyCode}`;

@@ -257,3 +257,16 @@ input:checked + .slider:before {
   border-radius: 12px;
   animation: skeleton-pulse 1.5s infinite ease-in-out;
 }
+
+@media (max-width: 600px) {
+  .settings-card {
+    padding: 16px;
+  }
+  .logo-upload-wrapper {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .save-settings-btn {
+    width: 100%;
+  }
+}

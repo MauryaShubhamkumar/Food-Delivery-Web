@@ -598,3 +598,15 @@ select option {
 .recharts-legend-item-text {
   color: var(--text-body, #334155) !important;
 }
+
+@media (max-width: 600px) {
+  .admin-analytics-container {
+    padding: 12px 4px;
+  }
+  .analytics-filter-card {
+    padding: 12px;
+  }
+  .analytics-card {
+    padding: 14px;
+  }
+}

@@ -74,6 +74,12 @@
   --shadow-glow: 0 10px 30px -5px rgba(255, 94, 58, 0.5);
 }
 
+html {
+  scroll-behavior: smooth;
+  overflow-x: hidden;
+  width: 100%;
+}
+
 * {
   padding: 0;
   margin: 0;
@@ -84,6 +90,7 @@
 
 body {
   min-height: 100vh;
+  width: 100%;
   background: var(--bg-gradient);
   color: var(--text-body);
   -webkit-font-smoothing: antialiased;
@@ -137,7 +144,7 @@ input:-webkit-autofill:focus {
 }
 
 .app {
-  width: 85%;
+  width: 88%;
   max-width: 1280px;
   margin: auto;
   min-height: 100vh;
@@ -431,7 +438,7 @@ input:-webkit-autofill:focus {
 
 @media (max-width: 1050px) {
   .app {
-    width: 90%;
+    width: 92%;
   }
 }
 
@@ -439,4 +446,27 @@ input:-webkit-autofill:focus {
   .app {
     width: 94%;
   }
+}
+
+@media (max-width: 480px) {
+  .app {
+    width: 95%;
+    padding: 0 4px;
+  }
+}
+
+@media (max-width: 360px) {
+  .app {
+    width: 96%;
+    padding: 0 2px;
+  }
+}
+
+/* Touch Target Helper */
+.touch-target {
+  min-width: 44px;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
