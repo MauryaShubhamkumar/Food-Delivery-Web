@@ -353,3 +353,27 @@
     padding: 50px 20px 30px 20px;
   }
 }
+
+@media (max-width: 480px) {
+  .avatar-wrapper {
+    width: 76px;
+    height: 76px;
+    left: 20px;
+    bottom: -30px;
+  }
+  .profile-body {
+    padding: 44px 16px 24px 16px;
+  }
+  .profile-header-info h2 {
+    font-size: 22px;
+  }
+  .avatar-actions-bar {
+    gap: 8px;
+  }
+  .avatar-action-btn {
+    padding: 6px 14px;
+    font-size: 12px;
+    width: 100%;
+    justify-content: center;
+  }
+}

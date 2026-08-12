@@ -14,7 +14,8 @@ import {
   LogOut,
   Menu,
   Crown,
-  LayoutDashboard
+  LayoutDashboard,
+  DollarSign
 } from 'lucide-react';
 import './SuperAdminLayout.css';
 
@@ -34,6 +35,7 @@ const SuperAdminLayout = ({ children }) => {
   const navItems = [
     { name: "Platform Dashboard", path: "/super-admin", icon: <LayoutDashboard size={18} /> },
     { name: "Restaurants", path: "/super-admin/restaurants", icon: <Building2 size={18} /> },
+    { name: "Revenue Ledger", path: "/super-admin/revenue-ledger", icon: <DollarSign size={18} /> },
     { name: "Platform Users", path: "/super-admin/users", icon: <Users size={18} /> },
     { name: "Platform Orders", path: "/super-admin/orders", icon: <Package size={18} /> },
     { name: "Platform Reviews", path: "/super-admin/reviews", icon: <MessageSquare size={18} /> },

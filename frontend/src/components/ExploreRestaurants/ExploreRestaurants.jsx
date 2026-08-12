@@ -55,6 +55,12 @@ const ExploreRestaurants = ({ title = "Partner Restaurants", subtitle = "Choose 
     return name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
   };
 
+  const [logoErrors, setLogoErrors] = useState({});
+
+  const handleLogoError = (id) => {
+    setLogoErrors(prev => ({ ...prev, [id]: true }));
+  };
+
   return (
     <section className="explore-restaurants-section" id="restaurants">
       <div className="section-header-centered">
@@ -117,8 +123,13 @@ const ExploreRestaurants = ({ title = "Partner Restaurants", subtitle = "Choose 
                 <div className="restaurant-card-banner">
                   <div className="banner-bg-pattern" />
                   <div className="restaurant-avatar-wrap">
-                    {rest.logo_url ? (
-                      <img src={rest.logo_url} alt={rest.name} className="rest-logo-img" />
+                    {rest.logo_url && !logoErrors[rest.id] ? (
+                      <img
+                        src={rest.logo_url}
+                        alt={rest.name}
+                        className="rest-logo-img"
+                        onError={() => handleLogoError(rest.id)}
+                      />
                     ) : (
                       <div className="rest-avatar-initials">
                         {getInitials(rest.name)}

@@ -9,6 +9,7 @@ import Profile from "./pages/Profile/Profile";
 import Footer from "./components/Footer/Footer";
 import LoginPopup from "./components/LoginPopup/LoginPopup";
 import CartConflictModal from "./components/Common/CartConflictModal";
+import ImpersonationBanner from "./components/Common/ImpersonationBanner";
 import ProtectedAdminRoute from "./components/Admin/ProtectedAdminRoute";
 import AdminLayout from "./components/Admin/AdminLayout";
 import { Loader2 } from "lucide-react";
@@ -35,6 +36,7 @@ const SuperAdminUsers = lazy(() => import("./components/SuperAdmin/SuperAdminUse
 const SuperAdminOrders = lazy(() => import("./components/SuperAdmin/SuperAdminOrders"));
 const SuperAdminReviews = lazy(() => import("./components/SuperAdmin/SuperAdminReviews"));
 const SuperAdminAnalytics = lazy(() => import("./components/SuperAdmin/SuperAdminAnalytics"));
+const SuperAdminRevenueLedger = lazy(() => import("./components/SuperAdmin/SuperAdminRevenueLedger"));
 
 const AdminLoadingFallback = () => (
   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '350px', gap: '12px', color: 'var(--text-muted)' }}>
@@ -46,7 +48,9 @@ const AdminLoadingFallback = () => (
 const App = () => {
   const [showLogin, setShowLogin] = useState(false);
   return (
-    <Routes>
+    <>
+      <ImpersonationBanner />
+      <Routes>
       {/* Super Admin Platform Routes */}
       <Route
         path="/super-admin/*"
@@ -58,6 +62,7 @@ const App = () => {
                   <Route path="/" element={<SuperAdminDashboard />} />
                   <Route path="/dashboard" element={<SuperAdminDashboard />} />
                   <Route path="/restaurants" element={<SuperAdminRestaurants />} />
+                  <Route path="/revenue-ledger" element={<SuperAdminRevenueLedger />} />
                   <Route path="/users" element={<SuperAdminUsers />} />
                   <Route path="/orders" element={<SuperAdminOrders />} />
                   <Route path="/reviews" element={<SuperAdminReviews />} />
@@ -155,6 +160,7 @@ const App = () => {
         }
       />
     </Routes>
+    </>
   );
 };
 

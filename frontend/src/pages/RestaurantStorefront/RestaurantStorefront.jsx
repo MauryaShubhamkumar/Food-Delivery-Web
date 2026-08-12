@@ -270,17 +270,6 @@ const RestaurantStorefront = () => {
         </div>
 
         <div className="explore-menu-scroll-container">
-          <div
-            className={`explore-category-card ${selectedCategory === 'All' ? 'active' : ''}`}
-            onClick={() => setSelectedCategory('All')}
-          >
-            <div className="category-img-ring">
-              <img src={assets.menu_1} alt="All Dishes" />
-            </div>
-            <p className="category-title">All Items</p>
-            <span className="category-count">({products.length})</span>
-          </div>
-
           {categories.map((cat) => {
             const countInCat = products.filter(p => p.category === cat.name).length;
             const isActive = selectedCategory === cat.name;

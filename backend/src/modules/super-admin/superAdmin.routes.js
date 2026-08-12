@@ -2,7 +2,8 @@ import express from 'express';
 import {
   getPlatformStats, getPlatformRestaurants, getPlatformRestaurantDetail,
   updateRestaurantStatus, getPlatformUsers, getPlatformOrders,
-  getPlatformReviews, togglePlatformReviewVisibility, getPlatformAnalytics, getOnboardingStuck
+  getPlatformReviews, togglePlatformReviewVisibility, getPlatformAnalytics, getOnboardingStuck,
+  impersonateRestaurant, getPlatformRevenueLedger, updateRestaurantCommission
 } from './superAdmin.controller.js';
 import authMiddleware, { requireRole } from '../../middleware/auth.js';
 import { ROLES } from '../../config/permissions.js';
@@ -14,6 +15,9 @@ superAdminRouter.get('/stats', ...superAdminOnly, getPlatformStats);
 superAdminRouter.get('/restaurants', ...superAdminOnly, getPlatformRestaurants);
 superAdminRouter.get('/restaurants/:id', ...superAdminOnly, getPlatformRestaurantDetail);
 superAdminRouter.patch('/restaurants/:id/status', ...superAdminOnly, updateRestaurantStatus);
+superAdminRouter.post('/restaurants/:id/impersonate', ...superAdminOnly, impersonateRestaurant);
+superAdminRouter.put('/restaurants/:id/commission', ...superAdminOnly, updateRestaurantCommission);
+superAdminRouter.get('/revenue-ledger', ...superAdminOnly, getPlatformRevenueLedger);
 superAdminRouter.get('/users', ...superAdminOnly, getPlatformUsers);
 superAdminRouter.get('/orders', ...superAdminOnly, getPlatformOrders);
 superAdminRouter.get('/reviews', ...superAdminOnly, getPlatformReviews);

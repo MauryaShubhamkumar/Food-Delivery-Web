@@ -28,7 +28,7 @@ export const getPlatformRestaurantsRepo = async ({ search, status, page, limit }
   const [[countRows], [dataRows]] = await Promise.all([
     pool.query(`SELECT COUNT(r.id) as total FROM restaurants r ${whereClause}`, params),
     pool.query(
-      `SELECT r.id, r.name, r.slug, r.logo_url, r.email, r.phone, r.address, r.city, r.state, r.pincode, r.status, r.onboarding_step, r.onboarding_completed, r.created_at,
+      `SELECT r.id, r.name, r.slug, r.logo_url, r.email, r.phone, r.address, r.city, r.state, r.pincode, r.status, r.onboarding_step, r.onboarding_completed, r.created_at, COALESCE(r.commission_rate, 5.00) as commission_rate,
        (SELECT u.name FROM users u WHERE u.restaurant_id = r.id AND u.role = 'restaurant_owner' LIMIT 1) as owner_name,
        (SELECT u.email FROM users u WHERE u.restaurant_id = r.id AND u.role = 'restaurant_owner' LIMIT 1) as owner_email,
        (SELECT u.phone FROM users u WHERE u.restaurant_id = r.id AND u.role = 'restaurant_owner' LIMIT 1) as owner_phone,
@@ -64,7 +64,16 @@ export const updateRestaurantStatusRepo = async (id, status) => {
 
 export const findRestaurantById = async (id) => {
   const pool = getPool();
-  const [rows] = await pool.query('SELECT id, name FROM restaurants WHERE id = ?', [id]);
+  const [rows] = await pool.query('SELECT id, name, slug, logo_url FROM restaurants WHERE id = ?', [id]);
+  return rows[0] || null;
+};
+
+export const findRestaurantOwnerByRestaurantId = async (restaurantId) => {
+  const pool = getPool();
+  const [rows] = await pool.query(
+    "SELECT id, name, email, role, restaurant_id, avatar_url, is_active FROM users WHERE restaurant_id = ? AND (role = 'restaurant_owner' OR role = 'admin') LIMIT 1",
+    [restaurantId]
+  );
   return rows[0] || null;
 };
 
@@ -155,4 +164,57 @@ export const getOnboardingStuckRepo = async () => {
   const pool = getPool();
   const [rows] = await pool.query(`SELECT r.id, r.name, r.slug, r.email, r.phone, r.onboarding_step, r.created_at, u.name as owner_name, u.email as owner_email, u.phone as owner_phone FROM restaurants r LEFT JOIN users u ON (u.restaurant_id = r.id AND u.role = 'restaurant_owner') WHERE r.onboarding_completed = FALSE OR r.status = 'setup' ORDER BY r.created_at DESC`);
   return rows;
+};
+
+export const updateRestaurantCommissionRepo = async (id, commissionRate) => {
+  const pool = getPool();
+  await pool.query('UPDATE restaurants SET commission_rate = ? WHERE id = ?', [commissionRate, id]);
+};
+
+export const getRevenueLedgerRepo = async (dateFilter = '') => {
+  const pool = getPool();
+  
+  const [summaryRows] = await pool.query(
+    `SELECT 
+       COUNT(DISTINCT o.id) as totalOrders,
+       COALESCE(SUM(CASE WHEN o.status != 'Cancelled' THEN o.amount ELSE 0 END), 0) as totalGMV,
+       COALESCE(SUM(CASE WHEN o.status != 'Cancelled' THEN (o.amount * COALESCE(r.commission_rate, 5.00) / 100.0) ELSE 0 END), 0) as totalPlatformEarnings,
+       COALESCE(AVG(COALESCE(r.commission_rate, 5.00)), 5.00) as avgCommissionRate
+     FROM orders o
+     JOIN restaurants r ON o.restaurant_id = r.id
+     WHERE 1=1 ${dateFilter}`
+  );
+
+  const [storeRows] = await pool.query(
+    `SELECT 
+       r.id, r.name, r.slug, r.logo_url, r.status,
+       COALESCE(r.commission_rate, 5.00) as commission_rate,
+       COUNT(DISTINCT CASE WHEN o.status != 'Cancelled' THEN o.id END) as completedOrders,
+       COALESCE(SUM(CASE WHEN o.status != 'Cancelled' THEN o.amount ELSE 0 END), 0) as storeGMV,
+       COALESCE(SUM(CASE WHEN o.status != 'Cancelled' THEN (o.amount * COALESCE(r.commission_rate, 5.00) / 100.0) ELSE 0 END), 0) as platformEarnings,
+       COALESCE(SUM(CASE WHEN o.status != 'Cancelled' THEN (o.amount * (1.0 - (COALESCE(r.commission_rate, 5.00) / 100.0))) ELSE 0 END), 0) as netStorePayout
+     FROM restaurants r
+     LEFT JOIN orders o ON (o.restaurant_id = r.id ${dateFilter})
+     GROUP BY r.id
+     ORDER BY storeGMV DESC`
+  );
+
+  const [timelineRows] = await pool.query(
+    `SELECT 
+       DATE_FORMAT(o.created_at, '%Y-%m-%d') as date,
+       COUNT(DISTINCT o.id) as ordersCount,
+       COALESCE(SUM(CASE WHEN o.status != 'Cancelled' THEN o.amount ELSE 0 END), 0) as dailyGMV,
+       COALESCE(SUM(CASE WHEN o.status != 'Cancelled' THEN (o.amount * COALESCE(r.commission_rate, 5.00) / 100.0) ELSE 0 END), 0) as dailyEarnings
+     FROM orders o
+     JOIN restaurants r ON o.restaurant_id = r.id
+     WHERE 1=1 ${dateFilter}
+     GROUP BY DATE_FORMAT(o.created_at, '%Y-%m-%d')
+     ORDER BY date ASC`
+  );
+
+  return {
+    summary: summaryRows[0] || {},
+    stores: storeRows,
+    timeline: timelineRows
+  };
 };

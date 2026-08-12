@@ -155,13 +155,15 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 8px;
   margin-top: auto;
+  flex-wrap: wrap;
 }
 
 .food-item-price {
   color: var(--primary-color);
-  font-size: 22px;
-  font-weight: 700;
+  font-size: 20px;
+  font-weight: 800;
   letter-spacing: -0.5px;
 }
 
@@ -247,8 +249,20 @@
   .food-item-name-rating p.food-item-name-text {
     font-size: 15px;
   }
+  .food-item-footer-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 6px;
+  }
   .food-item-price {
-    font-size: 18px;
+    font-size: 17px;
+  }
+  .btn-order-storefront {
+    width: 100%;
+    justify-content: center;
+    padding: 7px 10px;
+    font-size: 11px;
+    border-radius: 12px;
   }
   .food-item-img-container .add {
     width: 34px;

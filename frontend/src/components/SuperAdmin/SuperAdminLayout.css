@@ -147,6 +147,10 @@
   border-right: 1px solid var(--border-color, #1f2937);
   padding: 20px 0;
   flex-shrink: 0;
+  position: sticky;
+  top: 64px;
+  height: calc(100vh - 64px);
+  overflow-y: auto;
 }
 
 .sa-sidebar-nav {

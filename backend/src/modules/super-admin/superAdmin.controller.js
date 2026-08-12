@@ -1,7 +1,9 @@
+import jwt from 'jsonwebtoken';
 import {
   getPlatformStatsRepo, getPlatformRestaurantsRepo, getPlatformRestaurantDetailRepo,
-  updateRestaurantStatusRepo, findRestaurantById, getPlatformUsersRepo, getPlatformOrdersRepo,
-  getPlatformReviewsRepo, togglePlatformReviewVisibilityRepo, getPlatformAnalyticsRepo, getOnboardingStuckRepo
+  updateRestaurantStatusRepo, findRestaurantById, findRestaurantOwnerByRestaurantId, getPlatformUsersRepo, getPlatformOrdersRepo,
+  getPlatformReviewsRepo, togglePlatformReviewVisibilityRepo, getPlatformAnalyticsRepo, getOnboardingStuckRepo,
+  updateRestaurantCommissionRepo, getRevenueLedgerRepo
 } from './superAdmin.repository.js';
 import { logAuditEvent } from '../../utils/auditLogger.js';
 
@@ -96,3 +98,151 @@ export const getOnboardingStuck = async (req, res, next) => {
     res.json({ success: true, count: rows.length, data: rows });
   } catch (error) { next(error); }
 };
+
+export const impersonateRestaurant = async (req, res, next) => {
+  try {
+    const restaurantId = Number(req.params.id);
+    if (!restaurantId || isNaN(restaurantId)) {
+      return res.status(400).json({ success: false, message: "Valid restaurant ID is required." });
+    }
+
+    const restaurant = await findRestaurantById(restaurantId);
+    if (!restaurant) {
+      return res.status(404).json({ success: false, message: "Restaurant not found." });
+    }
+
+    const owner = await findRestaurantOwnerByRestaurantId(restaurantId);
+    if (!owner) {
+      return res.status(404).json({
+        success: false,
+        message: `No active owner account assigned to "${restaurant.name}". Please ensure an owner user exists.`
+      });
+    }
+
+    const jwtSecret = process.env.JWT_SECRET;
+    if (!jwtSecret) {
+      return res.status(500).json({ success: false, message: "JWT secret configuration missing." });
+    }
+
+    // Sign impersonation token with claims
+    const token = jwt.sign(
+      { id: owner.id, isImpersonated: true, originalAdminId: req.userId },
+      jwtSecret,
+      { expiresIn: '8h' }
+    );
+
+    // Audit log
+    await logAuditEvent({
+      restaurantId,
+      userId: req.userId,
+      action: 'SUPER_ADMIN_IMPERSONATION_STARTED',
+      entityType: 'RESTAURANT',
+      entityId: restaurantId,
+      details: { targetUserId: owner.id, targetOwnerEmail: owner.email, restaurantName: restaurant.name },
+      req
+    });
+
+    res.json({
+      success: true,
+      message: `Impersonation started for "${restaurant.name}"`,
+      token,
+      isImpersonated: true,
+      targetUser: {
+        id: owner.id,
+        name: owner.name,
+        email: owner.email,
+        role: 'restaurant_owner',
+        restaurant_id: restaurantId,
+        avatar_url: owner.avatar_url || null
+      },
+      targetRestaurant: {
+        id: restaurant.id,
+        name: restaurant.name,
+        slug: restaurant.slug,
+        logo_url: restaurant.logo_url
+      }
+    });
+  } catch (error) { next(error); }
+};
+
+export const getPlatformRevenueLedger = async (req, res, next) => {
+  try {
+    const { period = '30d' } = req.query;
+    let dateFilter = "AND o.created_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)";
+    if (period === 'today') dateFilter = "AND DATE(o.created_at) = CURDATE()";
+    else if (period === '7d') dateFilter = "AND o.created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)";
+    else if (period === 'month') dateFilter = "AND MONTH(o.created_at) = MONTH(NOW()) AND YEAR(o.created_at) = YEAR(NOW())";
+    else if (period === 'year') dateFilter = "AND YEAR(o.created_at) = YEAR(NOW())";
+    else if (period === 'all') dateFilter = "";
+
+    const { summary, stores, timeline } = await getRevenueLedgerRepo(dateFilter);
+
+    res.json({
+      success: true,
+      period,
+      data: {
+        summary: {
+          totalOrders: Number(summary.totalOrders || 0),
+          totalGMV: Number(summary.totalGMV || 0),
+          totalPlatformEarnings: Number(summary.totalPlatformEarnings || 0),
+          netStorePayouts: Number(summary.totalGMV || 0) - Number(summary.totalPlatformEarnings || 0),
+          avgCommissionRate: Number(summary.avgCommissionRate || 5.00)
+        },
+        stores: stores.map(s => ({
+          ...s,
+          commission_rate: Number(s.commission_rate || 5.00),
+          completedOrders: Number(s.completedOrders || 0),
+          storeGMV: Number(s.storeGMV || 0),
+          platformEarnings: Number(s.platformEarnings || 0),
+          netStorePayout: Number(s.netStorePayout || 0)
+        })),
+        timeline: timeline.map(t => ({
+          date: t.date,
+          ordersCount: Number(t.ordersCount || 0),
+          dailyGMV: Number(t.dailyGMV || 0),
+          dailyEarnings: Number(t.dailyEarnings || 0)
+        }))
+      }
+    });
+  } catch (error) { next(error); }
+};
+
+export const updateRestaurantCommission = async (req, res, next) => {
+  try {
+    const restaurantId = Number(req.params.id);
+    const { commissionRate } = req.body;
+
+    if (isNaN(restaurantId)) {
+      return res.status(400).json({ success: false, message: "Valid restaurant ID is required." });
+    }
+
+    const rateNum = Number(commissionRate);
+    if (isNaN(rateNum) || rateNum < 0 || rateNum > 100) {
+      return res.status(400).json({ success: false, message: "Commission rate must be a valid percentage between 0% and 100%." });
+    }
+
+    const restaurant = await findRestaurantById(restaurantId);
+    if (!restaurant) {
+      return res.status(404).json({ success: false, message: "Restaurant not found." });
+    }
+
+    await updateRestaurantCommissionRepo(restaurantId, rateNum);
+
+    await logAuditEvent({
+      restaurantId,
+      userId: req.userId,
+      action: 'SUPER_ADMIN_COMMISSION_UPDATED',
+      entityType: 'RESTAURANT',
+      entityId: restaurantId,
+      details: { oldRate: restaurant.commission_rate, newRate: rateNum },
+      req
+    });
+
+    res.json({
+      success: true,
+      message: `Commission rate for "${restaurant.name}" updated to ${rateNum.toFixed(2)}%`,
+      commissionRate: rateNum
+    });
+  } catch (error) { next(error); }
+};
+

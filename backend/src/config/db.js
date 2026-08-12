@@ -264,7 +264,8 @@ const initTables = async () => {
       "ALTER TABLE restaurants ADD COLUMN state VARCHAR(100);",
       "ALTER TABLE restaurants ADD COLUMN pincode VARCHAR(20);",
       "ALTER TABLE restaurants ADD COLUMN onboarding_step INT DEFAULT 1;",
-      "ALTER TABLE restaurants ADD COLUMN onboarding_completed BOOLEAN DEFAULT FALSE;"
+      "ALTER TABLE restaurants ADD COLUMN onboarding_completed BOOLEAN DEFAULT FALSE;",
+      "ALTER TABLE restaurants ADD COLUMN commission_rate DECIMAL(5,2) DEFAULT 5.00;"
     ];
 
     for (const q of alterQueries) {

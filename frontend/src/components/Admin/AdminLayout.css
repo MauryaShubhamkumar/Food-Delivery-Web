@@ -177,6 +177,11 @@
   flex-direction: column;
   padding: 20px 0;
   transition: transform 0.3s ease;
+  position: sticky;
+  top: 64px;
+  height: calc(100vh - 64px);
+  overflow-y: auto;
+  flex-shrink: 0;
 }
 
 .sidebar-nav {

@@ -1,13 +1,12 @@
-/* ── Sticky navbar wrapper (reserves space for fixed navbar) ── */
+/* ── Sticky navbar wrapper (reserves space & sticks floating navbar) ── */
 .sticky-navbar-wrapper {
   position: sticky;
-  top: 0;
+  top: 10px;
   z-index: 1000;
-  padding: 10px 16px 0;
+  padding: 0 16px;
   max-width: 1200px;
   margin: 0 auto;
-  pointer-events: none; /* let clicks pass through wrapper */
-  background: transparent;
+  width: 100%;
 }
 
 .navbar {
@@ -15,8 +14,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  position: sticky;
-  top: 10px;
+  position: relative;
   z-index: 1000;
   background: var(--navbar-bg);
   backdrop-filter: blur(20px);
@@ -25,7 +23,6 @@
   border: 1px solid var(--border-color);
   border-radius: var(--radius-pill);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.05);
-  pointer-events: all; /* re-enable clicks on navbar itself */
   margin-bottom: 20px;
 }
 
@@ -254,6 +251,8 @@
 }
 
 .navbar-profile:hover .nav-profile-dropdown,
+.navbar-profile.active .nav-profile-dropdown,
+.nav-profile-dropdown.show,
 .nav-profile-dropdown:hover {
   display: flex;
   flex-direction: column;

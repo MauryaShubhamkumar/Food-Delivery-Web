@@ -26,8 +26,16 @@ const Navbar = ({ setShowLogin }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [logoError, setLogoError] = useState(false);
+  const [showProfileMenu, setShowProfileMenu] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+
+  // Close profile dropdown when clicking anywhere outside
+  useEffect(() => {
+    const handleOutsideClick = () => setShowProfileMenu(false);
+    window.addEventListener("click", handleOutsideClick);
+    return () => window.removeEventListener("click", handleOutsideClick);
+  }, []);
 
   // Scroll listener for enhanced sticky shadow
   useEffect(() => {
@@ -196,9 +204,15 @@ const Navbar = ({ setShowLogin }) => {
         {!token ? (
           <button onClick={() => setShowLogin(true)} className="navbar-button">Sign In</button>
         ) : (
-          <div className="navbar-profile">
+          <div
+            className={`navbar-profile ${showProfileMenu ? "active" : ""}`}
+            onClick={(e) => {
+              e.stopPropagation();
+              setShowProfileMenu(prev => !prev);
+            }}
+          >
             <img src={user?.avatar_url || assets.profile_icon} alt="Profile" className="nav-profile-img" />
-            <ul className="nav-profile-dropdown">
+            <ul className={`nav-profile-dropdown ${showProfileMenu ? "show" : ""}`}>
               {user?.role === 'super_admin' && (
                 <>
                   <li onClick={() => navigate('/super-admin')}>

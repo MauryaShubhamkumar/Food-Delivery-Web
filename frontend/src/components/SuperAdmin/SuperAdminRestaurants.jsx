@@ -1,4 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { StoreContext } from '../../context/StoreContext';
 import {
   Building2,
@@ -9,12 +10,14 @@ import {
   ChevronLeft,
   ChevronRight,
   Loader2,
-  Store
+  Store,
+  UserCheck
 } from 'lucide-react';
 import './SuperAdminDashboard.css';
 
 const SuperAdminRestaurants = () => {
-  const { url, token } = useContext(StoreContext);
+  const { url, token, startImpersonation } = useContext(StoreContext);
+  const navigate = useNavigate();
 
   const [loading, setLoading] = useState(true);
   const [restaurants, setRestaurants] = useState([]);
@@ -24,6 +27,18 @@ const SuperAdminRestaurants = () => {
 
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
+  const [impersonatingId, setImpersonatingId] = useState(null);
+
+  const handleImpersonate = async (restaurantId) => {
+    setImpersonatingId(restaurantId);
+    const res = await startImpersonation(restaurantId);
+    setImpersonatingId(null);
+    if (res.success) {
+      navigate('/admin');
+    } else {
+      setAlertMsg(res.message || "Failed to start impersonation mode.");
+    }
+  };
 
   // Deactivation confirmation modal state
   const [selectedRest, setSelectedRest] = useState(null);
@@ -197,6 +212,15 @@ const SuperAdminRestaurants = () => {
                     </td>
                     <td>
                       <div className="action-buttons-cell">
+                        <button
+                          className="btn-impersonate-owner"
+                          onClick={() => handleImpersonate(r.id)}
+                          disabled={impersonatingId === r.id}
+                          title={`Impersonate & log in as owner of ${r.name}`}
+                        >
+                          {impersonatingId === r.id ? <Loader2 size={13} className="spin-icon" /> : <UserCheck size={13} />} Log in as Owner
+                        </button>
+
                         {r.status === 'active' && (
                           <a
                             href={`/r/${r.slug}`}

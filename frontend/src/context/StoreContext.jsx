@@ -62,6 +62,46 @@ const StoreContextProvider = (props) => {
     }
   });
 
+  const [isImpersonated, setIsImpersonated] = useState(() => {
+    return Boolean(localStorage.getItem("originalAdminToken"));
+  });
+
+  const startImpersonation = async (restaurantId) => {
+    try {
+      const response = await fetch(`${url}/api/super-admin/restaurants/${restaurantId}/impersonate`, {
+        method: "POST",
+        headers: { token }
+      });
+      const data = await response.json();
+      if (data.success && data.token) {
+        const orig = localStorage.getItem("token");
+        if (orig && !localStorage.getItem("originalAdminToken")) {
+          localStorage.setItem("originalAdminToken", orig);
+        }
+        localStorage.setItem("token", data.token);
+        setToken(data.token);
+        setIsImpersonated(true);
+        await loadUserProfile(data.token);
+        return { success: true, targetRestaurant: data.targetRestaurant };
+      } else {
+        return { success: false, message: data.message || "Failed to impersonate restaurant." };
+      }
+    } catch (err) {
+      return { success: false, message: "Network error during impersonation request." };
+    }
+  };
+
+  const exitImpersonation = async () => {
+    const origToken = localStorage.getItem("originalAdminToken");
+    if (origToken) {
+      localStorage.setItem("token", origToken);
+      localStorage.removeItem("originalAdminToken");
+      setToken(origToken);
+      setIsImpersonated(false);
+      await loadUserProfile(origToken);
+    }
+  };
+
   const setStorefrontRestaurant = (data) => {
     setStorefrontRestaurantState(data);
     if (data) {
@@ -470,7 +510,10 @@ const StoreContextProvider = (props) => {
     setStorefrontRestaurant,
     cartItemsDetails,
     clearCart,
-    clearCartAndAdd
+    clearCartAndAdd,
+    isImpersonated,
+    startImpersonation,
+    exitImpersonation
   };
 
   return (
