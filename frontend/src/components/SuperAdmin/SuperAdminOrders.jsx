@@ -31,14 +31,17 @@ const SuperAdminOrders = () => {
       });
       const data = await response.json();
 
-      if (data.success) {
+      if (data.success && Array.isArray(data.data)) {
         setOrders(data.data);
         setTotalPages(data.totalPages || 1);
         setCurrentPage(data.currentPage || 1);
         setTotalCount(data.totalCount || 0);
+      } else {
+        setOrders([]);
       }
     } catch (err) {
       console.error("Error loading orders:", err);
+      setOrders([]);
     } finally {
       setLoading(false);
     }
@@ -137,9 +140,14 @@ const SuperAdminOrders = () => {
                       </span>
                     </td>
                     <td>
-                      <span className={`status-badge-pill ${o.order_status.toLowerCase().replace(/\s+/g, '-')}`}>
-                        {o.order_status}
-                      </span>
+                      {(() => {
+                        const statusVal = String(o.status || o.order_status || 'Pending');
+                        return (
+                          <span className={`status-badge-pill ${statusVal.toLowerCase().replace(/\s+/g, '-')}`}>
+                            {statusVal}
+                          </span>
+                        );
+                      })()}
                     </td>
                     <td>{new Date(o.created_at).toLocaleDateString()}</td>
                     <td>

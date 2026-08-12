@@ -25,6 +25,7 @@ const Navbar = ({ setShowLogin }) => {
   const [showSearchInput, setShowSearchInput] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [logoError, setLogoError] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -106,11 +107,12 @@ const Navbar = ({ setShowLogin }) => {
             onClick={() => scrollToSection("home", "home")}
             title={`${activeRestaurant.name} Storefront`}
           >
-            {activeLogo ? (
+            {activeLogo && !logoError ? (
               <img
                 src={activeLogo}
                 alt={activeRestaurant.name}
                 className="navbar-storefront-logo-img"
+                onError={() => setLogoError(true)}
               />
             ) : (
               <div className="navbar-storefront-avatar">

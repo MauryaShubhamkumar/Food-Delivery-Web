@@ -30,14 +30,17 @@ const SuperAdminUsers = () => {
       });
       const data = await response.json();
 
-      if (data.success) {
+      if (data.success && Array.isArray(data.data)) {
         setUsers(data.data);
         setTotalPages(data.totalPages || 1);
         setCurrentPage(data.currentPage || 1);
         setTotalCount(data.totalCount || 0);
+      } else {
+        setUsers([]);
       }
     } catch (err) {
       console.error("Error loading users:", err);
+      setUsers([]);
     } finally {
       setLoading(false);
     }

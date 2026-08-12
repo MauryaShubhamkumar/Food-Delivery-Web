@@ -30,14 +30,17 @@ const SuperAdminReviews = () => {
       });
       const data = await response.json();
 
-      if (data.success) {
+      if (data.success && Array.isArray(data.data)) {
         setReviews(data.data);
         setTotalPages(data.totalPages || 1);
         setCurrentPage(data.currentPage || 1);
         setTotalCount(data.totalCount || 0);
+      } else {
+        setReviews([]);
       }
     } catch (err) {
       console.error("Error loading reviews:", err);
+      setReviews([]);
     } finally {
       setLoading(false);
     }

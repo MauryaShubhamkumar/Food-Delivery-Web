@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import "./Footer.css";
 import { assets } from "../../assets/assets";
 import Logo from "../Logo/Logo";
@@ -50,6 +50,8 @@ const Footer = () => {
   const year = new Date().getFullYear();
   const entityName = isStorefront ? rest?.name : "FastBite";
 
+  const [logoError, setLogoError] = useState(false);
+
   return (
     <footer className="footer" id="footer">
       {/* Top gradient bar */}
@@ -60,11 +62,12 @@ const Footer = () => {
         <div className="footer-col footer-col-brand">
           {isStorefront ? (
             <div className="footer-restaurant-brand">
-              {rest?.logo_url ? (
+              {rest?.logo_url && !logoError ? (
                 <img
                   src={rest.logo_url}
                   alt={rest.name}
                   className="footer-restaurant-logo"
+                  onError={() => setLogoError(true)}
                 />
               ) : (
                 <div className="footer-restaurant-avatar">

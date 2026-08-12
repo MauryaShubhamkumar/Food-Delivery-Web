@@ -5,7 +5,7 @@ export const getPlatformStatsRepo = async () => {
   const [[restStats], [userStats], [orderStats], [onboardingStats]] = await Promise.all([
     pool.query(`SELECT COUNT(id) as total, SUM(CASE WHEN status = 'active' THEN 1 ELSE 0 END) as activeCount, SUM(CASE WHEN status = 'setup' OR onboarding_completed = FALSE THEN 1 ELSE 0 END) as setupCount, SUM(CASE WHEN status = 'inactive' THEN 1 ELSE 0 END) as inactiveCount FROM restaurants`),
     pool.query(`SELECT COUNT(id) as total, SUM(CASE WHEN role = 'customer' THEN 1 ELSE 0 END) as customersCount, SUM(CASE WHEN role = 'restaurant_owner' THEN 1 ELSE 0 END) as ownersCount FROM users`),
-    pool.query(`SELECT COUNT(id) as totalOrders, COALESCE(SUM(CASE WHEN order_status != 'Cancelled' THEN amount ELSE 0 END), 0) as totalGMV FROM orders`),
+    pool.query(`SELECT COUNT(id) as totalOrders, COALESCE(SUM(CASE WHEN status != 'Cancelled' THEN amount ELSE 0 END), 0) as totalGMV FROM orders`),
     pool.query(`SELECT COUNT(id) as pendingOnboarding FROM restaurants WHERE onboarding_completed = FALSE OR status = 'setup'`)
   ]);
   return { restStats, userStats, orderStats, onboardingStats };
@@ -20,14 +20,24 @@ export const getPlatformRestaurantsRepo = async ({ search, status, page, limit }
   }
   if (search && search.trim() !== '') {
     const term = `%${search.trim()}%`;
-    whereConditions.push('(r.name LIKE ? OR r.slug LIKE ? OR r.email LIKE ? OR r.phone LIKE ? OR u.name LIKE ? OR u.email LIKE ?)');
-    params.push(term, term, term, term, term, term);
+    whereConditions.push('(r.name LIKE ? OR r.slug LIKE ? OR r.email LIKE ? OR r.phone LIKE ?)');
+    params.push(term, term, term, term);
   }
   const whereClause = whereConditions.length > 0 ? `WHERE ${whereConditions.join(' AND ')}` : '';
   const offset = (page - 1) * limit;
   const [[countRows], [dataRows]] = await Promise.all([
-    pool.query(`SELECT COUNT(DISTINCT r.id) as total FROM restaurants r LEFT JOIN users u ON (u.restaurant_id = r.id AND u.role = 'restaurant_owner') ${whereClause}`, params),
-    pool.query(`SELECT r.id, r.name, r.slug, r.logo_url, r.email, r.phone, r.address, r.city, r.state, r.pincode, r.status, r.onboarding_step, r.onboarding_completed, r.created_at, u.name as owner_name, u.email as owner_email, u.phone as owner_phone, (SELECT COUNT(f.id) FROM food_items f WHERE f.restaurant_id = r.id) as product_count, (SELECT COUNT(o.id) FROM orders o WHERE o.restaurant_id = r.id) as order_count, COALESCE((SELECT SUM(o.amount) FROM orders o WHERE o.restaurant_id = r.id AND o.order_status != 'Cancelled'), 0) as gmv FROM restaurants r LEFT JOIN users u ON (u.restaurant_id = r.id AND u.role = 'restaurant_owner') ${whereClause} GROUP BY r.id ORDER BY r.created_at DESC LIMIT ? OFFSET ?`, [...params, limit, offset])
+    pool.query(`SELECT COUNT(r.id) as total FROM restaurants r ${whereClause}`, params),
+    pool.query(
+      `SELECT r.id, r.name, r.slug, r.logo_url, r.email, r.phone, r.address, r.city, r.state, r.pincode, r.status, r.onboarding_step, r.onboarding_completed, r.created_at,
+       (SELECT u.name FROM users u WHERE u.restaurant_id = r.id AND u.role = 'restaurant_owner' LIMIT 1) as owner_name,
+       (SELECT u.email FROM users u WHERE u.restaurant_id = r.id AND u.role = 'restaurant_owner' LIMIT 1) as owner_email,
+       (SELECT u.phone FROM users u WHERE u.restaurant_id = r.id AND u.role = 'restaurant_owner' LIMIT 1) as owner_phone,
+       (SELECT COUNT(f.id) FROM food_items f WHERE f.restaurant_id = r.id) as product_count,
+       (SELECT COUNT(o.id) FROM orders o WHERE o.restaurant_id = r.id) as order_count,
+       COALESCE((SELECT SUM(o.amount) FROM orders o WHERE o.restaurant_id = r.id AND o.status != 'Cancelled'), 0) as gmv
+       FROM restaurants r ${whereClause} ORDER BY r.created_at DESC LIMIT ? OFFSET ?`,
+      [...params, limit, offset]
+    )
   ]);
   return { totalCount: Number(countRows[0]?.total || 0), dataRows };
 };
@@ -41,7 +51,7 @@ export const getPlatformRestaurantDetailRepo = async (id) => {
     pool.query('SELECT id, name, email, phone, is_active, created_at FROM users WHERE restaurant_id = ? AND role = ? LIMIT 1', [id, 'restaurant_owner']),
     pool.query('SELECT * FROM restaurant_settings WHERE restaurant_id = ? LIMIT 1', [id]),
     pool.query('SELECT COUNT(id) as count FROM food_items WHERE restaurant_id = ?', [id]),
-    pool.query('SELECT COUNT(id) as totalOrders, COALESCE(SUM(CASE WHEN order_status != "Cancelled" THEN amount ELSE 0 END), 0) as totalGMV FROM orders WHERE restaurant_id = ?', [id]),
+    pool.query('SELECT COUNT(id) as totalOrders, COALESCE(SUM(CASE WHEN status != "Cancelled" THEN amount ELSE 0 END), 0) as totalGMV FROM orders WHERE restaurant_id = ?', [id]),
     pool.query('SELECT AVG(rating) as avgRating, COUNT(id) as totalReviews FROM reviews WHERE restaurant_id = ? AND is_visible = TRUE', [id])
   ]);
   return { restaurant, owner: ownerRows[0] || null, settings: settingsRows[0] || null, prodCount: Number(prodCountRows[0]?.count || 0), orderStats: orderStatsRows[0] || {}, reviewStats: reviewStatsRows[0] || {} };
@@ -79,7 +89,7 @@ export const getPlatformUsersRepo = async ({ search, role, page, limit }) => {
 export const getPlatformOrdersRepo = async ({ search, status, page, limit }) => {
   const pool = getPool();
   let whereConditions = []; let params = [];
-  if (status && status !== 'all') { whereConditions.push('o.order_status = ?'); params.push(status); }
+  if (status && status !== 'all') { whereConditions.push('o.status = ?'); params.push(status); }
   if (search && search.trim() !== '') {
     const term = `%${search.trim()}%`;
     whereConditions.push('(o.id LIKE ? OR o.first_name LIKE ? OR o.email LIKE ? OR r.name LIKE ?)');
@@ -135,8 +145,8 @@ export const togglePlatformReviewVisibilityRepo = async (id) => {
 export const getPlatformAnalyticsRepo = async (dateFilter) => {
   const pool = getPool();
   const [[leaderboard], [timeline]] = await Promise.all([
-    pool.query(`SELECT r.id, r.name, r.slug, r.status, COUNT(o.id) as totalOrders, COALESCE(SUM(CASE WHEN o.order_status != 'Cancelled' THEN o.amount ELSE 0 END), 0) as gmv FROM restaurants r LEFT JOIN orders o ON (o.restaurant_id = r.id ${dateFilter}) GROUP BY r.id ORDER BY gmv DESC LIMIT 15`),
-    pool.query(`SELECT DATE(o.created_at) as date, COUNT(o.id) as ordersCount, COALESCE(SUM(CASE WHEN o.order_status != 'Cancelled' THEN o.amount ELSE 0 END), 0) as dailyGMV FROM orders o WHERE 1=1 ${dateFilter} GROUP BY DATE(o.created_at) ORDER BY date ASC`)
+    pool.query(`SELECT r.id, r.name, r.slug, r.status, COUNT(o.id) as totalOrders, COALESCE(SUM(CASE WHEN o.status != 'Cancelled' THEN o.amount ELSE 0 END), 0) as gmv FROM restaurants r LEFT JOIN orders o ON (o.restaurant_id = r.id ${dateFilter}) GROUP BY r.id ORDER BY gmv DESC LIMIT 15`),
+    pool.query(`SELECT DATE(o.created_at) as date, COUNT(o.id) as ordersCount, COALESCE(SUM(CASE WHEN o.status != 'Cancelled' THEN o.amount ELSE 0 END), 0) as dailyGMV FROM orders o WHERE 1=1 ${dateFilter} GROUP BY DATE(o.created_at) ORDER BY date ASC`)
   ]);
   return { leaderboard, timeline };
 };

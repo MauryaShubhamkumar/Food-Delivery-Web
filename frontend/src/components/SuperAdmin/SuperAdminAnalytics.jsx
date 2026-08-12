@@ -103,8 +103,8 @@ const SuperAdminAnalytics = () => {
                     <td>{r.totalOrders} orders</td>
                     <td><strong style={{ color: '#10b981' }}>₹{Number(r.gmv).toFixed(2)}</strong></td>
                     <td>
-                      <span className={`status-badge-pill ${r.status}`}>
-                        {r.status.toUpperCase()}
+                      <span className={`status-badge-pill ${r.status || 'setup'}`}>
+                        {String(r.status || 'setup').toUpperCase()}
                       </span>
                     </td>
                   </tr>

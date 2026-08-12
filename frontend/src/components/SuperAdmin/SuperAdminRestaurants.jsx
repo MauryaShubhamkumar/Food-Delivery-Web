@@ -47,14 +47,17 @@ const SuperAdminRestaurants = () => {
       });
       const data = await response.json();
 
-      if (data.success) {
+      if (data.success && Array.isArray(data.data)) {
         setRestaurants(data.data);
         setTotalPages(data.totalPages || 1);
         setCurrentPage(data.currentPage || 1);
         setTotalCount(data.totalCount || 0);
+      } else {
+        setRestaurants([]);
       }
     } catch (err) {
       setAlertMsg("Error loading platform restaurants.");
+      setRestaurants([]);
     } finally {
       setLoading(false);
     }
@@ -188,8 +191,8 @@ const SuperAdminRestaurants = () => {
                     <td>{r.order_count} orders</td>
                     <td><strong>₹{Number(r.gmv).toFixed(2)}</strong></td>
                     <td>
-                      <span className={`status-badge-pill ${r.status}`}>
-                        {r.status.toUpperCase()}
+                      <span className={`status-badge-pill ${r.status || 'setup'}`}>
+                        {String(r.status || 'setup').toUpperCase()}
                       </span>
                     </td>
                     <td>
