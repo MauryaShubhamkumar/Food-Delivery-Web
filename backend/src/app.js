@@ -27,6 +27,9 @@ import superAdminRouter from './modules/super-admin/superAdmin.routes.js';
 export const createApp = () => {
   const app = express();
 
+  // 0. Trust Proxy — Required for Render/Vercel/Cloudflare reverse proxies & express-rate-limit
+  app.set('trust proxy', 1);
+
   // 1. CORS Middleware mounted FIRST so all responses & preflights have Access-Control headers
   const getAllowedOrigins = () => {
     const envOrigins = [process.env.FRONTEND_URL, process.env.ALLOWED_ORIGINS]

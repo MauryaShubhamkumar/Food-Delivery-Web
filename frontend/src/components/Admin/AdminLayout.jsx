@@ -91,9 +91,14 @@ const AdminLayout = ({ children }) => {
           <div className="admin-theme-toggle" onClick={toggleTheme} title="Toggle Dark/Light Mode">
             {theme === "light" ? <Moon size={18} /> : <Sun size={18} />}
           </div>
-          <Link to={restSlug ? `/r/${restSlug}` : "/"} className="back-to-store-btn" target="_blank" rel="noopener noreferrer">
-            <Store size={16} /> View Storefront
-          </Link>
+          {(() => {
+            const targetSlug = restSlug || settings?.slug || (settings?.restaurantName ? settings.restaurantName.toLowerCase().replace(/[^a-z0-9]+/g, '-') : null);
+            return (
+              <Link to={targetSlug ? `/r/${targetSlug}` : "/"} className="back-to-store-btn" target="_blank" rel="noopener noreferrer">
+                <Store size={16} /> View Storefront
+              </Link>
+            );
+          })()}
           <div className="admin-user-info">
             <div className="admin-avatar">
               {user?.name ? user.name.charAt(0).toUpperCase() : 'A'}
