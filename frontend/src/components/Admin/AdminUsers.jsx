@@ -59,26 +59,6 @@ const AdminUsers = () => {
     setIsModalOpen(true);
   };
 
-  const handleStatusChangeInModal = async (userId, targetStatus) => {
-    const response = await fetch(`${url}/api/admin/users/${userId}/status`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        token: token
-      },
-      body: JSON.stringify({ isActive: targetStatus })
-    });
-
-    const data = await response.json();
-
-    if (!response.ok || !data.success) {
-      throw new Error(data.message || 'Failed to update account status');
-    }
-
-    triggerSuccess(data.message || 'Customer account status updated');
-    await fetchAdminUsers();
-  };
-
   return (
     <div className="admin-users-page">
       {/* Top Header */}
@@ -206,7 +186,6 @@ const AdminUsers = () => {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         userId={selectedUserId}
-        onStatusChange={handleStatusChangeInModal}
       />
     </div>
   );

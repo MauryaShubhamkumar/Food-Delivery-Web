@@ -262,14 +262,90 @@
   letter-spacing: 0.5px;
 }
 
-.info-value {
-  font-size: 16px;
-  font-weight: 500;
+.info-item.default-address-view-card {
+  background: var(--input-bg);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 16px 20px;
+  gap: 10px;
+}
+
+.address-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.default-address-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(16, 185, 129, 0.15);
+  color: #10b981;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: var(--radius-pill);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.structured-address-display {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.address-street {
+  font-size: 15px;
+  font-weight: 700;
   color: var(--text-dark);
-  line-height: 1.5;
+}
+
+.address-city-state, .address-country {
+  font-size: 14px;
+  color: var(--text-body);
+}
+
+.text-muted-empty {
+  color: var(--text-muted);
+  font-style: italic;
+  font-size: 14px;
 }
 
 /* EDIT FORM STYLES */
+.form-section-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-dark);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  margin-bottom: 14px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.address-section-title {
+  margin-top: 24px;
+  color: var(--primary-color);
+  border-bottom-color: rgba(255, 94, 58, 0.2);
+}
+
+.address-help-badge {
+  margin-left: auto;
+  font-size: 11px;
+  font-weight: 600;
+  color: #10b981;
+  background: rgba(16, 185, 129, 0.12);
+  padding: 3px 8px;
+  border-radius: var(--radius-pill);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
 .form-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -307,6 +383,51 @@
 .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
   border-color: var(--primary-color);
   box-shadow: 0 0 0 3px rgba(255, 94, 58, 0.2);
+}
+
+.form-group input.input-error,
+.form-group textarea.input-error {
+  border-color: #ef4444 !important;
+  background: rgba(239, 68, 68, 0.04) !important;
+}
+
+.form-group input.input-error:focus,
+.form-group textarea.input-error:focus {
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2) !important;
+}
+
+.form-group .field-error-msg {
+  color: #ef4444;
+  font-size: 12px;
+  font-weight: 600;
+  margin-top: 2px;
+}
+
+.form-group .pincode-status-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 600;
+  margin-top: 2px;
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+.form-group .pincode-status-tag.loading {
+  color: var(--primary-color);
+  background: rgba(255, 94, 58, 0.1);
+}
+
+.form-group .pincode-status-tag.success {
+  color: #10b981;
+  background: rgba(16, 185, 129, 0.1);
+}
+
+.country-readonly-input {
+  background: rgba(0, 0, 0, 0.03) !important;
+  cursor: not-allowed;
+  color: var(--text-muted) !important;
 }
 
 .form-actions {

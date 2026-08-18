@@ -24,6 +24,8 @@ import adminDashboardRouter from './modules/admin/admin.routes.js';
 import restaurantRouter from './modules/restaurants/restaurant.routes.js';
 import superAdminRouter from './modules/super-admin/superAdmin.routes.js';
 
+import { publicPlatformRouter, superAdminPlatformRouter } from './modules/platform/platformSettings.routes.js';
+
 export const createApp = () => {
   const app = express();
 
@@ -148,9 +150,11 @@ export const createApp = () => {
   app.use('/api/categories', publicCategoryRouter);
   app.use('/api/coupon', publicCouponRouter);
   app.use('/api/settings', publicSettingsRouter);
+  app.use('/api/platform', publicPlatformRouter);
   app.use('/api/reviews', publicReviewRouter);
   app.use('/api/restaurant', restaurantRouter);
   app.use('/api/super-admin', superAdminRouter);
+  app.use('/api/super-admin', superAdminPlatformRouter);
   app.use('/api/inventory', adminInventoryRouter);
 
   // 9. Consolidated Admin Router

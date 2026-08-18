@@ -234,6 +234,13 @@ const initTables = async () => {
       "ALTER TABLE users ADD COLUMN bio TEXT;",
       "ALTER TABLE users ADD COLUMN avatar_url TEXT;",
       "ALTER TABLE users ADD COLUMN avatar_public_id VARCHAR(255);",
+      "ALTER TABLE users ADD COLUMN first_name VARCHAR(255);",
+      "ALTER TABLE users ADD COLUMN last_name VARCHAR(255);",
+      "ALTER TABLE users ADD COLUMN street VARCHAR(255);",
+      "ALTER TABLE users ADD COLUMN city VARCHAR(255);",
+      "ALTER TABLE users ADD COLUMN state VARCHAR(255);",
+      "ALTER TABLE users ADD COLUMN zip_code VARCHAR(50);",
+      "ALTER TABLE users ADD COLUMN country VARCHAR(100);",
       "ALTER TABLE food_items ADD COLUMN restaurant_id INT DEFAULT 1;",
       "ALTER TABLE food_items ADD COLUMN available BOOLEAN DEFAULT TRUE;",
       "ALTER TABLE food_items ADD COLUMN category_id INT;",
@@ -378,6 +385,21 @@ const initTables = async () => {
       );
     `;
 
+    const createPlatformSettingsTable = `
+      CREATE TABLE IF NOT EXISTS platform_settings (
+        id INT PRIMARY KEY DEFAULT 1,
+        platform_name VARCHAR(255) DEFAULT 'FastBite',
+        tagline VARCHAR(255) DEFAULT 'Food Express',
+        logo_url TEXT,
+        support_email VARCHAR(255) DEFAULT 'support@fastbite.in',
+        support_phone VARCHAR(50) DEFAULT '+91 6387252549',
+        support_address TEXT,
+        description TEXT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+      );
+    `;
+
     await pool.query(createCategoriesTable);
     await pool.query(createFoodItemsTable);
     await pool.query(createCartItemsTable);
@@ -385,10 +407,18 @@ const initTables = async () => {
     await pool.query(createOrderItemsTable);
     await pool.query(createCouponsTable);
     await pool.query(createSettingsTable);
+    await pool.query(createPlatformSettingsTable);
     await pool.query(createReviewsTable);
     await pool.query(createInventoryTable);
     await pool.query(createInventoryTransactionsTable);
     await pool.query(createAuditLogsTable);
+
+    try {
+      await pool.query(`
+        INSERT IGNORE INTO platform_settings (id, platform_name, tagline, support_email, support_phone, support_address, description)
+        VALUES (1, 'FastBite', 'Food Express', 'support@fastbite.in', '+91 6387252549', 'FastBite HQ, Tech Hub, Varanasi, Uttar Pradesh, India', 'FastBite is your premier multi-restaurant food delivery marketplace connecting you with the finest restaurants in town.');
+      `);
+    } catch (platErr) {}
 
     try {
       await pool.query(`

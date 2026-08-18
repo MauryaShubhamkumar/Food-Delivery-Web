@@ -245,13 +245,13 @@ const AdminReviews = () => {
                     <td><span className="rev-id-badge">#{rev.id}</span></td>
                     <td>
                       <div className="user-info-cell">
-                        <strong>{rev.userName || 'Guest User'}</strong>
-                        <span className="user-email-text">{rev.userEmail}</span>
+                        <strong>{rev.userName || rev.customer_name || 'Guest User'}</strong>
+                        <span className="user-email-text">{rev.userEmail || rev.customer_email || '—'}</span>
                       </div>
                     </td>
                     <td>
                       <div className="product-info-cell">
-                        <strong>{rev.productName}</strong>
+                        <strong>{rev.productName || rev.product_name || (rev.productId || rev.product_id ? `Product #${rev.productId || rev.product_id}` : 'Product unavailable')}</strong>
                       </div>
                     </td>
                     <td>
@@ -272,7 +272,7 @@ const AdminReviews = () => {
                         {rev.comment}
                       </p>
                     </td>
-                    <td><span className="order-link-badge">#{rev.order_id}</span></td>
+                    <td><span className="order-link-badge">#{rev.orderId || rev.order_id || '—'}</span></td>
                     <td>
                       <span className={`status-pill pill-${rev.status}`}>
                         ● {rev.status}

@@ -1,5 +1,6 @@
 import { findSettingsByRestaurant, upsertSettings, getRestaurantIdBySlug } from './settings.repository.js';
 import { uploadImage, deleteImage } from '../../services/cloudinary.service.js';
+import { getPool } from '../../config/db.js';
 
 const ALLOWED_CURRENCIES = ['INR', 'USD', 'EUR', 'GBP'];
 
@@ -31,13 +32,44 @@ const DEFAULT_SETTINGS = {
 };
 
 export const getPublicSettingsService = async ({ restaurantId, slug }) => {
-  let targetId = restaurantId ? Number(restaurantId) : 1;
+  let targetId = null;
+  let restMeta = null;
+  const pool = getPool();
+
   if (slug && slug.trim()) {
-    const found = await getRestaurantIdBySlug(slug);
-    if (found) targetId = found;
+    const [rows] = await pool.query('SELECT * FROM restaurants WHERE LOWER(slug) = LOWER(?)', [slug.trim()]);
+    if (rows[0]) {
+      targetId = rows[0].id;
+      restMeta = rows[0];
+    }
+  } else if (restaurantId) {
+    const [rows] = await pool.query('SELECT * FROM restaurants WHERE id = ?', [Number(restaurantId)]);
+    if (rows[0]) {
+      targetId = rows[0].id;
+      restMeta = rows[0];
+    }
   }
+
+  if (!targetId) {
+    return DEFAULT_SETTINGS;
+  }
+
   const settings = await findSettingsByRestaurant(targetId);
-  return settings ? formatSettingsObj(settings) : DEFAULT_SETTINGS;
+  const formatted = settings ? formatSettingsObj(settings) : DEFAULT_SETTINGS;
+
+  return {
+    ...formatted,
+    restaurantId: targetId,
+    slug: restMeta?.slug || slug || null,
+    restaurantName: formatted.restaurantName || restMeta?.name || 'Restaurant',
+    logoUrl: formatted.logoUrl || restMeta?.logo_url || null,
+    phone: formatted.phone || restMeta?.phone || '',
+    email: formatted.email || restMeta?.email || '',
+    address: formatted.address || restMeta?.address || '',
+    city: restMeta?.city || '',
+    state: restMeta?.state || '',
+    pincode: restMeta?.pincode || ''
+  };
 };
 
 export const getAdminSettingsService = async (tenantId) => {

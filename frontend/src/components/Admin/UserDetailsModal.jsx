@@ -1,17 +1,16 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { StoreContext } from '../../context/StoreContext';
 import OrderDetailsModal from './OrderDetailsModal';
-import { User, X, AlertTriangle, Package, Eye, CheckCircle2, XCircle } from 'lucide-react';
+import { User, X, AlertTriangle, Package, Eye } from 'lucide-react';
 import './UserDetailsModal.css';
 
-const UserDetailsModal = ({ isOpen, onClose, userId, onStatusChange }) => {
+const UserDetailsModal = ({ isOpen, onClose, userId }) => {
   const { url, token } = useContext(StoreContext);
 
   const [userData, setUserData] = useState(null);
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState('');
-  const [updating, setUpdating] = useState(false);
 
   // Nested Order Details Modal state
   const [selectedOrder, setSelectedOrder] = useState(null);
@@ -53,27 +52,6 @@ const UserDetailsModal = ({ isOpen, onClose, userId, onStatusChange }) => {
   }, [isOpen, userId]);
 
   if (!isOpen) return null;
-
-  const handleToggleAccountStatus = async () => {
-    if (!userData) return;
-    const targetStatus = !userData.isActive;
-    const actionText = targetStatus ? 'activate' : 'deactivate';
-
-    if (!window.confirm(`Are you sure you want to ${actionText} ${userData.name}'s account?\n${!targetStatus ? 'The customer will not be able to log in while the account is inactive.' : ''}`)) {
-      return;
-    }
-
-    try {
-      setUpdating(true);
-      setErrorMsg('');
-      await onStatusChange(userData.id, targetStatus);
-      setUserData(prev => ({ ...prev, isActive: targetStatus }));
-    } catch (err) {
-      setErrorMsg(err.message || 'Failed to update account status');
-    } finally {
-      setUpdating(false);
-    }
-  };
 
   const handleViewOrder = (order) => {
     setSelectedOrder(order);
@@ -152,14 +130,6 @@ const UserDetailsModal = ({ isOpen, onClose, userId, onStatusChange }) => {
                     ● {userData.isActive ? 'Active' : 'Inactive'}
                   </span>
                 </div>
-                <button
-                  className={`btn-status-toggle ${userData.isActive ? 'btn-deactivate' : 'btn-activate'}`}
-                  onClick={handleToggleAccountStatus}
-                  disabled={updating}
-                  style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', justifyContent: 'center' }}
-                >
-                  {updating ? 'Updating...' : userData.isActive ? <><XCircle size={14} /> Deactivate Account</> : <><CheckCircle2 size={14} /> Activate Account</>}
-                </button>
               </div>
             </div>
 

@@ -119,8 +119,35 @@ export const getAdminReviews = async (req, res, next) => {
     const tenantId = req.restaurantId || 1;
     const page = Math.max(1, parseInt(req.query.page) || 1);
     const limit = Math.min(100, Math.max(1, parseInt(req.query.limit) || 20));
-    const { total, rows } = await getAdminReviewsList(tenantId, { search: req.query.search, status: req.query.status, page, limit });
-    const formatted = rows.map(r => ({ id: r.id, customer_name: r.customer_name || 'Unknown', product_name: r.product_name || 'Unknown', rating: r.rating, comment: r.comment, status: r.status, is_visible: Boolean(r.is_visible), created_at: r.created_at }));
+    const { total, rows } = await getAdminReviewsList(tenantId, {
+      search: req.query.search,
+      status: req.query.status,
+      rating: req.query.rating,
+      page,
+      limit
+    });
+    const formatted = rows.map(r => ({
+      id: r.id,
+      userId: r.user_id,
+      user_id: r.user_id,
+      userName: r.customer_name || 'Guest User',
+      customer_name: r.customer_name || 'Guest User',
+      userEmail: r.customer_email || '',
+      customer_email: r.customer_email || '',
+      productId: r.product_id,
+      product_id: r.product_id,
+      productName: r.product_name || 'Product unavailable',
+      product_name: r.product_name || 'Product unavailable',
+      productImage: r.product_image || null,
+      orderId: r.order_id,
+      order_id: r.order_id,
+      rating: Number(r.rating || 0),
+      comment: r.comment || '',
+      status: r.status || 'visible',
+      is_visible: Boolean(r.is_visible),
+      createdAt: r.created_at,
+      created_at: r.created_at
+    }));
     res.json({ success: true, count: formatted.length, page, limit, total, totalPages: Math.ceil(total / limit) || 1, data: formatted });
   } catch (error) { next(error); }
 };

@@ -8,6 +8,7 @@ import {
 } from './user.repository.js';
 import { uploadImage, deleteImage } from '../../services/cloudinary.service.js';
 import { normalizeRole, ROLE_PERMISSIONS } from '../../config/permissions.js';
+import { validateProfilePayload } from '../../utils/addressValidator.js';
 
 export const getProfileService = async (userId) => {
   const user = await getUserById(userId);
@@ -25,9 +26,11 @@ export const getProfileService = async (userId) => {
 };
 
 export const updateProfileService = async (userId, data) => {
-  if (!data.name) {
-    const error = new Error("Name is required");
+  const validation = validateProfilePayload(data);
+  if (!validation.isValid) {
+    const error = new Error(validation.message || "Invalid profile information.");
     error.statusCode = 400;
+    error.errors = validation.errors;
     throw error;
   }
   return await updateUserProfile(userId, data);

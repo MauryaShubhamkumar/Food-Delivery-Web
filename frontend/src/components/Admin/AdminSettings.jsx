@@ -1,5 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { StoreContext } from '../../context/StoreContext';
+import StorefrontShareCard from './StorefrontShareCard';
 import { Store, CreditCard, Clock, Truck, Globe, Save, CheckCircle2, AlertTriangle, X, Upload } from 'lucide-react';
 import './AdminSettings.css';
 
@@ -175,8 +176,8 @@ const AdminSettings = () => {
 
       if (response.ok && data.success) {
         triggerSuccess(data.message || 'Settings saved successfully!');
-        if (loadPublicSettings) {
-          await loadPublicSettings();
+        if (loadPublicSettings && data.data) {
+          await loadPublicSettings(data.data.slug || data.data.restaurantId);
         }
       } else {
         setErrorMsg(data.message || 'Failed to update settings');
@@ -213,6 +214,12 @@ const AdminSettings = () => {
           <button className="alert-close" onClick={() => setErrorMsg('')}><X size={14} /></button>
         </div>
       ) : null}
+
+      {/* Shareable Digital Storefront Marketing Card */}
+      <StorefrontShareCard
+        restaurantName={formData.restaurantName}
+        slug={formData.slug || (formData.restaurantName ? formData.restaurantName.toLowerCase().replace(/[^a-z0-9]+/g, '-') : null)}
+      />
 
       {loading ? (
         <div className="settings-loading-skeleton">

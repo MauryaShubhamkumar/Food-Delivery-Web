@@ -1,7 +1,7 @@
 import express from 'express';
 import {
   getPlatformStats, getPlatformRestaurants, getPlatformRestaurantDetail,
-  updateRestaurantStatus, getPlatformUsers, getPlatformOrders,
+  updateRestaurantStatus, getPlatformUsers, updatePlatformUserStatus, getPlatformOrders,
   getPlatformReviews, togglePlatformReviewVisibility, getPlatformAnalytics, getOnboardingStuck,
   impersonateRestaurant, getPlatformRevenueLedger, updateRestaurantCommission
 } from './superAdmin.controller.js';
@@ -19,6 +19,7 @@ superAdminRouter.post('/restaurants/:id/impersonate', ...superAdminOnly, imperso
 superAdminRouter.put('/restaurants/:id/commission', ...superAdminOnly, updateRestaurantCommission);
 superAdminRouter.get('/revenue-ledger', ...superAdminOnly, getPlatformRevenueLedger);
 superAdminRouter.get('/users', ...superAdminOnly, getPlatformUsers);
+superAdminRouter.patch('/users/:id/status', ...superAdminOnly, updatePlatformUserStatus);
 superAdminRouter.get('/orders', ...superAdminOnly, getPlatformOrders);
 superAdminRouter.get('/reviews', ...superAdminOnly, getPlatformReviews);
 superAdminRouter.patch('/reviews/:id/visibility', ...superAdminOnly, togglePlatformReviewVisibility);

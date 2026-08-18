@@ -3,9 +3,10 @@ import { StoreContext } from '../../context/StoreContext';
 import './Logo.css';
 
 const Logo = () => {
-  const { settings } = useContext(StoreContext);
-  const name = settings?.restaurantName || 'FastBite';
-  const logoUrl = settings?.logoUrl;
+  const { platformSettings } = useContext(StoreContext);
+  const name = platformSettings?.platformName || 'FastBite';
+  const tagline = platformSettings?.tagline || 'FOOD EXPRESS';
+  const logoUrl = platformSettings?.logoUrl;
 
   return (
     <div className="brand-logo">
@@ -37,7 +38,7 @@ const Logo = () => {
       )}
       <div className="brand-text-wrapper">
         <span className="brand-name">{name}<span className="brand-dot">.</span></span>
-        <span className="brand-tagline">FOOD EXPRESS</span>
+        <span className="brand-tagline">{tagline}</span>
       </div>
     </div>
   );

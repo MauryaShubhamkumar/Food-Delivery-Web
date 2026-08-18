@@ -5,6 +5,7 @@ import {
 } from './order.repository.js';
 import { getPool } from '../../config/db.js';
 import { logAuditEvent } from '../../utils/auditLogger.js';
+import { validateAddressPayload } from '../../utils/addressValidator.js';
 
 const VALID_TRANSITIONS = {
   'Pending': ['Confirmed', 'Cancelled'],
@@ -20,6 +21,15 @@ const VALID_STATUS_LIST = ['Pending', 'Confirmed', 'Preparing', 'Out for Deliver
 export const placeOrderService = async (userId, { items, amount, address, couponCode, paymentMethod = 'cod', paymentReference }) => {
   if (!items || items.length === 0) { const e = new Error("Order items cannot be empty"); e.statusCode = 400; throw e; }
   if (!address || !amount) { const e = new Error("Delivery address and total amount are required"); e.statusCode = 400; throw e; }
+
+  // Validate Delivery Address
+  const addressValidation = validateAddressPayload(address);
+  if (!addressValidation.isValid) {
+    const e = new Error(addressValidation.message || "Invalid delivery address information.");
+    e.statusCode = 400;
+    e.errors = addressValidation.errors;
+    throw e;
+  }
   const cleanPaymentMethod = (paymentMethod || 'cod').toLowerCase();
   if (!['cod', 'upi'].includes(cleanPaymentMethod)) { const e = new Error("Invalid payment method selected. Choose Cash on Delivery or UPI."); e.statusCode = 400; throw e; }
   let cleanPaymentRef = null; let initialPaymentStatus = 'pending';

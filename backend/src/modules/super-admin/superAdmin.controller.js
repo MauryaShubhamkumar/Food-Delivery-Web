@@ -53,6 +53,32 @@ export const getPlatformUsers = async (req, res, next) => {
   } catch (error) { next(error); }
 };
 
+export const updatePlatformUserStatus = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { isActive, is_active } = req.body;
+    const targetStatus = isActive !== undefined ? Boolean(isActive) : Boolean(is_active);
+
+    if (Number(req.userId) === Number(id)) {
+      return res.status(400).json({ success: false, message: "You cannot deactivate your own Super Admin account." });
+    }
+
+    const { getPool } = await import('../../config/db.js');
+    const pool = getPool();
+    const [userRows] = await pool.query('SELECT id, name, role FROM users WHERE id = ?', [id]);
+    if (userRows.length === 0) {
+      return res.status(404).json({ success: false, message: "User not found." });
+    }
+
+    await pool.query('UPDATE users SET is_active = ? WHERE id = ?', [targetStatus ? 1 : 0, id]);
+    res.json({
+      success: true,
+      message: `User account "${userRows[0].name}" ${targetStatus ? 'activated' : 'deactivated'} successfully.`,
+      isActive: targetStatus
+    });
+  } catch (error) { next(error); }
+};
+
 export const getPlatformOrders = async (req, res, next) => {
   try {
     const page = Math.max(1, Number(req.query.page) || 1);

@@ -1,29 +1,25 @@
 import React, { useContext } from 'react';
 import { StoreContext } from '../../context/StoreContext';
-import { Zap } from 'lucide-react';
+import { Zap, Sparkles } from 'lucide-react';
 import './Header.css';
 
 const Header = () => {
-  const { settings } = useContext(StoreContext);
-  const isOpen = settings?.isOpen && settings?.isActive;
-  const restaurantName = settings?.restaurantName || 'FastBite';
-  const description = settings?.description || 'Choose from a diverse menu featuring a delectable array of dishes crafted with the finest ingredients and culinary expertise.';
-  const hoursText = settings?.openingTime && settings?.closingTime
-    ? `${settings.openingTime} - ${settings.closingTime}`
-    : '10:00 - 22:00';
+  const { platformSettings } = useContext(StoreContext);
+  const platformName = platformSettings?.platformName || 'FastBite';
+  const description = platformSettings?.description || 'Discover top-rated restaurants, browse curated menus, and get delicious food delivered hot & fresh to your doorstep.';
 
   return (
     <div className="header">
       <div className="header-content">
         <div className="header-badges">
           <span className="header-badge" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
-            <Zap size={14} /> Fast Delivery
+            <Zap size={14} /> Fast Multi-Restaurant Delivery
           </span>
-          <span className={`header-badge ${isOpen ? 'status-open' : 'status-closed'}`}>
-            {isOpen ? `● Open Now (${hoursText})` : '● Restaurant Closed'}
+          <span className="header-badge" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', background: 'rgba(255, 255, 255, 0.2)' }}>
+            <Sparkles size={14} /> 100% Fresh & Hygienic
           </span>
         </div>
-        <h2>Welcome to {restaurantName}</h2>
+        <h2>Order your favourite food here</h2>
         <p>{description}</p>
         <a href="#explore-menu" className="header-btn">
           <span>Explore Menu</span>

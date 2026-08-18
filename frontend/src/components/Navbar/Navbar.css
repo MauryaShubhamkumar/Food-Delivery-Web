@@ -101,6 +101,12 @@
   user-select: none;
 }
 
+.navbar-search-icon.cart-page-active {
+  border-color: var(--primary-color);
+  background: rgba(255, 94, 58, 0.12);
+  box-shadow: 0 0 0 2px rgba(255, 94, 58, 0.2);
+}
+
 .navbar-search-box {
   display: flex;
   align-items: center;

@@ -3,17 +3,100 @@ import { getPool } from '../../config/db.js';
 export const getUserById = async (id) => {
   const pool = getPool();
   const [rows] = await pool.query(
-    'SELECT id, name, email, role, restaurant_id, phone, address, profession, dietary_preference, bio, avatar_url, avatar_public_id, created_at FROM users WHERE id = ?',
+    'SELECT id, name, first_name, last_name, email, role, restaurant_id, phone, address, street, city, state, zip_code, country, profession, dietary_preference, bio, avatar_url, avatar_public_id, created_at FROM users WHERE id = ?',
     [id]
   );
-  return rows[0] || null;
+  if (!rows[0]) return null;
+  const u = rows[0];
+
+  // Backward compatibility fallback parsing
+  const firstName = u.first_name || (u.name ? u.name.trim().split(' ')[0] : '');
+  const lastName = u.last_name || (u.name ? u.name.trim().split(' ').slice(1).join(' ') : '');
+
+  return {
+    ...u,
+    firstName,
+    lastName,
+    street: u.street || '',
+    city: u.city || '',
+    state: u.state || '',
+    zipCode: u.zip_code || '',
+    country: u.country || ''
+  };
 };
 
-export const updateUserProfile = async (id, { name, phone, address, profession, dietary_preference, bio }) => {
+export const updateUserProfile = async (id, data) => {
   const pool = getPool();
+  const {
+    name,
+    firstName,
+    lastName,
+    phone,
+    street,
+    city,
+    state,
+    zipCode,
+    country,
+    address,
+    profession,
+    dietary_preference,
+    bio
+  } = data;
+
+  const cleanFirstName = (firstName !== undefined ? firstName : (data.first_name || '')).trim();
+  const cleanLastName = (lastName !== undefined ? lastName : (data.last_name || '')).trim();
+  
+  let computedName = (name || '').trim();
+  if (!computedName) {
+    computedName = `${cleanFirstName} ${cleanLastName}`.trim();
+  }
+  if (!computedName && cleanFirstName) {
+    computedName = cleanFirstName;
+  }
+
+  const cleanStreet = (street || '').trim();
+  const cleanCity = (city || '').trim();
+  const cleanState = (state || '').trim();
+  const cleanZip = (zipCode !== undefined ? zipCode : (data.zip_code || '')).trim();
+  const cleanCountry = (country || '').trim();
+
+  let formattedAddress = (address || '').trim();
+  if (!formattedAddress && (cleanStreet || cleanCity)) {
+    formattedAddress = [cleanStreet, cleanCity, cleanState, cleanZip, cleanCountry].filter(Boolean).join(', ');
+  }
+
   await pool.query(
-    `UPDATE users SET name = ?, phone = ?, address = ?, profession = ?, dietary_preference = ?, bio = ? WHERE id = ?`,
-    [name, phone || '', address || '', profession || '', dietary_preference || 'Non-Veg', bio || '', id]
+    `UPDATE users SET 
+      name = ?, 
+      first_name = ?, 
+      last_name = ?, 
+      phone = ?, 
+      street = ?, 
+      city = ?, 
+      state = ?, 
+      zip_code = ?, 
+      country = ?, 
+      address = ?, 
+      profession = ?, 
+      dietary_preference = ?, 
+      bio = ? 
+     WHERE id = ?`,
+    [
+      computedName,
+      cleanFirstName,
+      cleanLastName,
+      phone || '',
+      cleanStreet,
+      cleanCity,
+      cleanState,
+      cleanZip,
+      cleanCountry,
+      formattedAddress,
+      profession || '',
+      dietary_preference || 'Non-Veg',
+      bio || '',
+      id
+    ]
   );
   return await getUserById(id);
 };

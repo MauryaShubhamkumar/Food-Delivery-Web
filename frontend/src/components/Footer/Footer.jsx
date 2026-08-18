@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 
 const Footer = () => {
-  const { storefrontRestaurant, settings } = useContext(StoreContext);
+  const { storefrontRestaurant, platformSettings } = useContext(StoreContext);
   const location = useLocation();
 
   /* ── Determine mode: strictly storefront routes (/r/:slug) ── */
@@ -26,11 +26,11 @@ const Footer = () => {
   /* ── Contact data ── */
   const contactPhone = isStorefront
     ? (rest?.settings?.phone || rest?.phone || null)
-    : (settings?.phone || "+91-6387252549");
+    : (platformSettings?.supportPhone || "+91-6387252549");
 
   const contactEmail = isStorefront
     ? (rest?.settings?.email || rest?.email || null)
-    : (settings?.email || "shubhamkumarmaurya155@gmail.com");
+    : (platformSettings?.supportEmail || "support@fastbite.in");
 
   const contactAddress = isStorefront
     ? (rest?.settings?.address || rest?.address
@@ -38,17 +38,17 @@ const Footer = () => {
             .filter(Boolean)
             .join(", ")
         : null)
-    : (settings?.address || "Varanasi, Uttar Pradesh, India");
+    : (platformSettings?.supportAddress || "Varanasi, Uttar Pradesh, India");
 
-  const openingTime = isStorefront ? (rest?.settings?.opening_time || "10:00") : (settings?.openingTime || "10:00");
-  const closingTime = isStorefront ? (rest?.settings?.closing_time || "22:00") : (settings?.closingTime || "22:00");
+  const openingTime = isStorefront ? (rest?.settings?.opening_time || "10:00") : "10:00";
+  const closingTime = isStorefront ? (rest?.settings?.closing_time || "22:00") : "22:00";
 
   const description = isStorefront
     ? (rest?.settings?.description || `${rest?.name || "This restaurant"} serves fresh, delicious food crafted with love. Order online and get it delivered hot to your doorstep.`)
-    : (settings?.description || "Delivering your favourite meals hot & fresh right to your doorstep. Experience premium dining at home with fast delivery and unmatched convenience.");
+    : (platformSettings?.description || "Delivering your favourite meals hot & fresh right to your doorstep. Experience premium dining at home with fast delivery and unmatched convenience.");
 
   const year = new Date().getFullYear();
-  const entityName = isStorefront ? rest?.name : "FastBite";
+  const entityName = isStorefront ? rest?.name : (platformSettings?.platformName || "FastBite");
 
   const [logoError, setLogoError] = useState(false);
 
@@ -137,9 +137,9 @@ const Footer = () => {
                   </a>
                 </li>
                 <li>
-                  <a href="#contact-us">
+                  <Link to={`/r/${rest?.slug || ''}/contact`}>
                     <ChevronRight size={14} /> Contact &amp; Info
-                  </a>
+                  </Link>
                 </li>
                 <li>
                   <Link to="/">
@@ -170,9 +170,9 @@ const Footer = () => {
                   </a>
                 </li>
                 <li>
-                  <a href="#">
-                    <ChevronRight size={14} /> About Us
-                  </a>
+                  <Link to="/contact">
+                    <ChevronRight size={14} /> Contact Us
+                  </Link>
                 </li>
                 <li>
                   <a href="#">

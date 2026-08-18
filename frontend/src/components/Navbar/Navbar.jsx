@@ -7,7 +7,6 @@ import Logo from "../Logo/Logo";
 import { Moon, Sun, Settings, X, Menu as MenuIcon, Crown, LayoutDashboard, UtensilsCrossed, ArrowLeft } from 'lucide-react';
 
 const Navbar = ({ setShowLogin }) => {
-  const [menu, setMenu] = useState("home");
   const {
     getTotalCartAmount,
     cartItems,
@@ -44,11 +43,20 @@ const Navbar = ({ setShowLogin }) => {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  // Storefront mode: strictly active when on /r/:slug pages
-  const isStorefront = location.pathname.startsWith('/r/');
-
-  // The restaurant to display in navbar — prefer storefrontRestaurant, fall back to cartRestaurant
+  const currentPath = location.pathname;
+  const currentHash = location.hash;
+  const isStorefront = currentPath.startsWith('/r/');
+  const pathSlug = isStorefront ? currentPath.split('/')[2] : null;
   const activeRestaurant = storefrontRestaurant || cartRestaurant || null;
+  const targetSlug = pathSlug || activeRestaurant?.slug || null;
+
+  // 100% Route & Hash-Based Active State Evaluation
+  const isContactActive = currentPath === '/contact' || currentPath.endsWith('/contact');
+  const isCartActive = currentPath === '/cart';
+  const isMenuActive = currentHash === '#explore-menu' || currentPath.endsWith('/menu');
+  const isHomeActive = !isContactActive && !isCartActive && !isMenuActive && (
+    currentPath === '/' || (isStorefront && (currentPath === `/r/${pathSlug}` || currentPath === `/r/${pathSlug}/`))
+  );
 
   const totalCartCount = Object.values(cartItems || {}).reduce((sum, qty) => sum + (Number(qty) || 0), 0);
 
@@ -75,19 +83,37 @@ const Navbar = ({ setShowLogin }) => {
     navigate("/");
   };
 
-  const scrollToSection = (sectionId, menuKey) => {
-    setMenu(menuKey);
+  const handleHomeClick = () => {
     setMobileMenuOpen(false);
-    const elem = document.getElementById(sectionId);
-    if (elem) {
-      elem.scrollIntoView({ behavior: 'smooth' });
-    } else if (window.location.pathname !== '/') {
-      const targetSlug = activeRestaurant?.slug || storefrontRestaurant?.slug || cartRestaurant?.slug;
-      if (isStorefront && targetSlug) {
-        navigate(`/r/${targetSlug}#${sectionId}`);
+    if (isStorefront && targetSlug) {
+      navigate(`/r/${targetSlug}`);
+    } else {
+      navigate('/');
+    }
+  };
+
+  const handleMenuClick = () => {
+    setMobileMenuOpen(false);
+    if (isStorefront && targetSlug) {
+      navigate(`/r/${targetSlug}#explore-menu`);
+      const elem = document.getElementById("explore-menu");
+      if (elem) elem.scrollIntoView({ behavior: 'smooth' });
+    } else {
+      if (currentPath !== '/') {
+        navigate('/#explore-menu');
       } else {
-        navigate(`/#${sectionId}`);
+        const elem = document.getElementById("explore-menu");
+        if (elem) elem.scrollIntoView({ behavior: 'smooth' });
       }
+    }
+  };
+
+  const handleContactClick = () => {
+    setMobileMenuOpen(false);
+    if (isStorefront && targetSlug) {
+      navigate(`/r/${targetSlug}/contact`);
+    } else {
+      navigate('/contact');
     }
   };
 
@@ -112,7 +138,7 @@ const Navbar = ({ setShowLogin }) => {
         {isStorefront && activeRestaurant ? (
           <div
             className="navbar-storefront-brand"
-            onClick={() => scrollToSection("home", "home")}
+            onClick={handleHomeClick}
             title={`${activeRestaurant.name} Storefront`}
           >
             {activeLogo && !logoError ? (
@@ -143,20 +169,20 @@ const Navbar = ({ setShowLogin }) => {
 
       <ul className={`navbar-menu ${mobileMenuOpen ? 'mobile-open' : ''}`}>
         <span
-          onClick={() => scrollToSection("home", "home")}
-          className={`nav-link-btn ${menu === "home" ? "active" : ""}`}
+          onClick={handleHomeClick}
+          className={`nav-link-btn ${isHomeActive ? "active" : ""}`}
         >
           Home
         </span>
         <span
-          onClick={() => scrollToSection("explore-menu", "menu")}
-          className={`nav-link-btn ${menu === "menu" ? "active" : ""}`}
+          onClick={handleMenuClick}
+          className={`nav-link-btn ${isMenuActive ? "active" : ""}`}
         >
           Menu
         </span>
         <span
-          onClick={() => scrollToSection("contact-us", "contact-us")}
-          className={`nav-link-btn ${menu === "contact-us" ? "active" : ""}`}
+          onClick={handleContactClick}
+          className={`nav-link-btn ${isContactActive ? "active" : ""}`}
         >
           {isStorefront ? "Store Info" : "Contact Us"}
         </span>
@@ -193,7 +219,7 @@ const Navbar = ({ setShowLogin }) => {
             <span className="search-clear" onClick={clearSearch}><X size={14} /></span>
           ) : null}
         </div>
-        <div className="navbar-search-icon">
+        <div className={`navbar-search-icon ${isCartActive ? 'cart-page-active' : ''}`}>
           <Link to='/cart' title="View Shopping Cart">
             <img src={assets.basket_icon} alt="Cart" />
           </Link>

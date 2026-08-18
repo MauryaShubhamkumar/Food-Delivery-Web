@@ -1,10 +1,10 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { StoreContext } from '../../context/StoreContext';
-import { Users, Search, ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
+import { Users, Search, ChevronLeft, ChevronRight, Loader2, UserCheck, UserX, AlertCircle, CheckCircle2 } from 'lucide-react';
 import './SuperAdminDashboard.css';
 
 const SuperAdminUsers = () => {
-  const { url, token } = useContext(StoreContext);
+  const { url, token, user: currentSuperAdmin } = useContext(StoreContext);
 
   const [loading, setLoading] = useState(true);
   const [users, setUsers] = useState([]);
@@ -14,6 +14,15 @@ const SuperAdminUsers = () => {
 
   const [search, setSearch] = useState('');
   const [roleFilter, setRoleFilter] = useState('all');
+  const [actionLoadingId, setActionLoadingId] = useState(null);
+  const [toastMsg, setToastMsg] = useState('');
+  const [toastType, setToastType] = useState('success');
+
+  const showToast = (msg, type = 'success') => {
+    setToastMsg(msg);
+    setToastType(type);
+    setTimeout(() => setToastMsg(''), 4000);
+  };
 
   const fetchUsers = async (page = 1) => {
     setLoading(true);
@@ -63,14 +72,72 @@ const SuperAdminUsers = () => {
     return 'Customer';
   };
 
+  const handleToggleUserStatus = async (targetUser) => {
+    const targetStatus = !targetUser.is_active;
+    const actionText = targetStatus ? 'activate' : 'deactivate';
+
+    if (Number(targetUser.id) === Number(currentSuperAdmin?.id)) {
+      showToast("You cannot deactivate your own Super Admin account.", "error");
+      return;
+    }
+
+    if (!window.confirm(`Are you sure you want to ${actionText} ${targetUser.name}'s account (${targetUser.email})?`)) {
+      return;
+    }
+
+    setActionLoadingId(targetUser.id);
+    try {
+      const response = await fetch(`${url}/api/super-admin/users/${targetUser.id}/status`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          token
+        },
+        body: JSON.stringify({ isActive: targetStatus })
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        showToast(`User account "${targetUser.name}" ${targetStatus ? 'activated' : 'deactivated'} successfully.`, 'success');
+        setUsers(prev => prev.map(u => u.id === targetUser.id ? { ...u, is_active: targetStatus } : u));
+      } else {
+        showToast(data.message || `Failed to ${actionText} user account.`, 'error');
+      }
+    } catch (err) {
+      showToast("Network error while updating user account status.", "error");
+    } finally {
+      setActionLoadingId(null);
+    }
+  };
+
   return (
     <div className="sa-dashboard-container">
       <div className="sa-header-hero">
         <div className="hero-text font-bold">
           <h1><Users size={24} color="#a78bfa" /> Platform Users Management</h1>
-          <p>Inspect all registered users, roles, and restaurant associations ({totalCount} Accounts).</p>
+          <p>Inspect and manage all registered users, roles, account activation/deactivation ({totalCount} Accounts).</p>
         </div>
       </div>
+
+      {toastMsg && (
+        <div className={`sa-toast-banner ${toastType === 'error' ? 'toast-error' : 'toast-success'}`} style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '8px',
+          padding: '12px 16px',
+          borderRadius: '8px',
+          marginBottom: '16px',
+          background: toastType === 'error' ? '#fef2f2' : '#f0fdf4',
+          color: toastType === 'error' ? '#dc2626' : '#16a34a',
+          border: `1px solid ${toastType === 'error' ? '#fca5a5' : '#86efac'}`,
+          fontWeight: '600',
+          fontSize: '14px'
+        }}>
+          {toastType === 'error' ? <AlertCircle size={16} /> : <CheckCircle2 size={16} />}
+          <span>{toastMsg}</span>
+        </div>
+      )}
 
       <div className="sa-section-card">
         <div className="section-card-header flex-col-sm">
@@ -123,41 +190,80 @@ const SuperAdminUsers = () => {
                   <th>Assigned Restaurant</th>
                   <th>Account Status</th>
                   <th>Registered Date</th>
+                  <th>Action</th>
                 </tr>
               </thead>
               <tbody>
-                {users.map(u => (
-                  <tr key={u.id}>
-                    <td>
-                      <div className="table-user-cell">
-                        <strong>{u.name}</strong>
-                        <small>{u.email}</small>
-                        {u.phone && <small>{u.phone}</small>}
-                      </div>
-                    </td>
-                    <td>
-                      <span className={`role-badge-pill ${u.role}`}>
-                        {formatRoleLabel(u.role)}
-                      </span>
-                    </td>
-                    <td>
-                      {u.restaurant_name ? (
-                        <div className="table-rest-cell">
-                          <span>{u.restaurant_name}</span>
-                          <code>{u.restaurant_slug}</code>
+                {users.map(u => {
+                  const isCurrentAdmin = Number(u.id) === Number(currentSuperAdmin?.id);
+                  const isActionLoading = actionLoadingId === u.id;
+
+                  return (
+                    <tr key={u.id}>
+                      <td>
+                        <div className="table-user-cell">
+                          <strong>{u.name}</strong>
+                          <small>{u.email}</small>
+                          {u.phone && <small>{u.phone}</small>}
                         </div>
-                      ) : (
-                        <span className="text-muted">—</span>
-                      )}
-                    </td>
-                    <td>
-                      <span className={`status-badge-pill ${u.is_active ? 'active' : 'inactive'}`}>
-                        {u.is_active ? 'Active' : 'Disabled'}
-                      </span>
-                    </td>
-                    <td>{new Date(u.created_at).toLocaleDateString()}</td>
-                  </tr>
-                ))}
+                      </td>
+                      <td>
+                        <span className={`role-badge-pill ${u.role}`}>
+                          {formatRoleLabel(u.role)}
+                        </span>
+                      </td>
+                      <td>
+                        {u.restaurant_name ? (
+                          <div className="table-rest-cell">
+                            <span>{u.restaurant_name}</span>
+                            <code>{u.restaurant_slug}</code>
+                          </div>
+                        ) : (
+                          <span className="text-muted">—</span>
+                        )}
+                      </td>
+                      <td>
+                        <span className={`status-badge-pill ${u.is_active ? 'active' : 'inactive'}`}>
+                          {u.is_active ? 'Active' : 'Disabled'}
+                        </span>
+                      </td>
+                      <td>{new Date(u.created_at).toLocaleDateString()}</td>
+                      <td>
+                        {isCurrentAdmin ? (
+                          <span className="text-muted" style={{ fontSize: '12px', fontStyle: 'italic' }}>Your Account</span>
+                        ) : (
+                          <button
+                            onClick={() => handleToggleUserStatus(u)}
+                            disabled={isActionLoading}
+                            style={{
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '5px',
+                              padding: '6px 12px',
+                              borderRadius: '6px',
+                              fontSize: '12px',
+                              fontWeight: '600',
+                              cursor: 'pointer',
+                              border: '1px solid',
+                              background: u.is_active ? '#fef2f2' : '#f0fdf4',
+                              color: u.is_active ? '#dc2626' : '#16a34a',
+                              borderColor: u.is_active ? '#fca5a5' : '#86efac',
+                              transition: 'all 0.2s ease'
+                            }}
+                          >
+                            {isActionLoading ? (
+                              <Loader2 size={13} className="spin-icon" />
+                            ) : u.is_active ? (
+                              <><UserX size={13} /> Deactivate</>
+                            ) : (
+                              <><UserCheck size={13} /> Activate</>
+                            )}
+                          </button>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>

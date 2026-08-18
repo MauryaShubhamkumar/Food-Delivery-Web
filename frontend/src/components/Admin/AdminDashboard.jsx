@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { StoreContext } from '../../context/StoreContext';
 import ProductModal from './ProductModal';
 import OrderDetailsModal from './OrderDetailsModal';
+import StorefrontShareCard from './StorefrontShareCard';
+import ShareStorefrontModal from './ShareStorefrontModal';
 import {
   Calendar,
   RefreshCw,
@@ -24,7 +26,8 @@ import {
   AlertTriangle,
   CheckCircle2,
   Eye,
-  ArrowRight
+  ArrowRight,
+  Share2
 } from 'lucide-react';
 import './AdminDashboard.css';
 
@@ -50,6 +53,7 @@ const AdminDashboard = () => {
   const [isProductModalOpen, setIsProductModalOpen] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
 
   const fetchRestaurantInfo = async () => {
     try {
@@ -194,6 +198,9 @@ const AdminDashboard = () => {
         <span className="quick-actions-title" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
           <Zap size={15} /> Quick Actions:
         </span>
+        <button className="action-chip share-chip" onClick={() => setIsShareModalOpen(true)}>
+          <Share2 size={14} /> Share Storefront & QR
+        </button>
         <button className="action-chip" onClick={() => setIsProductModalOpen(true)}>
           <Plus size={14} /> Add Product
         </button>
@@ -213,6 +220,12 @@ const AdminDashboard = () => {
           <Users size={14} /> View Customers
         </button>
       </div>
+
+      {/* Share & Promote Digital Storefront Card */}
+      <StorefrontShareCard
+        restaurantName={restaurantState?.name}
+        slug={restaurantState?.slug}
+      />
 
       {/* Summary Cards Grid */}
       <div className="summary-cards-grid">
@@ -489,6 +502,14 @@ const AdminDashboard = () => {
         onClose={() => setIsOrderModalOpen(false)}
         order={selectedOrder}
         onStatusChange={handleOrderStatusUpdate}
+      />
+
+      {/* Share Storefront Modal */}
+      <ShareStorefrontModal
+        isOpen={isShareModalOpen}
+        onClose={() => setIsShareModalOpen(false)}
+        restaurantName={restaurantState?.name}
+        slug={restaurantState?.slug}
       />
     </div>
   );

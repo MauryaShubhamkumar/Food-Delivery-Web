@@ -81,26 +81,47 @@ export const getProductReviewsList = async (productId, { limit, offset, orderByC
   return rows;
 };
 
-export const getAdminReviewsList = async (tenantId, { search, status, page, limit }) => {
+export const getAdminReviewsList = async (tenantId, { search, status, rating, page, limit }) => {
   const pool = getPool();
   let where = 'WHERE r.restaurant_id = ?';
   const params = [tenantId];
   if (search && search.trim() !== '') {
-    where += ' AND (u.name LIKE ? OR r.comment LIKE ?)';
-    params.push(`%${search.trim()}%`, `%${search.trim()}%`);
+    const term = `%${search.trim()}%`;
+    where += ' AND (u.name LIKE ? OR r.comment LIKE ? OR f.name LIKE ?)';
+    params.push(term, term, term);
   }
-  if (status && status !== 'All') {
+  if (status && status !== 'All' && status !== 'all') {
     where += ' AND r.status = ?';
     params.push(status.toLowerCase());
   }
-  const [countRows] = await pool.query(`SELECT COUNT(r.id) as total FROM reviews r JOIN users u ON r.user_id = u.id LEFT JOIN food_items f ON r.product_id = f.id ${where}`, params);
+  if (rating && rating !== 'All' && rating !== 'all') {
+    where += ' AND r.rating = ?';
+    params.push(Number(rating));
+  }
+  const [countRows] = await pool.query(`SELECT COUNT(r.id) as total FROM reviews r JOIN users u ON r.user_id = u.id LEFT JOIN food_items f ON (r.product_id = f.id OR r.food_id = f.id) ${where}`, params);
   const total = Number(countRows[0]?.total || 0);
   const offset = (page - 1) * limit;
   const [rows] = await pool.query(`
-    SELECT r.*, u.name as customer_name, f.name as product_name
+    SELECT 
+      r.id,
+      r.restaurant_id,
+      r.user_id,
+      COALESCE(r.product_id, r.food_id) as product_id,
+      r.order_id,
+      r.rating,
+      r.comment,
+      r.status,
+      COALESCE(r.is_visible, 1) as is_visible,
+      r.created_at,
+      r.updated_at,
+      u.name as customer_name,
+      u.email as customer_email,
+      f.name as product_name,
+      f.image as product_image,
+      f.available as product_available
     FROM reviews r
-    JOIN users u ON r.user_id = u.id
-    LEFT JOIN food_items f ON r.product_id = f.id
+    LEFT JOIN users u ON r.user_id = u.id
+    LEFT JOIN food_items f ON (r.product_id = f.id OR r.food_id = f.id)
     ${where} ORDER BY r.created_at DESC LIMIT ? OFFSET ?`, [...params, limit, offset]);
   return { total, rows };
 };

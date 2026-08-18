@@ -145,6 +145,14 @@ export const getAdminUserOrders = async (req, res, next) => {
 
 export const updateAdminUserStatus = async (req, res, next) => {
   try {
+    const role = req.userRole;
+    if (role !== 'super_admin') {
+      return res.status(403).json({
+        success: false,
+        message: "Access denied. Only Super Admin has permission to activate or deactivate user accounts."
+      });
+    }
+
     const { id } = req.params;
     const targetStatus = req.body.isActive !== undefined ? req.body.isActive : req.body.is_active;
 

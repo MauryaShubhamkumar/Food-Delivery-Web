@@ -1,4 +1,5 @@
-import React, { useState, lazy, Suspense } from "react";
+import React, { useContext, lazy, Suspense } from "react";
+import { StoreContext } from "./context/StoreContext";
 import Navbar from "./components/Navbar/Navbar";
 import { Route, Routes } from "react-router-dom";
 import Home from "./pages/Home/Home";
@@ -6,6 +7,7 @@ import Cart from "./pages/Cart/Cart";
 import PlaceOrder from "./pages/PlaceOrder/PlaceOrder";
 import MyOrders from "./pages/MyOrders/MyOrders";
 import Profile from "./pages/Profile/Profile";
+import ContactUs from "./pages/ContactUs/ContactUs";
 import Footer from "./components/Footer/Footer";
 import LoginPopup from "./components/LoginPopup/LoginPopup";
 import CartConflictModal from "./components/Common/CartConflictModal";
@@ -46,7 +48,7 @@ const AdminLoadingFallback = () => (
 );
 
 const App = () => {
-  const [showLogin, setShowLogin] = useState(false);
+  const { showLogin, setShowLogin } = useContext(StoreContext);
   return (
     <>
       <ImpersonationBanner />
@@ -89,6 +91,7 @@ const App = () => {
                 <Routes>
                   <Route path="/" element={<RestaurantStorefront />} />
                   <Route path="/product/:productId" element={<RestaurantStorefront />} />
+                  <Route path="/contact" element={<ContactUs />} />
                 </Routes>
               </Suspense>
             </div>
@@ -153,6 +156,7 @@ const App = () => {
                 <Route path="/order" element={<PlaceOrder />} />
                 <Route path="/myorders" element={<MyOrders />} />
                 <Route path="/profile" element={<Profile />} />
+                <Route path="/contact" element={<ContactUs />} />
               </Routes>
             </div>
             <Footer />

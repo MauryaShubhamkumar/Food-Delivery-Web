@@ -1,8 +1,31 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect, useRef } from "react";
 import "./PlaceOrder.css";
 import { StoreContext } from "../../context/StoreContext";
 import { useNavigate } from "react-router-dom";
-import { Lock, AlertTriangle, Banknote, QrCode, Copy, Check, Zap, Info } from 'lucide-react';
+import {
+  Lock,
+  AlertTriangle,
+  Banknote,
+  QrCode,
+  Copy,
+  Check,
+  Zap,
+  Info,
+  CheckCircle2,
+  MapPin,
+  ShoppingBag,
+  LogIn,
+  ArrowLeft,
+  Loader2,
+  Sparkles
+} from 'lucide-react';
+import {
+  validateField,
+  validateAddressForm,
+  fetchPincodeDetails,
+  normalizePhone,
+  PINCODE_REGEX
+} from "../../utils/addressValidation";
 
 const PlaceOrder = () => {
   const {
@@ -18,7 +41,10 @@ const PlaceOrder = () => {
     getFinalCartTotal,
     settings,
     formatCurrency,
-    cartRestaurant
+    cartRestaurant,
+    user,
+    userLoading,
+    setShowLogin
   } = useContext(StoreContext);
   const navigate = useNavigate();
 
@@ -26,6 +52,25 @@ const PlaceOrder = () => {
   const [paymentReference, setPaymentReference] = useState("");
   const [copiedUpi, setCopiedUpi] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [isPrefilled, setIsPrefilled] = useState(false);
+
+  // Field-level error & touched tracking
+  const [errors, setErrors] = useState({});
+  const [touched, setTouched] = useState({});
+  const [pincodeLoading, setPincodeLoading] = useState(false);
+  const [pincodeSuccessMsg, setPincodeSuccessMsg] = useState("");
+
+  const inputRefs = {
+    firstName: useRef(null),
+    lastName: useRef(null),
+    email: useRef(null),
+    street: useRef(null),
+    city: useRef(null),
+    state: useRef(null),
+    zipCode: useRef(null),
+    phone: useRef(null),
+    paymentReference: useRef(null)
+  };
 
   const [data, setData] = useState({
     firstName: "",
@@ -35,14 +80,111 @@ const PlaceOrder = () => {
     city: "",
     state: "",
     zipCode: "",
-    country: "",
+    country: "India",
     phone: ""
   });
 
-  const onChangeHandler = (event) => {
-    const name = event.target.name;
-    const value = event.target.value;
+  const totalCartCount = Object.values(cartItems || {}).reduce((sum, qty) => sum + (Number(qty) || 0), 0);
+
+  // Auto-fetch profile & prefill delivery information when user is signed in
+  useEffect(() => {
+    const prefillDeliveryInfo = async () => {
+      let currentUser = user;
+      if (!currentUser && token) {
+        try {
+          const res = await fetch(`${url}/api/user/me`, {
+            headers: { token }
+          });
+          const resData = await res.json();
+          if (resData.success && resData.user) {
+            currentUser = resData.user;
+          }
+        } catch (e) {
+          console.error("Error prefilling checkout from profile:", e);
+        }
+      }
+
+      if (currentUser) {
+        const fName = currentUser.firstName || currentUser.first_name || (currentUser.name ? currentUser.name.trim().split(' ')[0] : '');
+        const lName = currentUser.lastName || currentUser.last_name || (currentUser.name ? currentUser.name.trim().split(' ').slice(1).join(' ') : '');
+
+        const prefilledData = {
+          firstName: fName || '',
+          lastName: lName || '',
+          email: currentUser.email || '',
+          phone: currentUser.phone || '',
+          street: currentUser.street || '',
+          city: currentUser.city || '',
+          state: currentUser.state || '',
+          zipCode: currentUser.zipCode || currentUser.zip_code || '',
+          country: currentUser.country || 'India'
+        };
+
+        setData(prefilledData);
+
+        if (currentUser.street || currentUser.city || currentUser.phone) {
+          setIsPrefilled(true);
+        }
+      }
+    };
+
+    if (token) {
+      prefillDeliveryInfo();
+    }
+  }, [token, user, url]);
+
+  // Real-time Field Validation & PIN auto-lookup
+  const onChangeHandler = async (event) => {
+    const { name, value } = event.target;
     setData(prev => ({ ...prev, [name]: value }));
+
+    // Real-time validation if field was touched
+    if (touched[name]) {
+      const err = validateField(name, value);
+      setErrors(prev => ({ ...prev, [name]: err }));
+    }
+
+    // Auto-PIN Code Lookup when 6 digits are typed
+    if (name === "zipCode") {
+      const cleanPin = value.trim();
+      if (cleanPin.length === 6 && PINCODE_REGEX.test(cleanPin)) {
+        setPincodeLoading(true);
+        setPincodeSuccessMsg("");
+        try {
+          const result = await fetchPincodeDetails(cleanPin);
+          if (result.success) {
+            setData(prev => ({
+              ...prev,
+              city: result.city || prev.city,
+              state: result.state || prev.state
+            }));
+            setPincodeSuccessMsg(`Auto-detected: ${result.city}, ${result.state}`);
+            // Clear errors for auto-filled fields
+            setErrors(prev => ({
+              ...prev,
+              zipCode: null,
+              city: null,
+              state: null
+            }));
+          } else {
+            setPincodeSuccessMsg("");
+          }
+        } catch (e) {
+          setPincodeSuccessMsg("");
+        } finally {
+          setPincodeLoading(false);
+        }
+      } else {
+        setPincodeSuccessMsg("");
+      }
+    }
+  };
+
+  const onBlurHandler = (event) => {
+    const { name, value } = event.target;
+    setTouched(prev => ({ ...prev, [name]: true }));
+    const err = validateField(name, value);
+    setErrors(prev => ({ ...prev, [name]: err }));
   };
 
   const subtotal = getTotalCartAmount();
@@ -82,17 +224,41 @@ const PlaceOrder = () => {
     }
 
     if (!token) {
-      alert("Please login first to place an order!");
+      setShowLogin(true);
       return;
     }
 
-    if (paymentMethod === "upi") {
-      if (!paymentReference || paymentReference.trim() === "") {
-        alert("Please enter your UTR / Transaction ID after completing your UPI payment.");
-        return;
+    // 1. Strict Form Validation
+    const validation = validateAddressForm(data);
+    const allTouched = {
+      firstName: true,
+      lastName: true,
+      email: true,
+      street: true,
+      city: true,
+      state: true,
+      zipCode: true,
+      phone: true
+    };
+    setTouched(allTouched);
+    setErrors(validation.errors);
+
+    if (!validation.isValid) {
+      const firstInvalidField = Object.keys(validation.errors)[0];
+      if (firstInvalidField && inputRefs[firstInvalidField]?.current) {
+        inputRefs[firstInvalidField].current.focus();
       }
-      if (paymentReference.trim().length < 6) {
-        alert("Please enter a valid UTR / Transaction ID (at least 6 characters).");
+      return;
+    }
+
+    // 2. UPI Reference Validation
+    if (paymentMethod === "upi") {
+      const ref = (paymentReference || '').trim();
+      if (!ref || ref.length < 6) {
+        setErrors(prev => ({ ...prev, paymentReference: "Please enter a valid UTR / Transaction ID (at least 6 alphanumeric characters)." }));
+        if (inputRefs.paymentReference?.current) {
+          inputRefs.paymentReference.current.focus();
+        }
         return;
       }
     }
@@ -113,7 +279,10 @@ const PlaceOrder = () => {
     }
 
     let orderData = {
-      address: data,
+      address: {
+        ...data,
+        phone: normalizePhone(data.phone)
+      },
       items: orderItems,
       amount: finalTotalAmount,
       couponCode: appliedCoupon?.code || null,
@@ -144,19 +313,110 @@ const PlaceOrder = () => {
         }
         navigate("/myorders");
       } else {
-        alert(`Order error: ${resData.message}`);
+        if (resData.errors && typeof resData.errors === 'object') {
+          setErrors(prev => ({ ...prev, ...resData.errors }));
+        }
+        alert(resData.message || "Failed to place order. Please review your delivery details.");
       }
     } catch (err) {
-      alert("Error submitting order to backend server");
+      alert("Error submitting order to backend server. Please try again.");
     } finally {
       setSubmitting(false);
     }
   };
 
+  // 1. Loading State: Prevent UI flash while checking authentication
+  if (userLoading && token) {
+    return (
+      <div className="checkout-loading-page">
+        <div className="spinner"></div>
+        <p>Verifying authentication & loading checkout...</p>
+      </div>
+    );
+  }
+
+  // 2. Unauthenticated State: Show clean in-page sign-in prompt (Form & Payment hidden)
+  if (!token) {
+    return (
+      <div className="checkout-auth-required-page">
+        <div className="checkout-auth-card">
+          <div className="checkout-auth-icon-wrap">
+            <Lock size={36} />
+          </div>
+          <h2>Sign In to Complete Your Order</h2>
+          <p className="checkout-auth-subtitle">
+            Please sign in or create an account to enter your delivery address and finalize your order.
+          </p>
+
+          {totalCartCount > 0 && (
+            <div className="checkout-cart-summary-badge">
+              <ShoppingBag size={18} color="#ff5e3a" />
+              <div className="cart-badge-text">
+                <strong>{totalCartCount} item{totalCartCount === 1 ? '' : 's'} saved in your cart</strong>
+                <span>Subtotal: {formatCurrency(subtotal)} • {restaurantName}</span>
+              </div>
+            </div>
+          )}
+
+          <div className="checkout-auth-actions">
+            <button
+              type="button"
+              onClick={() => setShowLogin(true)}
+              className="checkout-auth-signin-btn"
+            >
+              <LogIn size={16} /> Sign In to Proceed
+            </button>
+            <button
+              type="button"
+              onClick={() => navigate('/cart')}
+              className="checkout-auth-back-btn"
+            >
+              <ArrowLeft size={16} /> Return to Cart
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // 3. Empty Cart State
+  if (totalCartCount === 0) {
+    return (
+      <div className="checkout-empty-cart-page">
+        <div className="checkout-auth-card">
+          <div className="checkout-auth-icon-wrap">
+            <ShoppingBag size={36} />
+          </div>
+          <h2>Your Cart is Empty</h2>
+          <p className="checkout-auth-subtitle">
+            Add some delicious food items from the menu before proceeding to checkout.
+          </p>
+          <div className="checkout-auth-actions">
+            <button
+              type="button"
+              onClick={() => navigate('/')}
+              className="checkout-auth-signin-btn"
+            >
+              Explore Menu
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // 4. Authenticated Checkout Flow
   return (
-    <form className="place-order" onSubmit={placeOrderSubmit}>
+    <form className="place-order" onSubmit={placeOrderSubmit} noValidate>
       <div className="place-order-left">
         <h2 className="title">Delivery Information</h2>
+        {isPrefilled && (
+          <div className="prefill-status-badge">
+            <CheckCircle2 size={15} color="#10b981" />
+            <span>Prefilled with your saved default delivery address from profile.</span>
+          </div>
+        )}
+
         {isClosed ? (
           <div className="cart-warning-banner closed-banner" style={{ marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '8px' }}>
             <Lock size={16} /> <strong>Restaurant Closed:</strong> Orders cannot be placed at this time.
@@ -168,20 +428,170 @@ const PlaceOrder = () => {
         ) : null}
 
         <div className="multi-fields">
-          <input name="firstName" onChange={onChangeHandler} value={data.firstName} type="text" placeholder="First Name" required />
-          <input name="lastName" onChange={onChangeHandler} value={data.lastName} type="text" placeholder="Last Name" required />
+          <div className="input-field-wrapper">
+            <input
+              ref={inputRefs.firstName}
+              name="firstName"
+              onChange={onChangeHandler}
+              onBlur={onBlurHandler}
+              value={data.firstName}
+              type="text"
+              placeholder="First Name *"
+              required
+              className={touched.firstName && errors.firstName ? "input-error" : ""}
+            />
+            {touched.firstName && errors.firstName && (
+              <span className="field-error-msg">{errors.firstName}</span>
+            )}
+          </div>
+
+          <div className="input-field-wrapper">
+            <input
+              ref={inputRefs.lastName}
+              name="lastName"
+              onChange={onChangeHandler}
+              onBlur={onBlurHandler}
+              value={data.lastName}
+              type="text"
+              placeholder="Last Name *"
+              required
+              className={touched.lastName && errors.lastName ? "input-error" : ""}
+            />
+            {touched.lastName && errors.lastName && (
+              <span className="field-error-msg">{errors.lastName}</span>
+            )}
+          </div>
         </div>
-        <input name="email" onChange={onChangeHandler} value={data.email} type="email" placeholder="Email address" required />
-        <input name="street" onChange={onChangeHandler} value={data.street} type="text" placeholder="Street Address" required />
+
+        <div className="input-field-wrapper">
+          <input
+            ref={inputRefs.email}
+            name="email"
+            onChange={onChangeHandler}
+            onBlur={onBlurHandler}
+            value={data.email}
+            type="email"
+            placeholder="Email address *"
+            required
+            className={touched.email && errors.email ? "input-error" : ""}
+          />
+          {touched.email && errors.email && (
+            <span className="field-error-msg">{errors.email}</span>
+          )}
+        </div>
+
+        <div className="input-field-wrapper">
+          <input
+            ref={inputRefs.street}
+            name="street"
+            onChange={onChangeHandler}
+            onBlur={onBlurHandler}
+            value={data.street}
+            type="text"
+            placeholder="Street Address (Flat / House No, Street) *"
+            required
+            className={touched.street && errors.street ? "input-error" : ""}
+          />
+          {touched.street && errors.street && (
+            <span className="field-error-msg">{errors.street}</span>
+          )}
+        </div>
+
         <div className="multi-fields">
-          <input name="city" onChange={onChangeHandler} value={data.city} type="text" placeholder="City" required />
-          <input name="state" onChange={onChangeHandler} value={data.state} type="text" placeholder="State" required />
+          <div className="input-field-wrapper">
+            <input
+              ref={inputRefs.zipCode}
+              name="zipCode"
+              onChange={onChangeHandler}
+              onBlur={onBlurHandler}
+              value={data.zipCode}
+              type="text"
+              maxLength={6}
+              placeholder="6-Digit PIN Code *"
+              required
+              className={touched.zipCode && errors.zipCode ? "input-error" : ""}
+            />
+            {pincodeLoading && (
+              <span className="pincode-status-tag loading">
+                <Loader2 size={12} className="spin-icon" /> Detecting City & State...
+              </span>
+            )}
+            {pincodeSuccessMsg && !pincodeLoading && (
+              <span className="pincode-status-tag success">
+                <Sparkles size={12} /> {pincodeSuccessMsg}
+              </span>
+            )}
+            {touched.zipCode && errors.zipCode && (
+              <span className="field-error-msg">{errors.zipCode}</span>
+            )}
+          </div>
+
+          <div className="input-field-wrapper">
+            <input
+              ref={inputRefs.city}
+              name="city"
+              onChange={onChangeHandler}
+              onBlur={onBlurHandler}
+              value={data.city}
+              type="text"
+              placeholder="City *"
+              required
+              className={touched.city && errors.city ? "input-error" : ""}
+            />
+            {touched.city && errors.city && (
+              <span className="field-error-msg">{errors.city}</span>
+            )}
+          </div>
         </div>
+
         <div className="multi-fields">
-          <input name="zipCode" onChange={onChangeHandler} value={data.zipCode} type="text" placeholder="Zip code" required />
-          <input name="country" onChange={onChangeHandler} value={data.country} type="text" placeholder="Country" required />
+          <div className="input-field-wrapper">
+            <input
+              ref={inputRefs.state}
+              name="state"
+              onChange={onChangeHandler}
+              onBlur={onBlurHandler}
+              value={data.state}
+              type="text"
+              placeholder="State *"
+              required
+              className={touched.state && errors.state ? "input-error" : ""}
+            />
+            {touched.state && errors.state && (
+              <span className="field-error-msg">{errors.state}</span>
+            )}
+          </div>
+
+          <div className="input-field-wrapper">
+            <input
+              name="country"
+              onChange={onChangeHandler}
+              value={data.country}
+              type="text"
+              placeholder="Country"
+              readOnly
+              className="country-readonly-input"
+            />
+          </div>
         </div>
-        <input name="phone" onChange={onChangeHandler} value={data.phone} type="text" placeholder="Phone" required />
+
+        <div className="input-field-wrapper">
+          <input
+            ref={inputRefs.phone}
+            name="phone"
+            onChange={onChangeHandler}
+            onBlur={onBlurHandler}
+            value={data.phone}
+            type="tel"
+            maxLength={15}
+            placeholder="10-Digit Mobile Number (e.g. 9876543210) *"
+            required
+            className={touched.phone && errors.phone ? "input-error" : ""}
+          />
+          {touched.phone && errors.phone && (
+            <span className="field-error-msg">{errors.phone}</span>
+          )}
+        </div>
       </div>
 
       <div className="place-order-right">
@@ -285,14 +695,23 @@ const PlaceOrder = () => {
                     <span className="utr-subtext">(Obtained from your UPI app receipt after payment)</span>
                   </label>
                   <input
+                    ref={inputRefs.paymentReference}
                     type="text"
                     id="utrInput"
                     value={paymentReference}
-                    onChange={(e) => setPaymentReference(e.target.value)}
+                    onChange={(e) => {
+                      setPaymentReference(e.target.value);
+                      if (errors.paymentReference) {
+                        setErrors(prev => ({ ...prev, paymentReference: null }));
+                      }
+                    }}
                     placeholder="e.g. 123456789012 or T2408081234"
                     required={paymentMethod === 'upi'}
-                    className="utr-input"
+                    className={`utr-input ${errors.paymentReference ? "input-error" : ""}`}
                   />
+                  {errors.paymentReference && (
+                    <span className="field-error-msg">{errors.paymentReference}</span>
+                  )}
                   <p className="utr-note" style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                     <Info size={14} /> Note: Payment status will be set to <strong>Verification Pending</strong> until verified by the restaurant admin.
                   </p>

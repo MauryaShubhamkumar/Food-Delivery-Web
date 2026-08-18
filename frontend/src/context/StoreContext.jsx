@@ -16,6 +16,7 @@ const StoreContextProvider = (props) => {
   const [token, setToken] = useState(() => localStorage.getItem("token") || "");
   const [user, setUser] = useState(null);
   const [userLoading, setUserLoading] = useState(true);
+  const [showLogin, setShowLogin] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const url = import.meta.env.VITE_BACKEND_URL || "http://localhost:4000";
 
@@ -330,13 +331,25 @@ const StoreContextProvider = (props) => {
 
   const [categories, setCategories] = useState([]);
   const [appliedCoupon, setAppliedCoupon] = useState(null);
-  const [settings, setSettings] = useState({
-    restaurantName: 'FastBite',
+
+  // Platform-level branding and Super Admin contact information (FastBite Marketplace)
+  const [platformSettings, setPlatformSettings] = useState({
+    platformName: 'FastBite',
+    tagline: 'Food Express',
     logoUrl: null,
-    description: 'Delivering your favourite meals hot & fresh right to your doorstep.',
-    phone: '+91-6387252549',
-    email: 'shubhamkumarmaurya155@gmail.com',
-    address: 'Varanasi, Uttar Pradesh, India',
+    supportEmail: 'support@fastbite.in',
+    supportPhone: '+91 6387252549',
+    supportAddress: 'FastBite HQ, Tech Hub, Varanasi, Uttar Pradesh, India',
+    description: 'FastBite is your premier multi-restaurant food delivery marketplace connecting you with the finest restaurants in town.'
+  });
+
+  const [settings, setSettings] = useState({
+    restaurantName: 'Restaurant',
+    logoUrl: null,
+    description: 'Fresh and delicious meals delivered hot.',
+    phone: '',
+    email: '',
+    address: '',
     openingTime: '10:00',
     closingTime: '22:00',
     isOpen: true,
@@ -345,6 +358,18 @@ const StoreContextProvider = (props) => {
     currency: 'INR',
     isActive: true
   });
+
+  const loadPlatformSettings = async () => {
+    try {
+      const response = await fetch(`${url}/api/platform/settings`);
+      const data = await response.json();
+      if (data.success && data.data) {
+        setPlatformSettings(data.data);
+      }
+    } catch (err) {
+      console.log("Failed to load platform settings");
+    }
+  };
 
   const loadCategories = async () => {
     try {
@@ -358,9 +383,17 @@ const StoreContextProvider = (props) => {
     }
   };
 
-  const loadPublicSettings = async () => {
+  const loadPublicSettings = async (restaurantSlugOrId = null) => {
     try {
-      const response = await fetch(`${url}/api/settings`);
+      let queryParam = '';
+      if (typeof restaurantSlugOrId === 'string' && restaurantSlugOrId.trim()) {
+        queryParam = `?slug=${encodeURIComponent(restaurantSlugOrId.trim())}`;
+      } else if (typeof restaurantSlugOrId === 'number' || !isNaN(Number(restaurantSlugOrId))) {
+        queryParam = `?restaurant_id=${Number(restaurantSlugOrId)}`;
+      }
+      if (!queryParam) return; // Do not query default restaurant 1 into global settings
+
+      const response = await fetch(`${url}/api/settings${queryParam}`);
       const data = await response.json();
       if (data.success && data.data) {
         setSettings(data.data);
@@ -433,7 +466,7 @@ const StoreContextProvider = (props) => {
       await Promise.all([
         fetchFoodList(),
         loadCategories(),
-        loadPublicSettings()
+        loadPlatformSettings()
       ]);
     }
     loadData();
@@ -484,6 +517,8 @@ const StoreContextProvider = (props) => {
     user,
     setUser,
     userLoading,
+    showLogin,
+    setShowLogin,
     loadUserProfile,
     loadCartData,
     searchQuery,
@@ -497,6 +532,8 @@ const StoreContextProvider = (props) => {
     getFinalCartTotal,
     theme,
     toggleTheme,
+    platformSettings,
+    loadPlatformSettings,
     settings,
     loadPublicSettings,
     getCurrencySymbol,

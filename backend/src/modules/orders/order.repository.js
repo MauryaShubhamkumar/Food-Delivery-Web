@@ -74,7 +74,19 @@ export const placeOrderTransaction = async (pool, { userId, restaurantId, addres
 export const findUserOrders = async (userId) => {
   const pool = getPool();
   const [orders] = await pool.query(
-    `SELECT o.*, r.name as restaurant_name, r.slug as restaurant_slug FROM orders o LEFT JOIN restaurants r ON o.restaurant_id = r.id WHERE o.user_id = ? ORDER BY o.created_at DESC`,
+    `SELECT 
+      o.*, 
+      COALESCE(rs.restaurant_name, r.name, 'FastBite') AS restaurant_name, 
+      r.slug AS restaurant_slug,
+      COALESCE(rs.logo_url, r.logo_url) AS restaurant_logo,
+      COALESCE(r.city, '') AS restaurant_city,
+      COALESCE(r.address, rs.address, '') AS restaurant_address,
+      COALESCE(r.phone, rs.phone, '') AS restaurant_phone
+    FROM orders o 
+    LEFT JOIN restaurants r ON o.restaurant_id = r.id 
+    LEFT JOIN restaurant_settings rs ON r.id = rs.restaurant_id 
+    WHERE o.user_id = ? 
+    ORDER BY o.created_at DESC`,
     [userId]
   );
   if (orders.length > 0) {

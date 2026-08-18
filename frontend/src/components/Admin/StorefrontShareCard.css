@@ -1,0 +1,215 @@
+.storefront-share-promo-card {
+  position: relative;
+  background: linear-gradient(135deg, rgba(30, 41, 59, 0.95) 0%, rgba(15, 23, 42, 0.98) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 20px;
+  padding: 24px 28px;
+  color: white;
+  margin-bottom: 28px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.18);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+  overflow: hidden;
+}
+
+.share-promo-header {
+  flex: 1;
+  max-width: 540px;
+}
+
+.share-promo-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  background: rgba(255, 94, 58, 0.18);
+  border: 1px solid rgba(255, 94, 58, 0.35);
+  color: #ff7e5f;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  margin-bottom: 10px;
+}
+
+.share-promo-header h3 {
+  font-size: 20px;
+  font-weight: 800;
+  margin: 0 0 6px 0;
+  color: #ffffff;
+  letter-spacing: -0.3px;
+}
+
+.share-promo-header p {
+  font-size: 13px;
+  color: #94a3b8;
+  margin: 0 0 16px 0;
+  line-height: 1.5;
+}
+
+.share-promo-body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+}
+
+.share-url-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
+  padding: 4px 6px;
+}
+
+.share-url-text {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #a78bfa;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 6px 10px;
+}
+
+.btn-copy-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 14px;
+  border-radius: 8px;
+  background: #ff5e3a;
+  color: white;
+  border: none;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.btn-copy-chip:hover {
+  background: #ff4c24;
+}
+
+.btn-copy-chip.copied {
+  background: #10b981;
+}
+
+.share-action-buttons {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.btn-share-whatsapp {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 10px;
+  background: rgba(37, 211, 102, 0.2);
+  color: #25d366;
+  border: 1px solid rgba(37, 211, 102, 0.4);
+  font-size: 12px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.btn-share-whatsapp:hover {
+  background: #25d366;
+  color: white;
+}
+
+.btn-open-qr-modal {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-open-qr-modal:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.btn-view-live-store {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 10px;
+  background: transparent;
+  color: #94a3b8;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 12px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.btn-view-live-store:hover {
+  color: white;
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.share-promo-qr-preview {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px dashed rgba(255, 255, 255, 0.2);
+  border-radius: 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.share-promo-qr-preview:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: #ff5e3a;
+  transform: scale(1.03);
+}
+
+.qr-thumb-img {
+  width: 72px;
+  height: 72px;
+  border-radius: 8px;
+  background: white;
+  padding: 4px;
+}
+
+.share-promo-qr-preview span {
+  font-size: 10px;
+  font-weight: 700;
+  color: #cbd5e1;
+  text-align: center;
+  max-width: 90px;
+}
+
+@media (max-width: 900px) {
+  .storefront-share-promo-card {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 20px;
+  }
+  .share-promo-qr-preview {
+    align-self: center;
+  }
+}

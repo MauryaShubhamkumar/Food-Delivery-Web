@@ -3,13 +3,27 @@ import './MyOrders.css';
 import { StoreContext } from '../../context/StoreContext';
 import { assets } from '../../assets/assets';
 import { useNavigate } from 'react-router-dom';
-import { Package, Lock, CheckCircle2, Clock, XCircle, Banknote, Check, Star } from 'lucide-react';
+import {
+  Package,
+  Lock,
+  CheckCircle2,
+  Clock,
+  XCircle,
+  Banknote,
+  Check,
+  Star,
+  Store,
+  MapPin,
+  ExternalLink,
+  RefreshCw
+} from 'lucide-react';
 import ProductReviewsModal from '../../components/Reviews/ProductReviewsModal';
 
 const MyOrders = () => {
-  const { url, token } = useContext(StoreContext);
+  const { url, token, formatCurrency } = useContext(StoreContext);
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [activeTab, setActiveTab] = useState('all'); // 'all' | 'today'
   const navigate = useNavigate();
 
@@ -28,8 +42,10 @@ const MyOrders = () => {
     setIsReviewModalOpen(true);
   };
 
-  const fetchOrders = async () => {
-    setLoading(true);
+  const fetchOrders = async (isManualRefresh = false) => {
+    if (isManualRefresh) setRefreshing(true);
+    else setLoading(true);
+
     try {
       const response = await fetch(`${url}/api/order/userorders`, {
         method: "GET",
@@ -43,6 +59,7 @@ const MyOrders = () => {
       console.error("Failed to fetch user orders:", error);
     } finally {
       setLoading(false);
+      setRefreshing(false);
     }
   };
 
@@ -95,20 +112,36 @@ const MyOrders = () => {
   return (
     <div className='my-orders'>
       <div className="my-orders-header">
-        <h2>My Orders & Summary</h2>
-        <div className="orders-tab-buttons">
+        <div>
+          <h2>My Orders & Summary</h2>
+          <p className="my-orders-subtitle">Track your live food orders and view past restaurant receipts.</p>
+        </div>
+
+        <div className="orders-header-actions">
           <button
-            className={`tab-btn ${activeTab === 'all' ? 'active' : ''}`}
-            onClick={() => setActiveTab('all')}
+            onClick={() => fetchOrders(true)}
+            disabled={refreshing}
+            className="refresh-orders-btn"
+            title="Refresh order statuses"
           >
-            All Orders ({data.length})
+            <RefreshCw size={14} className={refreshing ? 'spin-icon' : ''} />
+            <span>{refreshing ? 'Refreshing...' : 'Refresh Status'}</span>
           </button>
-          <button
-            className={`tab-btn ${activeTab === 'today' ? 'active' : ''}`}
-            onClick={() => setActiveTab('today')}
-          >
-            Today's Orders ({todayCount})
-          </button>
+
+          <div className="orders-tab-buttons">
+            <button
+              className={`tab-btn ${activeTab === 'all' ? 'active' : ''}`}
+              onClick={() => setActiveTab('all')}
+            >
+              All Orders ({data.length})
+            </button>
+            <button
+              className={`tab-btn ${activeTab === 'today' ? 'active' : ''}`}
+              onClick={() => setActiveTab('today')}
+            >
+              Today ({todayCount})
+            </button>
+          </div>
         </div>
       </div>
 
@@ -120,8 +153,8 @@ const MyOrders = () => {
       ) : !token ? (
         <div className="orders-empty">
           <div className="empty-icon"><Lock size={44} color="#94a3b8" /></div>
-          <h3>Please log in to view your order summary</h3>
-          <p>Your active and past order summaries will appear here once signed in.</p>
+          <h3>Please Sign In</h3>
+          <p>Sign in to view your order history, live tracking statuses, and receipts.</p>
         </div>
       ) : filteredOrders.length === 0 ? (
         <div className="orders-empty">
@@ -136,37 +169,103 @@ const MyOrders = () => {
             const currentStepIdx = getStepIndex(order.status);
             const isCancelled = order.status === 'Cancelled';
             const pStatus = order.payment_status || 'pending';
+            const restaurantName = order.restaurant_name || 'FastBite Restaurant';
+            const restaurantSlug = order.restaurant_slug;
+            const restaurantLogo = order.restaurant_logo;
+            const restaurantCity = order.restaurant_city;
 
             return (
               <div key={order.id || index} className="my-orders-order-card">
-                <div className="order-main-row">
-                  <img src={assets.parcel_icon} alt="Parcel Icon" className="order-parcel-img" />
-
-                  <div className="order-details">
-                    <p className="order-items-text">
-                      {order.items && order.items.map((item, idx) => {
-                        if (idx === order.items.length - 1) {
-                          return `${item.name} x ${item.quantity}`;
-                        } else {
-                          return `${item.name} x ${item.quantity}, `;
-                        }
-                      })}
-                    </p>
-                    <div className="order-meta">
-                      <span className="order-id">Order #{order.id}</span>
-                      <span className="order-date">
-                        {new Date(order.created_at || Date.now()).toLocaleDateString('en-IN', {
-                          day: 'numeric',
-                          month: 'short',
-                          year: 'numeric',
-                          hour: '2-digit',
-                          minute: '2-digit'
-                        })}
-                      </span>
-                      {isToday(order.created_at) && <span className="today-badge">Today</span>}
+                {/* 1. RESTAURANT IDENTITY HEADER */}
+                <div className="order-restaurant-header">
+                  <div className="restaurant-info-wrap">
+                    <div className="restaurant-logo-avatar">
+                      {restaurantLogo ? (
+                        <img src={restaurantLogo} alt={restaurantName} className="restaurant-logo-img" />
+                      ) : (
+                        <div className="restaurant-logo-fallback">
+                          <Store size={20} color="#ff5e3a" />
+                        </div>
+                      )}
                     </div>
 
-                    {/* Customer Payment Status Badge */}
+                    <div className="restaurant-text-details">
+                      <div className="restaurant-name-row">
+                        <h3 className="restaurant-title">{restaurantName}</h3>
+                        {restaurantSlug && (
+                          <button
+                            type="button"
+                            onClick={() => navigate(`/r/${restaurantSlug}`)}
+                            className="view-store-btn"
+                            title="Visit restaurant storefront"
+                          >
+                            <ExternalLink size={12} /> View Menu
+                          </button>
+                        )}
+                      </div>
+
+                      <div className="order-meta-info">
+                        <span className="order-id-tag">Order #{order.id}</span>
+                        <span className="meta-separator">•</span>
+                        <span className="order-datetime">
+                          {new Date(order.created_at || Date.now()).toLocaleDateString('en-IN', {
+                            day: 'numeric',
+                            month: 'short',
+                            year: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                          })}
+                        </span>
+                        {isToday(order.created_at) && <span className="today-badge">Today</span>}
+                        {restaurantCity && (
+                          <>
+                            <span className="meta-separator">•</span>
+                            <span className="restaurant-location-tag">
+                              <MapPin size={11} /> {restaurantCity}
+                            </span>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Status Pill in Header */}
+                  <div className="order-header-status">
+                    <span className={`status-pill ${order.status ? order.status.toLowerCase().replace(/\s+/g, '-') : 'processing'}`}>
+                      ● {order.status || "Pending"}
+                    </span>
+                  </div>
+                </div>
+
+                <hr className="order-card-divider" />
+
+                {/* 2. ORDER ITEMS & SUMMARY BODY */}
+                <div className="order-body-grid">
+                  <div className="order-items-section">
+                    <span className="section-small-label">Ordered Dishes:</span>
+                    <div className="order-items-chips">
+                      {order.items && order.items.length > 0 ? (
+                        order.items.map((item, idx) => (
+                          <span key={item.id || idx} className="order-item-badge">
+                            <span className="item-name">{item.name}</span>
+                            <span className="item-qty">×{item.quantity}</span>
+                          </span>
+                        ))
+                      ) : (
+                        <p className="order-items-fallback">{order.first_name ? 'Dishes prepared fresh for delivery' : 'Food items'}</p>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="order-financials-section">
+                    <div className="financial-amount-box">
+                      <span className="section-small-label">Total Amount:</span>
+                      <strong className="order-total-amount">
+                        {formatCurrency ? formatCurrency(order.amount) : `₹${order.amount}`}
+                      </strong>
+                    </div>
+
+                    {/* Payment Status Badge */}
                     <div className="customer-pay-status-box">
                       {pStatus === 'paid' ? (
                         <span className="cust-pay-badge cust-pay-confirmed" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
@@ -189,21 +288,9 @@ const MyOrders = () => {
                       )}
                     </div>
                   </div>
-
-                  <div className="order-summary-info">
-                    <p className="order-amount">₹{order.amount}</p>
-                    <p className="order-count">Items: {order.items ? order.items.length : 0}</p>
-                  </div>
-
-                  <div className="order-status-wrapper">
-                    <span className={`status-pill ${order.status ? order.status.toLowerCase().replace(/\s+/g, '-') : 'processing'}`}>
-                      ● {order.status || "Pending"}
-                    </span>
-                    <button onClick={fetchOrders} className="track-btn">Refresh</button>
-                  </div>
                 </div>
 
-                {/* Live Order Progress Tracker */}
+                {/* 3. LIVE ORDER PROGRESS TRACKER */}
                 <div className="order-progress-tracker">
                   {isCancelled ? (
                     <div className="order-cancelled-notice" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
@@ -230,10 +317,12 @@ const MyOrders = () => {
                   )}
                 </div>
 
-                {/* Delivered Order Review Items Section */}
+                {/* 4. DELIVERED ORDER REVIEW ITEMS SECTION */}
                 {order.status === 'Delivered' && order.items && order.items.length > 0 && (
                   <div className="delivered-review-items-bar">
-                    <span className="review-items-title"><Star size={14} fill="#f59e0b" color="#f59e0b" /> Rate Delivered Dishes:</span>
+                    <span className="review-items-title">
+                      <Star size={14} fill="#f59e0b" color="#f59e0b" /> Rate Delivered Dishes:
+                    </span>
                     <div className="review-item-chips">
                       {order.items.map((item, idx) => (
                         <button

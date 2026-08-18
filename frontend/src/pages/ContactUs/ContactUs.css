@@ -1,0 +1,513 @@
+.contact-page-container {
+  margin: 40px 0 80px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* 1. HERO BANNER (RESTAURANT & PLATFORM) */
+.contact-hero-card,
+.platform-hero-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  padding: 36px 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.platform-hero-card {
+  border-left: 4px solid var(--primary-color);
+}
+
+.contact-hero-content,
+.platform-hero-content {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.contact-restaurant-avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 20px;
+  background: rgba(255, 94, 58, 0.08);
+  border: 2px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  flex-shrink: 0;
+  box-shadow: var(--shadow-sm);
+}
+
+.platform-brand-badge {
+  flex-shrink: 0;
+}
+
+.contact-logo-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.contact-hero-text,
+.platform-hero-text {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.contact-name-row,
+.platform-title-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.contact-name-row h1,
+.platform-title-row h1 {
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--text-dark);
+  letter-spacing: -0.5px;
+  margin: 0;
+}
+
+.contact-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: var(--radius-pill);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.contact-status-badge.open {
+  background: rgba(16, 185, 129, 0.15);
+  color: #059669;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.contact-status-badge.closed {
+  background: rgba(239, 68, 68, 0.12);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.25);
+}
+
+.platform-support-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: var(--radius-pill);
+  font-size: 12px;
+  font-weight: 700;
+  background: rgba(59, 130, 246, 0.12);
+  color: #2563eb;
+  border: 1px solid rgba(59, 130, 246, 0.25);
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.contact-hero-desc,
+.platform-hero-desc {
+  font-size: 15px;
+  color: var(--text-muted);
+  max-width: 600px;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.contact-hero-location,
+.platform-hero-hq {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-dark);
+  margin: 2px 0 0 0;
+}
+
+.explore-store-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 28px;
+  border-radius: var(--radius-pill);
+  background: var(--primary-gradient);
+  color: white;
+  border: none;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: var(--shadow-glow);
+  transition: var(--transition-normal);
+  white-space: nowrap;
+}
+
+.explore-store-btn:hover {
+  transform: translateY(-2px);
+  background: var(--primary-gradient-hover);
+}
+
+/* 2. CHANNELS GRID */
+.contact-channels-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
+.contact-channel-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  transition: var(--transition-normal);
+}
+
+.contact-channel-card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+  border-color: rgba(255, 94, 58, 0.3);
+}
+
+.channel-icon-wrap {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.channel-icon-wrap.phone-icon {
+  background: rgba(59, 130, 246, 0.12);
+  color: #3b82f6;
+}
+
+.channel-icon-wrap.whatsapp-icon {
+  background: rgba(37, 211, 102, 0.15);
+  color: #25d366;
+}
+
+.channel-icon-wrap.email-icon {
+  background: rgba(245, 158, 11, 0.15);
+  color: #f59e0b;
+}
+
+.channel-icon-wrap.location-icon {
+  background: rgba(255, 94, 58, 0.12);
+  color: #ff5e3a;
+}
+
+.channel-info h3 {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-dark);
+  margin-bottom: 4px;
+}
+
+.channel-value {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-dark);
+  margin-bottom: 4px;
+  word-break: break-word;
+}
+
+.channel-subtext {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.channel-action-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  margin-top: auto;
+}
+
+.phone-btn {
+  background: rgba(59, 130, 246, 0.1);
+  color: #2563eb;
+  border: 1px solid rgba(59, 130, 246, 0.25);
+}
+
+.phone-btn:hover {
+  background: #2563eb;
+  color: white;
+}
+
+.whatsapp-btn {
+  background: rgba(37, 211, 102, 0.12);
+  color: #16a34a;
+  border: 1px solid rgba(37, 211, 102, 0.25);
+}
+
+.whatsapp-btn:hover {
+  background: #16a34a;
+  color: white;
+}
+
+.email-btn {
+  background: rgba(245, 158, 11, 0.12);
+  color: #d97706;
+  border: 1px solid rgba(245, 158, 11, 0.25);
+}
+
+.email-btn:hover {
+  background: #d97706;
+  color: white;
+}
+
+.map-btn {
+  background: rgba(255, 94, 58, 0.1);
+  color: var(--primary-color);
+  border: 1px solid rgba(255, 94, 58, 0.25);
+}
+
+.map-btn:hover {
+  background: var(--primary-color);
+  color: white;
+}
+
+/* 3. DETAILS GRID: OPERATING HOURS, SERVICES & PARTNER ONBOARDING */
+.contact-details-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+.services-panel-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 28px;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.panel-card-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.panel-card-header h3 {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--text-dark);
+  margin: 0;
+}
+
+.hours-table {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.hours-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+  color: var(--text-body);
+  padding: 6px 0;
+  border-bottom: 1px dashed var(--border-color);
+}
+
+.hours-row:last-child {
+  border-bottom: none;
+}
+
+.hours-row.highlight {
+  font-weight: 700;
+  color: var(--text-dark);
+}
+
+.text-success {
+  color: #10b981;
+  font-weight: 600;
+}
+
+.text-closed {
+  color: #ef4444;
+  font-weight: 600;
+}
+
+.fulfillment-badges-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.fulfillment-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.fulfillment-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: rgba(255, 94, 58, 0.1);
+  color: var(--primary-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.fulfillment-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.fulfillment-text strong {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-dark);
+}
+
+.fulfillment-text span {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+/* PARTNER ONBOARDING CARD */
+.partner-onboarding-panel {
+  background: linear-gradient(135deg, var(--card-bg) 0%, rgba(255, 94, 58, 0.04) 100%);
+  border: 1px solid rgba(255, 94, 58, 0.2);
+}
+
+.partner-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.partner-intro-text {
+  font-size: 14px;
+  color: var(--text-body);
+  line-height: 1.5;
+  margin: 0;
+}
+
+.partner-perks-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.partner-perks-list li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-dark);
+}
+
+.partner-register-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 20px;
+  border-radius: var(--radius-pill);
+  background: var(--primary-gradient);
+  color: white;
+  border: none;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: var(--shadow-glow);
+  transition: var(--transition-normal);
+  margin-top: 6px;
+}
+
+.partner-register-btn:hover {
+  transform: translateY(-2px);
+  background: var(--primary-gradient-hover);
+}
+
+.contact-loading-container {
+  text-align: center;
+  padding: 80px 20px;
+  background: var(--card-bg);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+  margin: 40px 0;
+}
+
+/* RESPONSIVENESS */
+@media (max-width: 1024px) {
+  .contact-channels-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 860px) {
+  .contact-details-grid {
+    grid-template-columns: 1fr;
+  }
+  .contact-hero-card,
+  .platform-hero-card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .explore-store-btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 600px) {
+  .contact-channels-grid {
+    grid-template-columns: 1fr;
+  }
+  .contact-hero-content,
+  .platform-hero-content {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .contact-hero-card,
+  .platform-hero-card {
+    padding: 24px 20px;
+  }
+}
